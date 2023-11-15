@@ -13,7 +13,7 @@ public record AzureTokenProperties(
 		@NotEmpty String appClientSecret
 ) {
 	public static final String SPRING_DEFAULT_PRINCIPAL = "anonymousUser";
-	public static final String CLIENT_REGISTRATION_JOURNALPOSTAPI = "azure-journalpostapi";
+	public static final String CLIENT_REGISTRATION_DOKARKIV = "azure-dokarkiv";
 
 	public static OAuth2AuthorizeRequest getOAuth2AuthorizeRequestForAzure(String clientRegistrationId) {
 		return OAuth2AuthorizeRequest

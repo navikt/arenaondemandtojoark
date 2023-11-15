@@ -20,7 +20,7 @@ import java.time.Duration;
 import java.util.List;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
-import static no.nav.arenaondemandtojoark.config.AzureTokenProperties.CLIENT_REGISTRATION_JOURNALPOSTAPI;
+import static no.nav.arenaondemandtojoark.config.AzureTokenProperties.CLIENT_REGISTRATION_DOKARKIV;
 import static org.springframework.security.oauth2.core.AuthorizationGrantType.CLIENT_CREDENTIALS;
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
 
@@ -82,7 +82,7 @@ public class AzureOAuthEnabledWebClientConfig {
 			ArenaondemandtojoarkProperties arenaondemandtojoarkProperties,
 			AzureTokenProperties azureTokenProperties) {
 
-		return List.of(ClientRegistration.withRegistrationId(CLIENT_REGISTRATION_JOURNALPOSTAPI)
+		return List.of(ClientRegistration.withRegistrationId(CLIENT_REGISTRATION_DOKARKIV)
 				.tokenUri(azureTokenProperties.openidConfigTokenEndpoint())
 				.clientId(azureTokenProperties.appClientId())
 				.clientSecret(azureTokenProperties.appClientSecret())
