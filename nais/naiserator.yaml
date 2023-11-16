@@ -1,0 +1,20 @@
+apiVersion: nais.io/v1
+kind: Naisjob
+metadata:
+  name: arenaondemandtojoark
+  namespace: teamdokumenthandtering
+  labels:
+    team: teamdokumenthandtering
+spec:
+  image: {{ image }}
+  env:
+    - name: ARENAONDEMANDTOJOARK_ENDPOINTS_DOKARKIV_URL
+      value: {{ ARENAONDEMANDTOJOARK_ENDPOINTS_DOKARKIV_URL }}
+    - name: ARENAONDEMANDTOJOARK_ENDPOINTS_DOKARKIV_SCOPE
+      value: {{ ARENAONDEMANDTOJOARK_ENDPOINTS_DOKARKIV_SCOPE }}
+    - name: ARENAONDEMANDTOJOARK_ENDPOINTS_ONDEMAND
+      value: {{ ARENAONDEMANDTOJOARK_ENDPOINTS_ONDEMAND }}
+  azure:
+    application:
+      enabled: true
+  webproxy: true
