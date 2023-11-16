@@ -17,6 +17,9 @@ public class ArenaondemandtojoarkProperties {
 	public static class Endpoints {
 		@NotNull
 		private AzureEndpoint dokarkiv;
+
+		@NotNull
+		private String ondemand;
 	}
 
 	@Data
