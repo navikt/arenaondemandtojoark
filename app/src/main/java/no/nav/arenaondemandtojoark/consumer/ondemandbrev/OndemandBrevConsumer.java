@@ -11,6 +11,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClientRequest;
+import reactor.util.retry.Retry;
 
 import java.time.Duration;
 import java.util.Map;
@@ -49,6 +50,9 @@ public class OndemandBrevConsumer {
 				.bodyToMono(byte[].class)
 				.switchIfEmpty(Mono.error(new OndemandTomResponseException("Payload fra ondemandbrev var tom.")))
 				.doOnError(this::handleError)
+				.retryWhen(Retry.backoff(10, Duration.ofMillis(2000))
+						.filter(e -> e instanceof OndemandTechnicalException)
+						.onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> retrySignal.failure()))
 				.block();
 	}
 
