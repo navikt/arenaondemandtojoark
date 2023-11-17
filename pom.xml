@@ -21,6 +21,7 @@
 	<properties>
 		<logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
 		<camel-spring-boot-dependencies.version>4.2.0</camel-spring-boot-dependencies.version>
+		<jaxb-runtime.version>4.0.4</jaxb-runtime.version>
 	</properties>
 
 	<dependencyManagement>
@@ -37,6 +38,11 @@
 				<groupId>net.logstash.logback</groupId>
 				<artifactId>logstash-logback-encoder</artifactId>
 				<version>${logstash-logback-encoder.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jaxb</groupId>
+				<artifactId>jaxb-runtime</artifactId>
+				<version>${jaxb-runtime.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>

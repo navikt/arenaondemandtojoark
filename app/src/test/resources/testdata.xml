@@ -1,0 +1,54 @@
+<innlasting>
+	<journaldata>
+		<onDemandId>ODAP08031000123</onDemandId>
+		<saksnummer>3133123</saksnummer>
+		<brukerId>11114928123</brukerId>
+		<brukerType>PERSON</brukerType>
+		<journalpostType>U</journalpostType>
+		<fagomraade>OPP</fagomraade>
+		<journaldato>2008-03-10T17:19:22</journaldato>
+		<innhold>Innk. til dialogmøte innen 26 uker der mottaker er arb.giver</innhold>
+		<mottakerNavn>DUCK DONALD</mottakerNavn>
+		<mottakerId>80000009123</mottakerId>
+		<journalfoerendeEnhet>0211</journalfoerendeEnhet>
+		<opprettetAvNavn>Tryll, Magika Von</opprettetAvNavn>
+		<dokumentkategori>B</dokumentkategori>
+		<dokumentFerdigDato>2018-03-10T17:19:22</dokumentFerdigDato>
+		<brevkode>brevkode1</brevkode>
+		<sensitivt>true</sensitivt>
+	</journaldata>
+	<journaldata>
+		<onDemandId>ODAP08031000456</onDemandId>
+		<brukerId>11117144123</brukerId>
+		<brukerType>PERSON</brukerType>
+		<journalpostType>U</journalpostType>
+		<fagomraade>OPP</fagomraade>
+		<journaldato>2008-03-10T10:20:19</journaldato>
+		<innhold>Innk. til dialogmøte innen 26 uker der mottaker er arb.giver</innhold>
+		<mottakerNavn>DUCK DOLLY</mottakerNavn>
+		<mottakerId>80000347123</mottakerId>
+		<journalfoerendeEnhet>1670</journalfoerendeEnhet>
+		<opprettetAvNavn>Smart, Petter</opprettetAvNavn>
+		<dokumentkategori>B</dokumentkategori>
+		<dokumentFerdigDato>2021-03-10T10:20:19</dokumentFerdigDato>
+		<brevkode>brevkode2</brevkode>
+		<sensitivt>true</sensitivt>
+	</journaldata>
+	<journaldata>
+		<onDemandId>ODAP08031000789</onDemandId>
+		<brukerId>11117741234</brukerId>
+		<brukerType>PERSON</brukerType>
+		<journalpostType>U</journalpostType>
+		<fagomraade>OPP</fagomraade>
+		<journaldato>2008-03-10T10:37:57</journaldato>
+		<innhold>Innk. til dialogmøte innen 26 uker der mottaker er arb.giver</innhold>
+		<mottakerNavn>ANTON FETTER</mottakerNavn>
+		<mottakerId>80000416123</mottakerId>
+		<journalfoerendeEnhet>1670</journalfoerendeEnhet>
+		<opprettetAvNavn>Duck, Bestemor</opprettetAvNavn>
+		<dokumentkategori>B</dokumentkategori>
+		<dokumentFerdigDato>2013-03-10T10:37:57</dokumentFerdigDato>
+		<brevkode>brevkode3</brevkode>
+		<sensitivt>true</sensitivt>
+	</journaldata>
+</innlasting>
