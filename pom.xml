@@ -20,10 +20,19 @@
 
 	<properties>
 		<logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
+		<camel-spring-boot-dependencies.version>4.2.0</camel-spring-boot-dependencies.version>
 	</properties>
 
 	<dependencyManagement>
 		<dependencies>
+			<dependency>
+				<groupId>org.apache.camel.springboot</groupId>
+				<artifactId>camel-spring-boot-dependencies</artifactId>
+				<version>${camel-spring-boot-dependencies.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+
 			<dependency>
 				<groupId>net.logstash.logback</groupId>
 				<artifactId>logstash-logback-encoder</artifactId>
