@@ -8,6 +8,7 @@
 	<artifactId>arenaondemandtojoark</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
+
 	<modules>
 		<module>app</module>
 	</modules>
@@ -22,6 +23,9 @@
 		<logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
 		<camel-spring-boot-dependencies.version>4.2.0</camel-spring-boot-dependencies.version>
 		<jaxb-runtime.version>4.0.4</jaxb-runtime.version>
+
+		<spring-cloud-contract-wiremock.version>4.0.4</spring-cloud-contract-wiremock.version>
+		<sshd-core.version>2.11.0</sshd-core.version>
 	</properties>
 
 	<dependencyManagement>
@@ -43,6 +47,31 @@
 				<groupId>org.glassfish.jaxb</groupId>
 				<artifactId>jaxb-runtime</artifactId>
 				<version>${jaxb-runtime.version}</version>
+			</dependency>
+
+			<dependency>
+				<groupId>org.springframework.cloud</groupId>
+				<artifactId>spring-cloud-contract-wiremock</artifactId>
+				<version>${spring-cloud-contract-wiremock.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.sshd</groupId>
+				<artifactId>sshd-core</artifactId>
+				<version>${sshd-core.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.sshd</groupId>
+				<artifactId>sshd-sftp</artifactId>
+				<version>${sshd-core.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.sshd</groupId>
+				<artifactId>sshd-scp</artifactId>
+				<version>${sshd-core.version}</version>
+				<scope>test</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
