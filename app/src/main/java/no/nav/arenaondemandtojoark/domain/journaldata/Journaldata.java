@@ -1,11 +1,12 @@
-package no.nav.arenaondemandtojoark.domain;
+package no.nav.arenaondemandtojoark.domain.journaldata;
 
-
+import lombok.Builder;
 import lombok.Value;
 
 import java.time.LocalDateTime;
 
 @Value
+@Builder
 public class Journaldata {
 	String onDemandId;
 	String saksnummer;

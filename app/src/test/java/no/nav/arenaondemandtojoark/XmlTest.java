@@ -25,6 +25,6 @@ public class XmlTest {
 		var result = (Innlasting) context.createUnmarshaller()
 				.unmarshal(fileReader);
 
-		assertThat(result.getInnlasting().size()).isEqualTo(3);
+		assertThat(result.getJournaldataList().size()).isEqualTo(3);
 	}
 }

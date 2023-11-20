@@ -2,7 +2,6 @@ package no.nav.arenaondemandtojoark.consumer.dokarkiv.map;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.consumer.dokarkiv.OpprettJournalpostRequest;
-import no.nav.arenaondemandtojoark.domain.Journaldata;
 import no.nav.arenaondemandtojoark.domain.joark.AvsenderMottaker;
 import no.nav.arenaondemandtojoark.domain.joark.AvsenderMottakerIdType;
 import no.nav.arenaondemandtojoark.domain.joark.Bruker;
@@ -12,18 +11,19 @@ import no.nav.arenaondemandtojoark.domain.joark.DokumentVariant;
 import no.nav.arenaondemandtojoark.domain.joark.JournalpostType;
 import no.nav.arenaondemandtojoark.domain.joark.Sak;
 import no.nav.arenaondemandtojoark.domain.joark.Tilleggsopplysning;
+import no.nav.arenaondemandtojoark.domain.journaldata.Journaldata;
 import no.nav.arenaondemandtojoark.exception.JournalpostdataMappingException;
 
 import java.util.List;
 
 import static java.util.Collections.singletonList;
-import static no.nav.arenaondemandtojoark.domain.JournalpostType.U;
 import static no.nav.arenaondemandtojoark.domain.joark.AvsenderMottakerIdType.ORGNR;
 import static no.nav.arenaondemandtojoark.domain.joark.Fagsaksystem.AO01;
 import static no.nav.arenaondemandtojoark.domain.joark.JournalpostType.NOTAT;
 import static no.nav.arenaondemandtojoark.domain.joark.JournalpostType.UTGAAENDE;
 import static no.nav.arenaondemandtojoark.domain.joark.Sakstype.FAGSAK;
 import static no.nav.arenaondemandtojoark.domain.joark.Sakstype.GENERELL_SAK;
+import static no.nav.arenaondemandtojoark.domain.journaldata.JournalpostType.U;
 import static org.apache.logging.log4j.util.Strings.isBlank;
 
 @Slf4j
@@ -121,7 +121,7 @@ public class OpprettJournalpostRequestMapper {
 
 	public static List<Dokument> toDokumenter(Journaldata journaldata, byte[] pdfDocument) {
 		if (pdfDocument == null || pdfDocument.length == 0 ) {
-			throw new JournalpostdataMappingException("Kan ikke mappe journaldata med ondemandId=%s. PDF-dokment mangler eller tomt."
+			throw new JournalpostdataMappingException("Kan ikke mappe journaldata med ondemandId=%s. PDF-dokment mangler eller er tomt."
 					.formatted(journaldata.getOnDemandId()));
 		}
 

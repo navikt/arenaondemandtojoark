@@ -1,4 +1,4 @@
-package no.nav.arenaondemandtojoark.domain;
+package no.nav.arenaondemandtojoark.domain.journaldata;
 
 public enum Dokumentkategori {
 	B,

@@ -1,27 +1,26 @@
 package no.nav.arenaondemandtojoark;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.ondemandtojoark.domain.journaldata.JournaldataMapper;
-import no.nav.ondemandtojoark.domain.journaldata.JournaldataValidator;
-import no.nav.ondemandtojoark.exception.functional.AbstractOndemandToJoarkFunctionalException;
-import no.nav.ondemandtojoark.exception.functional.JournalpostFerdigstillingFunctionalException;
-import no.nav.ondemandtojoark.exception.technical.AbstractOndemandToJoarkTechnicalException;
-import no.nav.ondemandtojoark.mdc.MDCGenerate;
-import no.nav.ondemandtojoark.service.OndemandToJoarkService;
+import no.nav.arenaondemandtojoark.domain.journaldata.map.JournaldataMapper;
+import no.nav.arenaondemandtojoark.domain.journaldata.validate.JournaldataValidator;
+import no.nav.arenaondemandtojoark.exception.ArenaondemandtojoarkFunctionalException;
+import no.nav.arenaondemandtojoark.exception.ArenaondemandtojoarkTechnicalException;
+import no.nav.arenaondemandtojoark.util.MDCGenerate;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.dataformat.csv.CsvDataFormat;
+import org.apache.camel.model.dataformat.JaxbDataFormat;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-import javax.inject.Inject;
+import static org.apache.camel.LoggingLevel.ERROR;
+import static org.apache.camel.LoggingLevel.INFO;
 
 @Slf4j
 @Component
-public class OndemandToJoarkRoute extends RouteBuilder {
+public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 	private static final String PROPERTY_ORIGINAL_CSV_LINE = "OriginalCsvLine";
 	private static final String PROPERTY_ONDEMAND_ID = "OndemandId";
 	private static final String PROPERTY_OUTPUT_FOLDER = "OutputFolder";
@@ -29,15 +28,20 @@ public class OndemandToJoarkRoute extends RouteBuilder {
 	private static final String FUNCTIONAL_AVVIKSFIL = "functional_avvik";
 	private static final String FUNCTIONAL_JOURNALPOST_FERDIGSTILT_FUNCTIONAL_AVVIK = "journalpost_ferdigstilt_functional_avvik";
 
-	private final OndemandToJoarkService ondemandToJoarkService;
+	private static final String LES_FIL_ROUTE = "file://{{odtojoark.workdir}}?antInclude=*.xml" +
+												"&antExclude=*_avvik.xml" +
+												"&initialDelay=5000" +
+												"&repeatCount=1" +
+												"&noop=true" +
+												"&maxMessagesPerPoll=1" +
+												"&charset=UTF-8";
+
+	private final ArenaOndemandToJoarkService arenaOndemandToJoarkService;
 	private final ApplicationContext springContext;
 
-	@Inject
-	public OndemandToJoarkRoute(
-			OndemandToJoarkService ondemandToJoarkService,
-			ApplicationContext springContext
-	) {
-		this.ondemandToJoarkService = ondemandToJoarkService;
+	public ArenaOndemandToJoarkRoute(ArenaOndemandToJoarkService arenaOndemandToJoarkService,
+									 ApplicationContext springContext) {
+		this.arenaOndemandToJoarkService = arenaOndemandToJoarkService;
 		this.springContext = springContext;
 		MDCGenerate.generateNewCallId();
 	}
@@ -47,39 +51,33 @@ public class OndemandToJoarkRoute extends RouteBuilder {
 		// Alle andre exceptions havner også her med ekstra logging.
 		errorHandler(deadLetterChannel("direct:avviksfil")
 				.log(log)
-				.loggingLevel(LoggingLevel.ERROR)
+				.loggingLevel(ERROR)
 				.logHandled(true)
 				.logExhausted(true)
 				.logExhaustedMessageHistory(false));
 
 		this.avviksFilSetup();
 
-		from("file://{{odtojoark.workdir}}?antInclude=*.csv" +
-			 "&antExclude=*_avvik.csv" +
-			 "&initialDelay=5000" +
-			 "&repeatCount=1" +
-			 "&noop=true" +
-			 "&maxMessagesPerPoll=1" +
-			 "&charset=UTF-8")
+		from(LES_FIL_ROUTE)
 				.routeId("lese_fil")
-				.log(LoggingLevel.INFO, log, "Starter lesing av ${file:absolute.path}.")
-				.setProperty(PROPERTY_OUTPUT_FOLDER, simple("${date:now:yyyy-MM-dd_HHmmss}"))
-				.split(body().tokenize("\n")).streaming().parallelProcessing()
-				.setProperty(PROPERTY_ORIGINAL_CSV_LINE, body())
-				.unmarshal(this.configureCsv())
+				.log(INFO, log, "Starter lesing av ${file:absolute.path}.")
+				//.setProperty(PROPERTY_OUTPUT_FOLDER, simple("${date:now:yyyy-MM-dd_HHmmss}"))
+				//.split(body().tokenize("\n")).streaming().parallelProcessing()
+				//.setProperty(PROPERTY_ORIGINAL_CSV_LINE, body())
+				.unmarshal(new JaxbDataFormat()) //TODO sjekk dette
 				.setBody(simple("${body[0]}"))
-				.to("direct:behandle_linje")
+				.to("direct:behandle_journaldata")
 				.end() // split
-				.log(LoggingLevel.INFO, log, "Behandlet ferdig ${file:absolute.path}.")
+				.log(INFO, log, "Behandlet ferdig ${file:absolute.path}.")
 				.to("direct:{{odtojoark.camel.shutdown}}");
 
-		from("direct:behandle_linje")// step to create Journaldata
-				.routeId("behandle_linje")
+		from("direct:behandle_journaldata")// step to create Journaldata
+				.routeId("behandle_journaldata")
 				.setProperty(PROPERTY_ONDEMAND_ID, simple("${body[0]}"))
-				.log(LoggingLevel.INFO, log, "ondemandId=${exchangeProperty." + PROPERTY_ONDEMAND_ID + "} under behandling.")
+				.log(INFO, log, "ondemandId=${exchangeProperty." + PROPERTY_ONDEMAND_ID + "} under behandling.")
 				.bean(new JournaldataMapper())
 				.bean(new JournaldataValidator())
-				.bean(ondemandToJoarkService)
+				.bean(arenaOndemandToJoarkService)
 				.end();
 
 		this.shutdownSetup();
@@ -88,15 +86,15 @@ public class OndemandToJoarkRoute extends RouteBuilder {
 
 	// AvviksFilSetup er for å differensiere exception for ferdigstill og resten av prossesen for journalpost. Dette er for å unngå å lage duplisering i databasen.
 	public void avviksFilSetup() {
-		onException(AbstractOndemandToJoarkTechnicalException.class)
+		onException(ArenaondemandtojoarkTechnicalException.class)
 				.handled(true)
 				.to("direct:" + TECHNICAL_AVVIKSFIL);
 
-		onException(JournalpostFerdigstillingFunctionalException.class)
-				.handled(true)
-				.to("direct:" + FUNCTIONAL_JOURNALPOST_FERDIGSTILT_FUNCTIONAL_AVVIK);
+//		onException(JournalpostFerdigstillingFunctionalException.class)
+//				.handled(true)
+//				.to("direct:" + FUNCTIONAL_JOURNALPOST_FERDIGSTILT_FUNCTIONAL_AVVIK);
 
-		onException(AbstractOndemandToJoarkFunctionalException.class)
+		onException(ArenaondemandtojoarkFunctionalException.class)
 				.handled(true)
 				.to("direct:" + FUNCTIONAL_AVVIKSFIL);
 
@@ -144,13 +142,5 @@ public class OndemandToJoarkRoute extends RouteBuilder {
 						stop.start();
 					}
 				});
-	}
-
-	private CsvDataFormat configureCsv() {
-		CsvDataFormat csvDataFormat = new CsvDataFormat();
-		csvDataFormat.setQuoteDisabled(true);
-		csvDataFormat.setDelimiter(';');
-
-		return csvDataFormat;
 	}
 }
