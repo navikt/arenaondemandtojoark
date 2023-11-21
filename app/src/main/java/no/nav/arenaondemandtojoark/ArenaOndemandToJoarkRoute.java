@@ -1,14 +1,20 @@
 package no.nav.arenaondemandtojoark;
 
+import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.arenaondemandtojoark.domain.journaldata.map.JournaldataMapper;
+import no.nav.arenaondemandtojoark.domain.journaldata.validate.JournaldataValidator;
+import no.nav.arenaondemandtojoark.domain.xml.Innlasting;
 import no.nav.arenaondemandtojoark.exception.ArenaondemandtojoarkFunctionalException;
 import no.nav.arenaondemandtojoark.exception.ArenaondemandtojoarkTechnicalException;
 import no.nav.arenaondemandtojoark.util.MDCGenerate;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.model.dataformat.JaxbDataFormat;
+import org.apache.camel.converter.jaxb.JaxbDataFormat;
+import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
@@ -52,23 +58,23 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				 "&antInclude=*.xml")
 				.routeId("lese_fil")
 				.log(INFO, log, "Starter lesing av ${file:absolute.path}.")
-				.unmarshal(new JaxbDataFormat()) //TODO sjekk dette
+				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
 				.setBody(simple("${body.journaldataList}"))
 				.split(body())
 					.to("direct:behandle_journaldata")
 				.end() // split
 				.log(INFO, log, "Behandlet ferdig ${file:absolute.path}.")
-				.to("direct:{{odtojoark.camel.shutdown}}");
+				.to("direct:shutdown");
 
-		from("direct:behandle_journaldata")// step to create Journaldata
+		from("direct:behandle_journaldata")
 				.routeId("behandle_journaldata")
 				.log(INFO, log, "Starter lesing av ${body}.")
-//				.bean(new JournaldataMapper())
-//				.bean(new JournaldataValidator())
+				.bean(new JournaldataMapper())
+				.bean(new JournaldataValidator())
 //				.bean(arenaOndemandToJoarkService)
 				.end();
-//
-//		this.shutdownSetup();
+
+		this.shutdownSetup();
 	}
 
 
@@ -101,34 +107,34 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.log(LoggingLevel.WARN, log, "ondemandId=${exchangeProperty." + PROPERTY_ONDEMAND_ID + "} sendt til " + avviksFil +". Exception=${exception}");
 	}
 
-//	public void shutdownSetup() {
-//		from("direct:shutdown")
-//				.routeId("shutdown")
-//				.process(new Processor() {
-//					Thread stop;
-//
-//					@Override
-//					public void process(final Exchange exchange) throws Exception {
-//						// stop this route using a thread that will stop
-//						// this route gracefully while we are still running
-//						if (stop == null) {
-//							stop = new Thread() {
-//								@Override
-//								public void run() {
-//									try {
-//										exchange.getContext().shutdown();
-//										SpringApplication.exit(springContext, () -> 0);
-//										System.exit(0);
-//									} catch (Exception e) {
-//										// ignore
-//									}
-//								}
-//							};
-//						}
-//
-//						// start the thread that stops this route
-//						stop.start();
-//					}
-//				});
-//	}
+	public void shutdownSetup() {
+		from("direct:shutdown")
+				.routeId("shutdown")
+				.process(new Processor() {
+					Thread stop;
+
+					@Override
+					public void process(final Exchange exchange) throws Exception {
+						// stop this route using a thread that will stop
+						// this route gracefully while we are still running
+						if (stop == null) {
+							stop = new Thread() {
+								@Override
+								public void run() {
+									try {
+										exchange.getContext().shutdown();
+										SpringApplication.exit(springContext, () -> 0);
+										System.exit(0);
+									} catch (Exception e) {
+										// ignore
+									}
+								}
+							};
+						}
+
+						// start the thread that stops this route
+						stop.start();
+					}
+				});
+	}
 }

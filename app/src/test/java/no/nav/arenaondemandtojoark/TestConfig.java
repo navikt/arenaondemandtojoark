@@ -28,7 +28,6 @@ import static java.util.Collections.singletonList;
 
 @Slf4j
 @Configuration
-@EnableAutoConfiguration
 @ComponentScan
 @EnableConfigurationProperties(ArenaondemandtojoarkProperties.class)
 @Import({TestConfig.SshdSftpServerConfig.class, TestConfig.CamelTestStartupConfig.class})

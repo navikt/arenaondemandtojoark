@@ -18,6 +18,7 @@ public class JournaldataMapper {
 
 	@Handler
 	public Journaldata map(no.nav.arenaondemandtojoark.domain.xml.Journaldata journaldata) {
+
 		return Journaldata.builder()
 			.onDemandId(journaldata.getOnDemandId())
 			.saksnummer(journaldata.getSaksnummer())
