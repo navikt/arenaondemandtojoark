@@ -16,7 +16,6 @@ public class Journaldata {
 	String journalpostType;
 	String fagomraade;
 	String journaldato;
-	String journalstatus;
 	String innhold;
 	String mottakerNavn;
 	String mottakerId;
@@ -25,7 +24,5 @@ public class Journaldata {
 	String sendtPrintDato;
 	String opprettetAvNavn;
 	String dokumentkategori;
-	String dokumentFerdigDato;
 	String brevkode;
-	String sensitivt;
 }

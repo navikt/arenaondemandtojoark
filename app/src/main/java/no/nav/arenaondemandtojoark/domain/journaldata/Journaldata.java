@@ -15,7 +15,6 @@ public class Journaldata {
 	JournalpostType journalpostType;
 	Fagomraade fagomraade;
 	LocalDateTime journaldato;
-	Journalstatus journalstatus;
 	String innhold;
 	String mottakerNavn;
 	String mottakerId;
@@ -24,7 +23,5 @@ public class Journaldata {
 	LocalDateTime sendtPrintDato;
 	String opprettetAvNavn;
 	Dokumentkategori dokumentkategori;
-	LocalDateTime dokumentFerdigDato;
 	String brevkode;
-	boolean sensitivt;
 }

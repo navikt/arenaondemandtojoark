@@ -34,7 +34,6 @@ public class JournaldataValidator {
 		validerPaakrevdFelt("journalpostType", journaldata.getJournalpostType(), validationErrors);
 		validerPaakrevdFelt("tema", journaldata.getFagomraade(), validationErrors);
 		validerPaakrevdFelt("datoJournal", journaldata.getJournaldato(), validationErrors);
-		validerPaakrevdFelt("journalStatus", journaldata.getJournalstatus(), validationErrors);
 		validerPaakrevdFelt("innhold", journaldata.getInnhold(), validationErrors);
 		validerPaakrevdFelt("journalfEnhet", journaldata.getJournalfoerendeEnhet(), validationErrors);
 		validerPaakrevdFelt("opprettetAvNavn", journaldata.getOpprettetAvNavn(), validationErrors);

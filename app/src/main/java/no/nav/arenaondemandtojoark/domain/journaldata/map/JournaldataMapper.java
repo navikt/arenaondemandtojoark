@@ -4,7 +4,6 @@ import no.nav.arenaondemandtojoark.domain.journaldata.Dokumentkategori;
 import no.nav.arenaondemandtojoark.domain.journaldata.Fagomraade;
 import no.nav.arenaondemandtojoark.domain.journaldata.Journaldata;
 import no.nav.arenaondemandtojoark.domain.journaldata.JournalpostType;
-import no.nav.arenaondemandtojoark.domain.journaldata.Journalstatus;
 import no.nav.arenaondemandtojoark.domain.journaldata.Utsendingskanal;
 import no.nav.arenaondemandtojoark.exception.JournaldataMappingException;
 import org.apache.camel.Handler;
@@ -27,7 +26,6 @@ public class JournaldataMapper {
 			.journalpostType(toEnum(JournalpostType.class, journaldata.getJournalpostType()))
 			.fagomraade(toEnum(Fagomraade.class, journaldata.getFagomraade()))
 			.journaldato(toLocalDateTime(journaldata.getJournaldato(), "journaldato"))
-			.journalstatus(toEnum(Journalstatus.class, journaldata.getJournalstatus()))
 			.innhold(journaldata.getInnhold())
 			.mottakerNavn(journaldata.getMottakerNavn())
 			.mottakerId(journaldata.getMottakerId())
@@ -36,9 +34,7 @@ public class JournaldataMapper {
 			.sendtPrintDato(toLocalDateTime(journaldata.getSendtPrintDato(), "sendtPrintDato"))
 			.opprettetAvNavn(journaldata.getOpprettetAvNavn())
 			.dokumentkategori(toEnum(Dokumentkategori.class, journaldata.getDokumentkategori()))
-			.dokumentFerdigDato(toLocalDateTime(journaldata.getDokumentFerdigDato(), "dokumentFerdigDato"))
 			.brevkode(journaldata.getBrevkode())
-			.sensitivt(journaldata.getSensitivt().equalsIgnoreCase("true"))
 			.build();
 	}
 
