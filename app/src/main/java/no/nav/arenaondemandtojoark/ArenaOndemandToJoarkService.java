@@ -9,6 +9,7 @@ import no.nav.arenaondemandtojoark.consumer.dokarkiv.map.FerdigstillJournalpostR
 import no.nav.arenaondemandtojoark.consumer.dokarkiv.map.OpprettJournalpostRequestMapper;
 import no.nav.arenaondemandtojoark.consumer.ondemandbrev.OndemandBrevConsumer;
 import no.nav.arenaondemandtojoark.domain.journaldata.Journaldata;
+import no.nav.arenaondemandtojoark.domain.xml.rapport.JournalpostrapportElement;
 import no.nav.arenaondemandtojoark.exception.OndemandDokumentIkkeFunnetException;
 import org.apache.camel.Body;
 import org.apache.camel.Handler;
@@ -45,15 +46,19 @@ public class ArenaOndemandToJoarkService {
 	}
 
 	@Handler
-	public void processJournaldata(@Body Journaldata journaldata) {
+	public JournalpostrapportElement processJournaldata(@Body Journaldata journaldata) {
 		byte[] pdfDocument = hentDokument(journaldata.getOnDemandId());
 
 		OpprettJournalpostRequest journalpost = OpprettJournalpostRequestMapper.map(journaldata, pdfDocument);
-		OpprettJournalpostResponse response = dokarkivConsumer.opprettJournalpost(journalpost);
+		OpprettJournalpostResponse opprettJournalpostResponse = dokarkivConsumer.opprettJournalpost(journalpost);
 
 		FerdigstillJournalpostRequest ferdigstillJournalpostRequest = FerdigstillJournalpostRequestMapper.map(journaldata);
 
-		dokarkivConsumer.ferdigstillJournalpost(response.journalpostId(), ferdigstillJournalpostRequest);
+		dokarkivConsumer.ferdigstillJournalpost(opprettJournalpostResponse.journalpostId(), ferdigstillJournalpostRequest);
+
+		return new JournalpostrapportElement(opprettJournalpostResponse.journalpostId(),
+				opprettJournalpostResponse.dokumenter().get(0).dokumentInfoId(),
+				journaldata.getOnDemandId());
 	}
 
 	private byte[] hentDokument(String ondemandId) {

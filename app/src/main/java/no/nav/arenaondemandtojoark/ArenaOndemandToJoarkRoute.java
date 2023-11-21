@@ -6,9 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.domain.journaldata.map.JournaldataMapper;
 import no.nav.arenaondemandtojoark.domain.journaldata.validate.JournaldataValidator;
 import no.nav.arenaondemandtojoark.domain.xml.Innlasting;
+import no.nav.arenaondemandtojoark.domain.xml.rapport.Journalpostrapport;
 import no.nav.arenaondemandtojoark.exception.ArenaondemandtojoarkFunctionalException;
 import no.nav.arenaondemandtojoark.exception.ArenaondemandtojoarkTechnicalException;
 import no.nav.arenaondemandtojoark.util.MDCGenerate;
+import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
@@ -17,6 +19,9 @@ import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.apache.camel.LoggingLevel.INFO;
 
@@ -61,10 +66,19 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
 				.setBody(simple("${body.journaldataList}"))
 				.split(body())
-					.to("direct:behandle_journaldata")
+				.to("direct:behandle_journaldata")
 				.end() // split
+				.aggregate(constant(true), new RapportAggregationStrategy())
+				.completionSize(1)
+				.completionTimeout(5000) // Set the completion timeout as needed
+				.to("direct:file")
 				.log(INFO, log, "Behandlet ferdig ${file:absolute.path}.")
 				.to("direct:shutdown");
+
+		from("direct:file")
+				.log(INFO, log, "Her: ${body}")
+				.marshal(new JaxbDataFormat(JAXBContext.newInstance(Journalpostrapport.class)))
+				.to("file:src/test/resources/rapport.xml?fileExist=Append");
 
 		from("direct:behandle_journaldata")
 				.routeId("behandle_journaldata")
@@ -72,6 +86,8 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.bean(new JournaldataMapper())
 				.bean(new JournaldataValidator())
 				.bean(arenaOndemandToJoarkService)
+				//.marshal(new JaxbDataFormat(JAXBContext.newInstance(JournalpostrapportElement.class)))
+				//.setBody(simple("${body}"))
 				.end();
 
 		this.shutdownSetup();
@@ -137,4 +153,28 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 					}
 				});
 	}
+
+	private class RapportAggregationStrategy implements AggregationStrategy {
+
+		@Override
+		public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
+			Object newBody = newExchange.getIn().getBody();
+			log.info("Dette skjer! {}", newBody);
+
+			List<Object> list;
+			if (oldExchange == null) {
+				// First time aggregation, create a new list
+				list = new ArrayList<>();
+				list.add(newBody);
+				newExchange.getIn().setBody(list);
+				return newExchange;
+			} else {
+				// Existing list, add the new element
+				list = oldExchange.getIn().getBody(List.class);
+				list.add(newBody);
+				return oldExchange;
+			}
+		}
+	}
+
 }
