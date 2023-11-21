@@ -14,7 +14,6 @@ import reactor.netty.http.client.HttpClientRequest;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
-import java.util.Map;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
@@ -24,6 +23,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 public class OndemandBrevConsumer {
 	private static final String ARENA_ONDEMAND_FOLDER = "AREP1";
 	private static final String IDNR = "IDNR";
+	private static final String APP_ID = "appID";
 
 	private final WebClient webClient;
 
@@ -32,7 +32,6 @@ public class OndemandBrevConsumer {
 			WebClient webClient) {
 		this.webClient = webClient.mutate()
 				.baseUrl(arenaondemandtojoarkProperties.getEndpoints().getOndemand())
-				.defaultUriVariables(Map.of("appID", ARENA_ONDEMAND_FOLDER))
 				.build();
 	}
 
@@ -41,6 +40,7 @@ public class OndemandBrevConsumer {
 		return webClient.get()
 				.uri(uriBuilder -> uriBuilder
 						.queryParam(IDNR, ondemandId)
+						.queryParam(APP_ID, ARENA_ONDEMAND_FOLDER)
 						.build())
 				.httpRequest(httpRequest -> {
 					HttpClientRequest reactorRequest = httpRequest.getNativeRequest();

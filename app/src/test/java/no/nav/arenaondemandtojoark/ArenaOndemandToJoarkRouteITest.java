@@ -26,8 +26,15 @@ public class ArenaOndemandToJoarkRouteITest extends AbstractIt {
 
 	@Test
 	public void skalLeseFraFilomraade() throws IOException {
+		var ondemandId = "ODAP08031000123";
+		var journalpostId = "467010363";
 
-		copyFileFromClasspathToInngaaende("testdata.xml");
+		stubAzure();
+		stubHentOndemandDokument(ondemandId);
+		stubOpprettJournalpost();
+		stubFerdigstillJournalpost(journalpostId);
+
+		copyFileFromClasspathToInngaaende("journaldata-ett-element.xml");
 
 		await().atMost(15, SECONDS).untilAsserted(() -> {
 			fail();

@@ -71,7 +71,7 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.log(INFO, log, "Starter lesing av ${body}.")
 				.bean(new JournaldataMapper())
 				.bean(new JournaldataValidator())
-//				.bean(arenaOndemandToJoarkService)
+				.bean(arenaOndemandToJoarkService)
 				.end();
 
 		this.shutdownSetup();

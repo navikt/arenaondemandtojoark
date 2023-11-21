@@ -54,8 +54,8 @@ public class DokarkivConsumer {
 	public void ferdigstillJournalpost(String journalpostId, FerdigstillJournalpostRequest request) {
 		webClient.patch()
 				.uri(uriBuilder -> uriBuilder
-						.queryParam("journalpostId", journalpostId)
-						.build())
+						.path("/{journalpostId}/ferdigstill")
+						.build(journalpostId))
 				.attributes(getOAuth2AuthorizedClient())
 				.bodyValue(request)
 				.retrieve()

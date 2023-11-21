@@ -19,7 +19,7 @@ public class XmlTest {
 	@Test
 	void shouldUnmarshallXml() throws JAXBException, FileNotFoundException {
 
-		FileReader fileReader = new FileReader("src/test/resources/testdata.xml");
+		FileReader fileReader = new FileReader("src/test/resources/journaldata.xml");
 		JAXBContext context = JAXBContext.newInstance(Innlasting.class);
 
 		var result = (Innlasting) context.createUnmarshaller()
