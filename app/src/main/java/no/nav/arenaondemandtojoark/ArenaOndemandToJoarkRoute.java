@@ -7,6 +7,7 @@ import no.nav.arenaondemandtojoark.domain.journaldata.map.JournaldataMapper;
 import no.nav.arenaondemandtojoark.domain.journaldata.validate.JournaldataValidator;
 import no.nav.arenaondemandtojoark.domain.xml.Innlasting;
 import no.nav.arenaondemandtojoark.domain.xml.rapport.Journalpostrapport;
+import no.nav.arenaondemandtojoark.domain.xml.rapport.JournalpostrapportElement;
 import no.nav.arenaondemandtojoark.exception.ArenaondemandtojoarkFunctionalException;
 import no.nav.arenaondemandtojoark.exception.ArenaondemandtojoarkTechnicalException;
 import no.nav.arenaondemandtojoark.util.MDCGenerate;
@@ -65,17 +66,20 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.log(INFO, log, "Starter lesing av ${file:absolute.path}.")
 				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
 				.setBody(simple("${body.journaldataList}"))
-				.split(body())
-				.to("direct:behandle_journaldata")
+				.split(body(), new RapportAggregationStrategy())
+					.to("direct:behandle_journaldata")
 				.end() // split
-				.aggregate(constant(true), new RapportAggregationStrategy())
-				.completionSize(1)
-				.completionTimeout(5000) // Set the completion timeout as needed
 				.to("direct:file")
 				.log(INFO, log, "Behandlet ferdig ${file:absolute.path}.")
 				.to("direct:shutdown");
 
 		from("direct:file")
+				.process(exchange -> {
+					Journalpostrapport journalpostrapport = new Journalpostrapport();
+					journalpostrapport.setJournalpostList((List<JournalpostrapportElement>) exchange.getIn().getBody());
+					exchange.getIn().setBody(journalpostrapport, Journalpostrapport.class);
+					log.info("Hei og haa");
+				})
 				.log(INFO, log, "Her: ${body}")
 				.marshal(new JaxbDataFormat(JAXBContext.newInstance(Journalpostrapport.class)))
 				.to("file:src/test/resources/rapport.xml?fileExist=Append");
@@ -86,8 +90,6 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.bean(new JournaldataMapper())
 				.bean(new JournaldataValidator())
 				.bean(arenaOndemandToJoarkService)
-				//.marshal(new JaxbDataFormat(JAXBContext.newInstance(JournalpostrapportElement.class)))
-				//.setBody(simple("${body}"))
 				.end();
 
 		this.shutdownSetup();
@@ -156,22 +158,23 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 
 	private class RapportAggregationStrategy implements AggregationStrategy {
 
+		// TODO: Denne kan eventuelt returnere Journalpostrapporten med aggregert liste med JournalpostrapportElement
 		@Override
 		public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-			Object newBody = newExchange.getIn().getBody();
-			log.info("Dette skjer! {}", newBody);
+			JournalpostrapportElement element = (JournalpostrapportElement) newExchange.getIn().getBody();
+			log.info("Dette skjer! {}", element);
 
-			List<Object> list;
+			ArrayList<JournalpostrapportElement> list;
 			if (oldExchange == null) {
 				// First time aggregation, create a new list
 				list = new ArrayList<>();
-				list.add(newBody);
+				list.add(element);
 				newExchange.getIn().setBody(list);
 				return newExchange;
 			} else {
 				// Existing list, add the new element
-				list = oldExchange.getIn().getBody(List.class);
-				list.add(newBody);
+				list = oldExchange.getIn().getBody(ArrayList.class);
+				list.add(element);
 				return oldExchange;
 			}
 		}

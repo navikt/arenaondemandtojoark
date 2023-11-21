@@ -41,6 +41,27 @@ public class ArenaOndemandToJoarkRouteITest extends AbstractIt {
 		});
 	}
 
+	@Test
+	public void skalLeseFraFilomraadeMedFlereFiler() throws IOException {
+		var ondemandId = "ODAP08031000123";
+		var journalpostId = "467010363";
+		var ondemandId2 = "ODAP08031000456";
+		var ondemandId3 = "ODAP08031000789";
+
+		stubAzure();
+		stubHentOndemandDokument(ondemandId);
+		stubOpprettJournalpost();
+		stubFerdigstillJournalpost(journalpostId);
+		stubHentOndemandDokument(ondemandId2);
+		stubHentOndemandDokument(ondemandId3);
+
+		copyFileFromClasspathToInngaaende("journaldata.xml");
+
+		await().atMost(15, SECONDS).untilAsserted(() -> {
+			fail();
+		});
+	}
+
 	private void preparePath(Path path) throws IOException {
 		if (!Files.exists(path)) {
 			Files.createDirectory(path);
