@@ -18,7 +18,9 @@ public class JournaldataValidator {
 	@Handler
 	public void validate(Journaldata journaldata) {
 		final List<String> validationErrors = new ArrayList<>();
+
 		validateAllePaakrevdeFelt(journaldata, validationErrors);
+
 		if (!validationErrors.isEmpty()) {
 			var feilmelding = "Journaldata med ondemandId=%s feilet validering med feilmeldinger: %s"
 					.formatted(journaldata.getOnDemandId(), String.join("\n", validationErrors));

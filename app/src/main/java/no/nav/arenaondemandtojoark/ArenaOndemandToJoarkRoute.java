@@ -13,7 +13,6 @@ import no.nav.arenaondemandtojoark.exception.ArenaondemandtojoarkTechnicalExcept
 import no.nav.arenaondemandtojoark.util.MDCGenerate;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
-import org.apache.camel.LoggingLevel;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
@@ -25,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.camel.LoggingLevel.INFO;
+import static org.apache.camel.LoggingLevel.WARN;
 
 @Slf4j
 @Component
@@ -57,7 +57,7 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 //				.logExhausted(true)
 //				.logExhaustedMessageHistory(false));
 
-//		this.avviksFilSetup();
+		avviksFilSetup();
 
 		from("{{arenaondemandtojoark.endpointuri}}" +
 				 "?{{arenaondemandtojoark.endpointconfig}}" +
@@ -100,11 +100,12 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 
 		onException(ArenaondemandtojoarkFunctionalException.class)
 				.handled(true)
+				.log(WARN, "Funksjonell feil.")
 				.to("direct:" + FUNCTIONAL_AVVIKSFIL);
 
-		this.buildAvvikFrom(TECHNICAL_AVVIKSFIL);
-		this.buildAvvikFrom(FUNCTIONAL_JOURNALPOST_FERDIGSTILT_FUNCTIONAL_AVVIK);
-		this.buildAvvikFrom(FUNCTIONAL_AVVIKSFIL);
+		buildAvvikFrom(TECHNICAL_AVVIKSFIL);
+		buildAvvikFrom(FUNCTIONAL_JOURNALPOST_FERDIGSTILT_FUNCTIONAL_AVVIK);
+		buildAvvikFrom(FUNCTIONAL_AVVIKSFIL);
 	}
 
 	public void buildAvvikFrom(String avviksFil) {
@@ -114,7 +115,7 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.transform(body().append("\n"))
 				.setHeader(Exchange.FILE_NAME, simple("${exchangeProperty." + PROPERTY_OUTPUT_FOLDER + "}_" + avviksFil +".csv"))
 				.to("file://{{odtojoark.workdir}}/?fileExist=Append")
-				.log(LoggingLevel.WARN, log, "ondemandId=${exchangeProperty." + PROPERTY_ONDEMAND_ID + "} sendt til " + avviksFil +". Exception=${exception}");
+				.log(WARN, log, "ondemandId=${exchangeProperty." + PROPERTY_ONDEMAND_ID + "} sendt til " + avviksFil + ". Exception=${exception}");
 	}
 
 	public void shutdownSetup() {
