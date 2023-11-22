@@ -23,7 +23,7 @@ import static no.nav.arenaondemandtojoark.domain.joark.JournalpostType.NOTAT;
 import static no.nav.arenaondemandtojoark.domain.joark.JournalpostType.UTGAAENDE;
 import static no.nav.arenaondemandtojoark.domain.joark.Sakstype.FAGSAK;
 import static no.nav.arenaondemandtojoark.domain.joark.Sakstype.GENERELL_SAK;
-import static no.nav.arenaondemandtojoark.domain.journaldata.JournalpostType.U;
+import static no.nav.arenaondemandtojoark.domain.journaldata.Journalposttype.U;
 import static org.apache.logging.log4j.util.Strings.isBlank;
 
 @Slf4j
@@ -54,18 +54,18 @@ public class OpprettJournalpostRequestMapper {
 	}
 
 	private static JournalpostType toJournalpostType(Journaldata journaldata) {
-		return switch (journaldata.getJournalpostType()) {
+		return switch (journaldata.getJournalposttype()) {
 			case U -> UTGAAENDE;
 			case N -> NOTAT;
 		};
 	}
 
 	private static AvsenderMottaker toAvsenderMottaker(Journaldata journaldata) {
-		if (U.equals(journaldata.getJournalpostType())) {
+		if (U.equals(journaldata.getJournalposttype())) {
 			return AvsenderMottaker.builder()
 					.id(toMottakerId(journaldata.getMottakerId()))
 					.idType(toAvsenderMottakerIdType(journaldata.getMottakerId()))
-					.navn(journaldata.getMottakerNavn())
+					.navn(journaldata.getMottakernavn())
 					.build();
 		}
 
@@ -93,7 +93,7 @@ public class OpprettJournalpostRequestMapper {
 	private static Bruker toBruker(Journaldata journaldata) {
 		return Bruker.builder()
 				.id(valider(journaldata, journaldata.getBrukerId(), BRUKER_ID))
-				.idType(PERSON.equalsIgnoreCase(journaldata.getBrukerType()) ? BrukerIdType.FNR : BrukerIdType.ORGNR)
+				.idType(PERSON.equalsIgnoreCase(journaldata.getBrukertype()) ? BrukerIdType.FNR : BrukerIdType.ORGNR)
 				.build();
 	}
 

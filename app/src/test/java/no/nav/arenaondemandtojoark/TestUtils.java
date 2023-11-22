@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 import static no.nav.arenaondemandtojoark.domain.journaldata.Dokumentkategori.B;
 import static no.nav.arenaondemandtojoark.domain.journaldata.Fagomraade.OPP;
-import static no.nav.arenaondemandtojoark.domain.journaldata.JournalpostType.U;
+import static no.nav.arenaondemandtojoark.domain.journaldata.Journalposttype.U;
 import static no.nav.arenaondemandtojoark.domain.journaldata.Utsendingskanal.L;
 
 public class TestUtils {
@@ -39,12 +39,12 @@ public class TestUtils {
 				.onDemandId("ODAP08031000123")
 				.saksnummer("3133123")
 				.brukerId("11114928123")
-				.brukerType("PERSON")
-				.journalpostType(U)
+				.brukertype("PERSON")
+				.journalposttype(U)
 				.fagomraade(OPP)
 				.journaldato(LocalDateTime.parse("2008-03-10T17:19:22"))
 				.innhold("Innk. til dialogmøte innen 26 uker der mottaker er arb.giver")
-				.mottakerNavn("DUCK DONALD")
+				.mottakernavn("DUCK DONALD")
 				.mottakerId("80000009123")
 				.utsendingskanal(L)
 				.journalfoerendeEnhet("0211")
@@ -60,8 +60,8 @@ public class TestUtils {
 				.onDemandId("ODAP08031000123")
 				.saksnummer("3133123")
 				.brukerId("11114928123")
-				.brukerType("PERSON")
-				.journalpostType(U)
+				.brukertype("PERSON")
+				.journalposttype(U)
 				.fagomraade(OPP)
 				.journaldato(LocalDateTime.parse("2008-03-10T17:19:22"))
 				.innhold("Innk. til dialogmøte innen 26 uker der mottaker er arb.giver")

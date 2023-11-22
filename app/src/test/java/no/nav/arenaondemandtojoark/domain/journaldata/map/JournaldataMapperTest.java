@@ -38,7 +38,7 @@ class JournaldataMapperTest {
 		var resultat = journaldataMapper.map(xmlJournaldata);
 
 		assertThat(resultat)
-				.extracting("journalpostType",
+				.extracting("journalposttype",
 						"fagomraade",
 						"utsendingskanal",
 						"dokumentkategori",

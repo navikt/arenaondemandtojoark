@@ -11,12 +11,12 @@ public class Journaldata {
 	String onDemandId;
 	String saksnummer;
 	String brukerId;
-	String brukerType;
-	JournalpostType journalpostType;
+	String brukertype;
+	Journalposttype journalposttype;
 	Fagomraade fagomraade;
 	LocalDateTime journaldato;
 	String innhold;
-	String mottakerNavn;
+	String mottakernavn;
 	String mottakerId;
 	Utsendingskanal utsendingskanal;
 	String journalfoerendeEnhet;

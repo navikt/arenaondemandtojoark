@@ -1,6 +1,6 @@
 package no.nav.arenaondemandtojoark.domain.journaldata;
 
-public enum JournalpostType {
+public enum Journalposttype {
 	U,
 	N
 }

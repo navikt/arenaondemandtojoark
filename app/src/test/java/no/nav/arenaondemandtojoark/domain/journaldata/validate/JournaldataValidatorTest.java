@@ -30,12 +30,12 @@ class JournaldataValidatorTest {
 						"Journaldata med ondemandId=null feilet validering med feilmeldinger:",
 						"Journaldata mangler påkrevd felt=onDemandId",
 						"Journaldata mangler påkrevd felt=brukerId",
-						"Journaldata mangler påkrevd felt=brukerType",
-						"Journaldata mangler påkrevd felt=journalpostType",
-						"Journaldata mangler påkrevd felt=tema",
-						"Journaldata mangler påkrevd felt=datoJournal",
+						"Journaldata mangler påkrevd felt=brukertype",
+						"Journaldata mangler påkrevd felt=journalposttype",
+						"Journaldata mangler påkrevd felt=fagomraade",
+						"Journaldata mangler påkrevd felt=journaldato",
 						"Journaldata mangler påkrevd felt=innhold",
-						"Journaldata mangler påkrevd felt=journalfEnhet",
+						"Journaldata mangler påkrevd felt=journalfoerendeEnhet",
 						"Journaldata mangler påkrevd felt=opprettetAvNavn",
 						"Journaldata mangler påkrevd felt=brevkode"
 				);
@@ -50,7 +50,7 @@ class JournaldataValidatorTest {
 				.withMessageContainingAll(
 						"Journaldata med ondemandId=ODAP08031000123 feilet validering med feilmeldinger:",
 						"Journaldata mangler påkrevd felt=utsendingskanal",
-						"Journaldata mangler påkrevd felt=mottakerNavn",
+						"Journaldata mangler påkrevd felt=mottakernavn",
 						"Journaldata mangler påkrevd felt=mottakerId",
 						"Journaldata mangler påkrevd felt=sendtPrintDato"
 				);

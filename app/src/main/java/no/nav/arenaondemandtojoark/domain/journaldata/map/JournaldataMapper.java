@@ -3,7 +3,7 @@ package no.nav.arenaondemandtojoark.domain.journaldata.map;
 import no.nav.arenaondemandtojoark.domain.journaldata.Dokumentkategori;
 import no.nav.arenaondemandtojoark.domain.journaldata.Fagomraade;
 import no.nav.arenaondemandtojoark.domain.journaldata.Journaldata;
-import no.nav.arenaondemandtojoark.domain.journaldata.JournalpostType;
+import no.nav.arenaondemandtojoark.domain.journaldata.Journalposttype;
 import no.nav.arenaondemandtojoark.domain.journaldata.Utsendingskanal;
 import no.nav.arenaondemandtojoark.exception.JournaldataMappingException;
 import org.apache.camel.Handler;
@@ -22,12 +22,12 @@ public class JournaldataMapper {
 			.onDemandId(journaldata.getOnDemandId())
 			.saksnummer(journaldata.getSaksnummer())
 			.brukerId(journaldata.getBrukerId())
-			.brukerType(journaldata.getBrukerType())
-			.journalpostType(toEnum(JournalpostType.class, journaldata.getJournalpostType()))
+			.brukertype(journaldata.getBrukerType())
+			.journalposttype(toEnum(Journalposttype.class, journaldata.getJournalpostType()))
 			.fagomraade(toEnum(Fagomraade.class, journaldata.getFagomraade()))
 			.journaldato(toLocalDateTime(journaldata.getJournaldato(), "journaldato"))
 			.innhold(journaldata.getInnhold())
-			.mottakerNavn(journaldata.getMottakerNavn())
+			.mottakernavn(journaldata.getMottakerNavn())
 			.mottakerId(journaldata.getMottakerId())
 			.utsendingskanal(toEnum(Utsendingskanal.class, journaldata.getUtsendingskanal()))
 			.journalfoerendeEnhet(journaldata.getJournalfoerendeEnhet())

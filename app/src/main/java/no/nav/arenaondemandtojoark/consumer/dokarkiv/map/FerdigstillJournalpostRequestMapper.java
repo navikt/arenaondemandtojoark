@@ -3,7 +3,7 @@ package no.nav.arenaondemandtojoark.consumer.dokarkiv.map;
 import no.nav.arenaondemandtojoark.consumer.dokarkiv.FerdigstillJournalpostRequest;
 import no.nav.arenaondemandtojoark.domain.journaldata.Journaldata;
 
-import static no.nav.arenaondemandtojoark.domain.journaldata.JournalpostType.U;
+import static no.nav.arenaondemandtojoark.domain.journaldata.Journalposttype.U;
 
 public class FerdigstillJournalpostRequestMapper {
 
@@ -14,7 +14,7 @@ public class FerdigstillJournalpostRequestMapper {
 				.journalfortAvNavn(journaldata.getOpprettetAvNavn())
 				.opprettetAvNavn(journaldata.getOpprettetAvNavn())
 				.datoJournal(journaldata.getJournaldato()) //TODO Verdifiser at disse datoene er på riktig format
-				.datoSendtPrint(U.equals(journaldata.getJournalpostType()) ? journaldata.getSendtPrintDato() : null)
+				.datoSendtPrint(U.equals(journaldata.getJournalposttype()) ? journaldata.getSendtPrintDato() : null)
 				.build();
 	}
 }

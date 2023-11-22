@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static no.nav.arenaondemandtojoark.domain.journaldata.JournalpostType.U;
+import static no.nav.arenaondemandtojoark.domain.journaldata.Journalposttype.U;
 import static org.apache.logging.log4j.util.Strings.isBlank;
 
 public class JournaldataValidator {
@@ -32,18 +32,18 @@ public class JournaldataValidator {
 	private void validateAllePaakrevdeFelt(Journaldata journaldata, List<String> validationErrors) {
 		validerPaakrevdFelt("onDemandId", journaldata.getOnDemandId(), validationErrors);
 		validerPaakrevdFelt("brukerId", journaldata.getBrukerId(), validationErrors);
-		validerPaakrevdFelt("brukerType", journaldata.getBrukerType(), validationErrors);
-		validerPaakrevdFelt("journalpostType", journaldata.getJournalpostType(), validationErrors);
-		validerPaakrevdFelt("tema", journaldata.getFagomraade(), validationErrors);
-		validerPaakrevdFelt("datoJournal", journaldata.getJournaldato(), validationErrors);
+		validerPaakrevdFelt("brukertype", journaldata.getBrukertype(), validationErrors);
+		validerPaakrevdFelt("journalposttype", journaldata.getJournalposttype(), validationErrors);
+		validerPaakrevdFelt("fagomraade", journaldata.getFagomraade(), validationErrors);
+		validerPaakrevdFelt("journaldato", journaldata.getJournaldato(), validationErrors);
 		validerPaakrevdFelt("innhold", journaldata.getInnhold(), validationErrors);
-		validerPaakrevdFelt("journalfEnhet", journaldata.getJournalfoerendeEnhet(), validationErrors);
+		validerPaakrevdFelt("journalfoerendeEnhet", journaldata.getJournalfoerendeEnhet(), validationErrors);
 		validerPaakrevdFelt("opprettetAvNavn", journaldata.getOpprettetAvNavn(), validationErrors);
 		validerPaakrevdFelt("brevkode", journaldata.getBrevkode(), validationErrors);
 
-		if (U.equals(journaldata.getJournalpostType())) {
+		if (U.equals(journaldata.getJournalposttype())) {
 			validerPaakrevdFelt("utsendingskanal", journaldata.getUtsendingskanal(), validationErrors);
-			validerPaakrevdFelt("mottakerNavn", journaldata.getMottakerNavn(), validationErrors);
+			validerPaakrevdFelt("mottakernavn", journaldata.getMottakernavn(), validationErrors);
 			validerPaakrevdFelt("mottakerId", journaldata.getMottakerId(), validationErrors);
 			validerPaakrevdFelt("sendtPrintDato", journaldata.getSendtPrintDato(), validationErrors);
 		}
