@@ -120,7 +120,7 @@ public class OpprettJournalpostRequestMapper {
 	}
 
 	public static List<Dokument> toDokumenter(Journaldata journaldata, byte[] pdfDocument) {
-		if (pdfDocument == null || pdfDocument.length == 0 ) {
+		if (pdfDocument == null || pdfDocument.length == 0) {
 			throw new JournalpostdataMappingException("Kan ikke mappe journaldata med ondemandId=%s. PDF-dokment mangler eller er tomt."
 					.formatted(journaldata.getOnDemandId()));
 		}
@@ -131,8 +131,7 @@ public class OpprettJournalpostRequestMapper {
 						.variantformat(ARKIV)
 						.fysiskDokument(pdfDocument)
 						.filnavn(journaldata.getOnDemandId() + ".pdf")
-						.build()
-		);
+						.build());
 
 		return singletonList(
 				Dokument.builder()
@@ -140,8 +139,7 @@ public class OpprettJournalpostRequestMapper {
 						.brevkode(journaldata.getBrevkode())
 						.dokumentKategori(journaldata.getDokumentkategori().name())
 						.dokumentvarianter(dokumentvarianter)
-						.build()
-		);
+						.build());
 	}
 
 	public static String valider(Journaldata journaldata, String value, String valueName) {

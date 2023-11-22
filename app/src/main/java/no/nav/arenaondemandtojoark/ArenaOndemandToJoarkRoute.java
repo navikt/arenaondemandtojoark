@@ -66,31 +66,23 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.log(INFO, log, "Starter lesing av ${file:absolute.path}.")
 				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
 				.setBody(simple("${body.journaldataList}"))
-				.split(body(), new RapportAggregationStrategy())
+				.split(body(), new RapportAggregator())
 					.to("direct:behandle_journaldata")
 				.end() // split
 				.to("direct:file")
 				.log(INFO, log, "Behandlet ferdig ${file:absolute.path}.")
 				.to("direct:shutdown");
 
-		from("direct:file")
-				.process(exchange -> {
-					Journalpostrapport journalpostrapport = new Journalpostrapport();
-					journalpostrapport.setJournalpostList((List<JournalpostrapportElement>) exchange.getIn().getBody());
-					exchange.getIn().setBody(journalpostrapport, Journalpostrapport.class);
-					log.info("Hei og haa");
-				})
-				.log(INFO, log, "Her: ${body}")
-				.marshal(new JaxbDataFormat(JAXBContext.newInstance(Journalpostrapport.class)))
-				.to("file:src/test/resources/rapport.xml?fileExist=Append");
-
 		from("direct:behandle_journaldata")
 				.routeId("behandle_journaldata")
-				.log(INFO, log, "Starter lesing av ${body}.")
 				.bean(new JournaldataMapper())
 				.bean(new JournaldataValidator())
 				.bean(arenaOndemandToJoarkService)
 				.end();
+
+		from("direct:file")
+				.marshal(new JaxbDataFormat(JAXBContext.newInstance(Journalpostrapport.class)))
+				.to("file:src/test/resources/rapport?fileName=placeholder.xml"); //FIXME
 
 		this.shutdownSetup();
 	}
@@ -156,27 +148,21 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				});
 	}
 
-	private class RapportAggregationStrategy implements AggregationStrategy {
+	private static class RapportAggregator implements AggregationStrategy {
 
-		// TODO: Denne kan eventuelt returnere Journalpostrapporten med aggregert liste med JournalpostrapportElement
+		private final List<JournalpostrapportElement> journalposter = new ArrayList<>();
+
 		@Override
 		public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
 			JournalpostrapportElement element = (JournalpostrapportElement) newExchange.getIn().getBody();
-			log.info("Dette skjer! {}", element);
+			journalposter.add(element);
 
-			ArrayList<JournalpostrapportElement> list;
-			if (oldExchange == null) {
-				// First time aggregation, create a new list
-				list = new ArrayList<>();
-				list.add(element);
-				newExchange.getIn().setBody(list);
-				return newExchange;
-			} else {
-				// Existing list, add the new element
-				list = oldExchange.getIn().getBody(ArrayList.class);
-				list.add(element);
-				return oldExchange;
-			}
+			return newExchange;
+		}
+
+		@Override
+		public void onCompletion(Exchange exchange) {
+			exchange.getIn().setBody(new Journalpostrapport(journalposter));
 		}
 	}
 

@@ -10,8 +10,8 @@ import no.nav.arenaondemandtojoark.consumer.dokarkiv.map.OpprettJournalpostReque
 import no.nav.arenaondemandtojoark.consumer.ondemandbrev.OndemandBrevConsumer;
 import no.nav.arenaondemandtojoark.domain.journaldata.Journaldata;
 import no.nav.arenaondemandtojoark.domain.xml.rapport.JournalpostrapportElement;
+import no.nav.arenaondemandtojoark.exception.DokarkivFunctionalException;
 import no.nav.arenaondemandtojoark.exception.OndemandDokumentIkkeFunnetException;
-import org.apache.camel.Body;
 import org.apache.camel.Handler;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ public class ArenaOndemandToJoarkService {
 	static {
 		byte[] pdf;
 		try {
-			File resource = new ClassPathResource("/MigreringMisslyktes.pdf").getFile();
+			File resource = new ClassPathResource("/MigreringMislyktes.pdf").getFile();
 			pdf = Files.readAllBytes(resource.toPath());
 		} catch (IOException e) {
 			pdf = null;
@@ -46,11 +46,14 @@ public class ArenaOndemandToJoarkService {
 	}
 
 	@Handler
-	public JournalpostrapportElement processJournaldata(@Body Journaldata journaldata) {
+	public JournalpostrapportElement prosesserJournaldata(Journaldata journaldata) {
 		byte[] pdfDocument = hentDokument(journaldata.getOnDemandId());
 
 		OpprettJournalpostRequest journalpost = OpprettJournalpostRequestMapper.map(journaldata, pdfDocument);
 		OpprettJournalpostResponse opprettJournalpostResponse = dokarkivConsumer.opprettJournalpost(journalpost);
+
+		if (opprettJournalpostResponse.dokumenter().size() != 1)
+			throw new DokarkivFunctionalException("Forventet akkurat ett dokument i opprettJournalpostResponse");
 
 		FerdigstillJournalpostRequest ferdigstillJournalpostRequest = FerdigstillJournalpostRequestMapper.map(journaldata);
 

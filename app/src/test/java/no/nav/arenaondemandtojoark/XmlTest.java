@@ -39,8 +39,7 @@ public class XmlTest {
 		var element2 = new JournalpostrapportElement("aaa", "bbb", "ccc");
 		var element3 = new JournalpostrapportElement("***", "---", "###");
 
-		var liste = new Journalpostrapport();
-		liste.setJournalpostList(List.of(element1, element2, element3));
+		var liste = new Journalpostrapport(List.of(element1, element2, element3));
 
 		JAXBContext context = JAXBContext.newInstance(Journalpostrapport.class);
 		Marshaller marshaller = context.createMarshaller();
