@@ -57,11 +57,12 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 //				.logExhausted(true)
 //				.logExhaustedMessageHistory(false));
 
-		avviksFilSetup();
+//		avviksFilSetup();
 
 		from("{{arenaondemandtojoark.endpointuri}}" +
-				 "?{{arenaondemandtojoark.endpointconfig}}" +
-				 "&antInclude=*.xml")
+			 "?{{arenaondemandtojoark.endpointconfig}}" +
+			 "&antInclude=*.xml" +
+			 "&move=processed/${date:now:yyyyMMdd}/${file:name}")
 				.routeId("lese_fil")
 				.log(INFO, log, "Starter lesing av ${file:absolute.path}.")
 				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
@@ -82,7 +83,10 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 
 		from("direct:file")
 				.marshal(new JaxbDataFormat(JAXBContext.newInstance(Journalpostrapport.class)))
-				.to("file:src/test/resources/rapport?fileName=placeholder.xml"); //FIXME
+				.to("{{arenaondemandtojoark.endpointuri}}/rapport" +
+					"?{{arenaondemandtojoark.endpointconfig}}" +
+					"&fileName=placeholder.xml" //FIXME
+				);
 
 		this.shutdownSetup();
 	}
