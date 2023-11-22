@@ -6,8 +6,8 @@ import org.junit.jupiter.api.Test;
 
 import static no.nav.arenaondemandtojoark.TestUtils.lagJournaldata;
 import static no.nav.arenaondemandtojoark.TestUtils.lagJournaldataMedJournalposttypeU;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatNoException;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 class JournaldataValidatorTest {
 
@@ -24,9 +24,9 @@ class JournaldataValidatorTest {
 	void skalKasteJournaldataValideringExceptionHvisAlleDataMangler() {
 		var journaldata = Journaldata.builder().build();
 
-		assertThatThrownBy(() -> validator.validate(journaldata))
-				.isInstanceOf(JournaldataValideringException.class)
-				.hasMessageContainingAll(
+		assertThatExceptionOfType(JournaldataValideringException.class)
+				.isThrownBy(() -> validator.validate(journaldata))
+				.withMessageContainingAll(
 						"Journaldata med ondemandId=null feilet validering med feilmeldinger:",
 						"Journaldata mangler påkrevd felt=onDemandId",
 						"Journaldata mangler påkrevd felt=brukerId",
@@ -45,9 +45,9 @@ class JournaldataValidatorTest {
 	void skalKasteJournaldataValideringExceptionForJournalposttypeU() {
 		var journaldata = lagJournaldataMedJournalposttypeU();
 
-		assertThatThrownBy(() -> validator.validate(journaldata))
-				.isInstanceOf(JournaldataValideringException.class)
-				.hasMessageContainingAll(
+		assertThatExceptionOfType(JournaldataValideringException.class)
+				.isThrownBy(() -> validator.validate(journaldata))
+				.withMessageContainingAll(
 						"Journaldata med ondemandId=ODAP08031000123 feilet validering med feilmeldinger:",
 						"Journaldata mangler påkrevd felt=utsendingskanal",
 						"Journaldata mangler påkrevd felt=mottakerNavn",

@@ -11,6 +11,29 @@ import static no.nav.arenaondemandtojoark.domain.journaldata.Utsendingskanal.L;
 
 public class TestUtils {
 
+	public static no.nav.arenaondemandtojoark.domain.xml.Journaldata lagXmlJournaldata() {
+		var journaldata = new no.nav.arenaondemandtojoark.domain.xml.Journaldata();
+
+		journaldata.setOnDemandId("ODAP08031000123");
+		journaldata.setSaksnummer("3133123");
+		journaldata.setBrukerId("11114928123");
+		journaldata.setBrukerType("PERSON");
+		journaldata.setJournalpostType("U");
+		journaldata.setFagomraade("OPP");
+		journaldata.setJournaldato("2008-03-10T17:19:22");
+		journaldata.setInnhold("Innk. til dialogmøte innen 26 uker der mottaker er arb.giver");
+		journaldata.setMottakerNavn("DUCK DONALD");
+		journaldata.setMottakerId("80000009123");
+		journaldata.setUtsendingskanal("L");
+		journaldata.setJournalfoerendeEnhet("0211");
+		journaldata.setSendtPrintDato("2011-12-08T15:07:48");
+		journaldata.setOpprettetAvNavn("Tryll, Magika Von");
+		journaldata.setDokumentkategori("B");
+		journaldata.setBrevkode("brevkode1");
+
+		return journaldata;
+	}
+
 	public static Journaldata lagJournaldata() {
 		return Journaldata.builder()
 				.onDemandId("ODAP08031000123")

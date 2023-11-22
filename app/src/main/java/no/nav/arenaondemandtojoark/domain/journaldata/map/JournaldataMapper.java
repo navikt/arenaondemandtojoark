@@ -31,7 +31,7 @@ public class JournaldataMapper {
 			.mottakerId(journaldata.getMottakerId())
 			.utsendingskanal(toEnum(Utsendingskanal.class, journaldata.getUtsendingskanal()))
 			.journalfoerendeEnhet(journaldata.getJournalfoerendeEnhet())
-			.sendtPrintDato(toLocalDateTime(journaldata.getSendtPrintDato(), "sendtPrintDato"))
+			.sendtPrintDato(toLocalDateTime(journaldata.getSendtPrintDato(), "sendtprintdato"))
 			.opprettetAvNavn(journaldata.getOpprettetAvNavn())
 			.dokumentkategori(toEnum(Dokumentkategori.class, journaldata.getDokumentkategori()))
 			.brevkode(journaldata.getBrevkode())
@@ -47,7 +47,7 @@ public class JournaldataMapper {
 			return Enum.valueOf(enumType, value);
 		} catch (IllegalArgumentException e) {
 			throw new JournaldataMappingException(KAN_IKKE_MAPPE_FEILMELDING
-					.formatted(enumType.getSimpleName(), value));
+					.formatted(enumType.getSimpleName().toLowerCase(), value));
 		}
 	}
 
