@@ -36,6 +36,7 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 	private static final String TECHNICAL_AVVIKSFIL = "technical_avvik";
 	private static final String FUNCTIONAL_AVVIKSFIL = "functional_avvik";
 	private static final String FUNCTIONAL_JOURNALPOST_FERDIGSTILT_FUNCTIONAL_AVVIK = "journalpost_ferdigstilt_functional_avvik";
+	private static final String PROPERTY_FILNAVN = "PROPERTY_FILNAVN";
 
 	private final ArenaOndemandToJoarkService arenaOndemandToJoarkService;
 	private final ApplicationContext springContext;
@@ -53,6 +54,8 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 
 	@Override
 	public void configure() throws JAXBException {
+		//@formatter:off
+
 		// Alle andre exceptions havner også her med ekstra logging.
 //		errorHandler(deadLetterChannel("direct:avviksfil")
 //				.log(log)
@@ -84,23 +87,34 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 			 "&move=processed/${date:now:yyyyMMdd}/${file:name}")
 				.routeId("lese_fil")
 				.log(INFO, log, "Starter lesing av ${file:absolute.path}.")
+				.setProperty(PROPERTY_FILNAVN, simple("${file:name}"))
 				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
 				.setBody(simple("${body.journaldataList}")) // List<Journaldata>
-				// map alle journaldata-elementa til db-entitetar
-				// lagre alle til db
-				// slutt
-				.split(body(), new RapportAggregator())
-					.to("direct:map_journaldata")
-				.end() // split
-				.to("direct:lagre_journaldata")
+
+				.split(body()).streaming().parallelProcessing() //map alle journaldata-elementa til db-entitetar
+				.to("direct:map_journaldata")
+				.end()
+
+				.to("direct:lagre_journaldata")// lagre alle til db
+
+				.split(body(), new RapportAggregator()).streaming().parallelProcessing()
+				.to("direct:behandle_journaldata")
+				.end()
+
+				.to("direct:file")
+
 				.log(INFO, log, "Behandlet ferdig ${file:absolute.path}.")
 				.to("direct:shutdown");
 
+		from("direct:map_journaldata")
+				.routeId("map_journaldata")
+				.bean(journaldataMapper)
+				.end();
+
 		from("direct:lagre_journaldata")
 				.routeId("lagre_journaldata")
-				.bean(journaldataMapper)
+				//.bean(journaldataLagrer)
 				// lagre i db
-//				.bean(SaveStuff)
 				.end();
 
 		from("direct:behandle_journaldata")
@@ -119,6 +133,7 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				);
 
 		this.shutdownSetup();
+		//@formatter:on
 	}
 
 
@@ -147,7 +162,7 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.routeId(avviksFil)
 				.setBody(exchangeProperty(PROPERTY_ORIGINAL_CSV_LINE))
 				.transform(body().append("\n"))
-				.setHeader(Exchange.FILE_NAME, simple("${exchangeProperty." + PROPERTY_OUTPUT_FOLDER + "}_" + avviksFil +".csv"))
+				.setHeader(Exchange.FILE_NAME, simple("${exchangeProperty." + PROPERTY_OUTPUT_FOLDER + "}_" + avviksFil + ".csv"))
 				.to("file://{{odtojoark.workdir}}/?fileExist=Append")
 				.log(WARN, log, "ondemandId=${exchangeProperty." + PROPERTY_ONDEMAND_ID + "} sendt til " + avviksFil + ". Exception=${exception}");
 	}
