@@ -8,7 +8,7 @@ import no.nav.arenaondemandtojoark.consumer.dokarkiv.OpprettJournalpostResponse;
 import no.nav.arenaondemandtojoark.consumer.dokarkiv.map.FerdigstillJournalpostRequestMapper;
 import no.nav.arenaondemandtojoark.consumer.dokarkiv.map.OpprettJournalpostRequestMapper;
 import no.nav.arenaondemandtojoark.consumer.ondemandbrev.OndemandBrevConsumer;
-import no.nav.arenaondemandtojoark.domain.journaldata.Journaldata;
+import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.domain.xml.rapport.JournalpostrapportElement;
 import no.nav.arenaondemandtojoark.exception.DokarkivFunctionalException;
 import no.nav.arenaondemandtojoark.exception.OndemandDokumentIkkeFunnetException;

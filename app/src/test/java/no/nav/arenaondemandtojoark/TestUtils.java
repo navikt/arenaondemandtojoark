@@ -1,13 +1,13 @@
 package no.nav.arenaondemandtojoark;
 
-import no.nav.arenaondemandtojoark.domain.journaldata.Journaldata;
+import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 
 import java.time.LocalDateTime;
 
-import static no.nav.arenaondemandtojoark.domain.journaldata.Dokumentkategori.B;
-import static no.nav.arenaondemandtojoark.domain.journaldata.Fagomraade.OPP;
-import static no.nav.arenaondemandtojoark.domain.journaldata.Journalposttype.U;
-import static no.nav.arenaondemandtojoark.domain.journaldata.Utsendingskanal.L;
+import static no.nav.arenaondemandtojoark.domain.db.Dokumentkategori.B;
+import static no.nav.arenaondemandtojoark.domain.db.Fagomraade.OPP;
+import static no.nav.arenaondemandtojoark.domain.db.Journalposttype.U;
+import static no.nav.arenaondemandtojoark.domain.db.Utsendingskanal.L;
 
 public class TestUtils {
 
@@ -69,6 +69,28 @@ public class TestUtils {
 				.opprettetAvNavn("Tryll, Magika Von")
 				.dokumentkategori(B)
 				.brevkode("brevkode1")
+				.build();
+	}
+
+	public static no.nav.arenaondemandtojoark.domain.db.Journaldata lagJournaldataentitet() {
+		return no.nav.arenaondemandtojoark.domain.db.Journaldata.builder()
+				.onDemandId("ODAP08031000123")
+				.saksnummer("3133123")
+				.brukerId("11114928123")
+				.brukertype("PERSON")
+				.journalposttype(U)
+				.fagomraade(OPP)
+				.journaldato(LocalDateTime.parse("2008-03-10T17:19:22"))
+				.innhold("Innk. til dialogmøte innen 26 uker der mottaker er arb.giver")
+				.mottakernavn("DUCK DONALD")
+				.mottakerId("80000009123")
+				.utsendingskanal(L)
+				.journalfoerendeEnhet("0211")
+				.sendtPrintDato(LocalDateTime.parse("2011-12-08T15:07:48"))
+				.opprettetAvNavn("Tryll, Magika Von")
+				.dokumentkategori(B)
+				.brevkode("brevkode1")
+				.status("INNLASTING")
 				.build();
 	}
 

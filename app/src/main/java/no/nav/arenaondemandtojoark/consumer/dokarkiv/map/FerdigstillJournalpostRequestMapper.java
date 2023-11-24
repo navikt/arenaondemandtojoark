@@ -1,9 +1,9 @@
 package no.nav.arenaondemandtojoark.consumer.dokarkiv.map;
 
 import no.nav.arenaondemandtojoark.consumer.dokarkiv.FerdigstillJournalpostRequest;
-import no.nav.arenaondemandtojoark.domain.journaldata.Journaldata;
+import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 
-import static no.nav.arenaondemandtojoark.domain.journaldata.Journalposttype.U;
+import static no.nav.arenaondemandtojoark.domain.db.Journalposttype.U;
 
 public class FerdigstillJournalpostRequestMapper {
 

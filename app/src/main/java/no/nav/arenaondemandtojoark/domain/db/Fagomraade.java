@@ -1,4 +1,4 @@
-package no.nav.arenaondemandtojoark.domain.journaldata;
+package no.nav.arenaondemandtojoark.domain.db;
 
 public enum Fagomraade {
 	AAP,

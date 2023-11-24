@@ -1,6 +1,6 @@
-package no.nav.arenaondemandtojoark.domain.journaldata.validate;
+package no.nav.arenaondemandtojoark.domain.db.validate;
 
-import no.nav.arenaondemandtojoark.domain.journaldata.Journaldata;
+import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.exception.JournaldataValideringException;
 import org.junit.jupiter.api.Test;
 

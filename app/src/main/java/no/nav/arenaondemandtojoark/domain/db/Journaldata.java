@@ -5,21 +5,35 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import no.nav.arenaondemandtojoark.domain.journaldata.Dokumentkategori;
-import no.nav.arenaondemandtojoark.domain.journaldata.Fagomraade;
-import no.nav.arenaondemandtojoark.domain.journaldata.Journalposttype;
-import no.nav.arenaondemandtojoark.domain.journaldata.Utsendingskanal;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
+import static lombok.AccessLevel.NONE;
+
 @Entity
 @Table
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Getter
 public class Journaldata {
 
 	@Id
-	@Column
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "journaldata_id")
+	@Setter(NONE)
+	private Long journaldataId;
+
+	@Column(name = "ondemand_id")
 	String onDemandId;
 
 	@Column(name = "saksnummer")
@@ -71,6 +85,9 @@ public class Journaldata {
 	@Column(name = "brevkode")
 	String brevkode;
 
+	@Column(name = "status")
+	String status;
+
 	// Status -> (default) INNLEST, HAR_HENTET_ONDEMAND_DOKUMENT (avvik), HAR_FÅTT_OPPRETTET_JOURNALPOST, HAR_FERDIGSTILT_JOURNALPOST, HAR_LAGET_JOURNALPOSTRAPPORT
 	// Status -> INNLEST, AVLEVERT, FEILET
 
@@ -80,9 +97,7 @@ public class Journaldata {
 	To tabellar:
 	1. Journalpostrapport (ondemandId, journalpostId (frå dokarkiv), dokumentInfoId (frå dokarkiv))
 		- 1, 3 og 4
-	2. Avvik
-		- OndemandId, filnamn, feilmelding, feiltype (funksjonell eller teknisk feil - kan eller ikkje kan prøvast på nytt)
-		- 2, 5, 6, 7
+
 	 */
 
 }

@@ -3,8 +3,8 @@ package no.nav.arenaondemandtojoark;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.arenaondemandtojoark.domain.journaldata.map.JournaldataMapper;
-import no.nav.arenaondemandtojoark.domain.journaldata.validate.JournaldataValidator;
+import no.nav.arenaondemandtojoark.domain.db.map.JournaldataMapper;
+import no.nav.arenaondemandtojoark.domain.db.validate.JournaldataValidator;
 import no.nav.arenaondemandtojoark.domain.xml.Innlasting;
 import no.nav.arenaondemandtojoark.domain.xml.rapport.Journalpostrapport;
 import no.nav.arenaondemandtojoark.domain.xml.rapport.JournalpostrapportElement;
@@ -39,12 +39,16 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 
 	private final ArenaOndemandToJoarkService arenaOndemandToJoarkService;
 	private final ApplicationContext springContext;
+	private final JournaldataMapper journaldataMapper;
+	private final JournaldataValidator journaldataValidator;
 
 	public ArenaOndemandToJoarkRoute(ArenaOndemandToJoarkService arenaOndemandToJoarkService,
 									 ApplicationContext springContext) {
 		this.arenaOndemandToJoarkService = arenaOndemandToJoarkService;
 		this.springContext = springContext;
 		MDCGenerate.generateNewCallId();
+		journaldataMapper = new JournaldataMapper();
+		journaldataValidator = new JournaldataValidator();
 	}
 
 	@Override
@@ -59,6 +63,21 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 
 //		avviksFilSetup();
 
+//		from("{{arenaondemandtojoark.endpointuri}}" +
+//			 "?{{arenaondemandtojoark.endpointconfig}}" +
+//			 "&antInclude=*.xml" +
+//			 "&move=processed/${date:now:yyyyMMdd}/${file:name}")
+//				.routeId("lese_fil")
+//				.log(INFO, log, "Starter lesing av ${file:absolute.path}.")
+//				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
+//				.setBody(simple("${body.journaldataList}"))
+//				.split(body(), new RapportAggregator())
+//				.to("direct:behandle_journaldata")
+//				.end() // split
+//				.to("direct:lagre_journaldata")
+//				.log(INFO, log, "Behandlet ferdig ${file:absolute.path}.")
+//				.to("direct:shutdown");
+
 		from("{{arenaondemandtojoark.endpointuri}}" +
 			 "?{{arenaondemandtojoark.endpointconfig}}" +
 			 "&antInclude=*.xml" +
@@ -66,18 +85,29 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.routeId("lese_fil")
 				.log(INFO, log, "Starter lesing av ${file:absolute.path}.")
 				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
-				.setBody(simple("${body.journaldataList}"))
+				.setBody(simple("${body.journaldataList}")) // List<Journaldata>
+				// map alle journaldata-elementa til db-entitetar
+				// lagre alle til db
+				// slutt
 				.split(body(), new RapportAggregator())
-					.to("direct:behandle_journaldata")
+					.to("direct:map_journaldata")
 				.end() // split
-				.to("direct:file")
+				.to("direct:lagre_journaldata")
 				.log(INFO, log, "Behandlet ferdig ${file:absolute.path}.")
 				.to("direct:shutdown");
+
+		from("direct:lagre_journaldata")
+				.routeId("lagre_journaldata")
+				.bean(journaldataMapper)
+				// lagre i db
+//				.bean(SaveStuff)
+				.end();
 
 		from("direct:behandle_journaldata")
 				.routeId("behandle_journaldata")
 				.bean(new JournaldataMapper())
-				.bean(new JournaldataValidator())
+				// lagre i db
+				.bean(journaldataValidator)
 				.bean(arenaOndemandToJoarkService)
 				.end();
 

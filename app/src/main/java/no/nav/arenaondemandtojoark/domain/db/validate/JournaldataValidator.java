@@ -1,6 +1,6 @@
-package no.nav.arenaondemandtojoark.domain.journaldata.validate;
+package no.nav.arenaondemandtojoark.domain.db.validate;
 
-import no.nav.arenaondemandtojoark.domain.journaldata.Journaldata;
+import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.exception.JournaldataValideringException;
 import org.apache.camel.Handler;
 
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static java.lang.String.format;
-import static no.nav.arenaondemandtojoark.domain.journaldata.Journalposttype.U;
+import static no.nav.arenaondemandtojoark.domain.db.Journalposttype.U;
 import static org.apache.logging.log4j.util.Strings.isBlank;
 
 public class JournaldataValidator {

@@ -1,4 +1,4 @@
-package no.nav.arenaondemandtojoark.domain.journaldata.map;
+package no.nav.arenaondemandtojoark.domain.db.map;
 
 import no.nav.arenaondemandtojoark.exception.JournaldataMappingException;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ class JournaldataMapperTest {
 
 		var actual = journaldataMapper.map(xmlJournaldata);
 
-		assertThat(actual).usingRecursiveComparison().isEqualTo(expected);
+		assertThat(actual).usingRecursiveComparison().ignoringFields("status").isEqualTo(expected);
 	}
 
 	@Test

@@ -11,7 +11,7 @@ import no.nav.arenaondemandtojoark.domain.joark.DokumentVariant;
 import no.nav.arenaondemandtojoark.domain.joark.JournalpostType;
 import no.nav.arenaondemandtojoark.domain.joark.Sak;
 import no.nav.arenaondemandtojoark.domain.joark.Tilleggsopplysning;
-import no.nav.arenaondemandtojoark.domain.journaldata.Journaldata;
+import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.exception.JournalpostdataMappingException;
 
 import java.util.List;
@@ -23,7 +23,7 @@ import static no.nav.arenaondemandtojoark.domain.joark.JournalpostType.NOTAT;
 import static no.nav.arenaondemandtojoark.domain.joark.JournalpostType.UTGAAENDE;
 import static no.nav.arenaondemandtojoark.domain.joark.Sakstype.FAGSAK;
 import static no.nav.arenaondemandtojoark.domain.joark.Sakstype.GENERELL_SAK;
-import static no.nav.arenaondemandtojoark.domain.journaldata.Journalposttype.U;
+import static no.nav.arenaondemandtojoark.domain.db.Journalposttype.U;
 import static org.apache.logging.log4j.util.Strings.isBlank;
 
 @Slf4j
