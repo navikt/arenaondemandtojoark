@@ -1,5 +1,6 @@
 package no.nav.arenaondemandtojoark.domain.db.map;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.domain.db.Dokumentkategori;
 import no.nav.arenaondemandtojoark.domain.db.Fagomraade;
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
@@ -11,6 +12,7 @@ import org.apache.camel.Handler;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
+@Slf4j
 public class JournaldataMapper {
 
 	private static final String KAN_IKKE_MAPPE_FEILMELDING = "Kan ikke mappe til journaldata. Ugyldig verdi for %s=%s";
@@ -18,6 +20,7 @@ public class JournaldataMapper {
 
 	@Handler
 	public Journaldata map(no.nav.arenaondemandtojoark.domain.xml.Journaldata journaldata) {
+		log.info("Mapper journaldata med ondemandId={}", journaldata.getOnDemandId());
 
 		return Journaldata.builder()
 			.onDemandId(journaldata.getOnDemandId())

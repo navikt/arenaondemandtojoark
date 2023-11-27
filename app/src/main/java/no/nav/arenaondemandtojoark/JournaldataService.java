@@ -1,9 +1,16 @@
 package no.nav.arenaondemandtojoark;
 
+import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
-import org.apache.camel.Handler;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+
+@Slf4j
+@Service
+@Transactional
 public class JournaldataService {
 
 	private final JournaldataRepository journaldataRepository;
@@ -12,10 +19,9 @@ public class JournaldataService {
 		this.journaldataRepository = journaldataRepository;
 	}
 
-	@Handler
-	public void lagreJournaldata(Journaldata journaldata) {
-//		no.nav.arenaondemandtojoark.domain.db.Journaldata journaldata1 = mapToJournaldataEntity(journaldata);
-//
-//		journaldataRepository.save(journaldata1);
+	public void lagreJournaldata(ArrayList<Journaldata> journaldata) {
+		log.info("Lagrer journaldataliste med ondemandId={}", journaldata.stream().map(Journaldata::getOnDemandId).toList());
+
+		journaldataRepository.saveAll(journaldata);
 	}
 }

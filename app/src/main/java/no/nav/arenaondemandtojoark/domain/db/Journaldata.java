@@ -28,7 +28,7 @@ import static lombok.AccessLevel.NONE;
 public class Journaldata {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "journaldata_id")
 	@Setter(NONE)
 	private Long journaldataId;

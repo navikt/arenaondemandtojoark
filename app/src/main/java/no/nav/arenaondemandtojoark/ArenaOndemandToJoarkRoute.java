@@ -3,6 +3,7 @@ package no.nav.arenaondemandtojoark;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
+import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.domain.db.map.JournaldataMapper;
 import no.nav.arenaondemandtojoark.domain.db.validate.JournaldataValidator;
 import no.nav.arenaondemandtojoark.domain.xml.Innlasting;
@@ -42,11 +43,14 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 	private final ApplicationContext springContext;
 	private final JournaldataMapper journaldataMapper;
 	private final JournaldataValidator journaldataValidator;
+	private final JournaldataService journaldataService;
 
 	public ArenaOndemandToJoarkRoute(ArenaOndemandToJoarkService arenaOndemandToJoarkService,
-									 ApplicationContext springContext) {
+									 ApplicationContext springContext,
+									 JournaldataService journaldataService) {
 		this.arenaOndemandToJoarkService = arenaOndemandToJoarkService;
 		this.springContext = springContext;
+		this.journaldataService = journaldataService;
 		MDCGenerate.generateNewCallId();
 		journaldataMapper = new JournaldataMapper();
 		journaldataValidator = new JournaldataValidator();
@@ -66,21 +70,6 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 
 //		avviksFilSetup();
 
-//		from("{{arenaondemandtojoark.endpointuri}}" +
-//			 "?{{arenaondemandtojoark.endpointconfig}}" +
-//			 "&antInclude=*.xml" +
-//			 "&move=processed/${date:now:yyyyMMdd}/${file:name}")
-//				.routeId("lese_fil")
-//				.log(INFO, log, "Starter lesing av ${file:absolute.path}.")
-//				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
-//				.setBody(simple("${body.journaldataList}"))
-//				.split(body(), new RapportAggregator())
-//				.to("direct:behandle_journaldata")
-//				.end() // split
-//				.to("direct:lagre_journaldata")
-//				.log(INFO, log, "Behandlet ferdig ${file:absolute.path}.")
-//				.to("direct:shutdown");
-
 		from("{{arenaondemandtojoark.endpointuri}}" +
 			 "?{{arenaondemandtojoark.endpointconfig}}" +
 			 "&antInclude=*.xml" +
@@ -90,21 +79,20 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.setProperty(PROPERTY_FILNAVN, simple("${file:name}"))
 				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
 				.setBody(simple("${body.journaldataList}")) // List<Journaldata>
-
-				.split(body()).streaming().parallelProcessing() //map alle journaldata-elementa til db-entitetar
-				.to("direct:map_journaldata")
+				.split(body(), new JournalpostAggregator()).streaming().parallelProcessing() //map alle journaldata-elementa til db-entitetar
+					.to("direct:map_journaldata")
 				.end()
+				.log(INFO, log, "Før lagring")
+				.to("direct:lagre_journaldata")
+				.end();
 
-				.to("direct:lagre_journaldata")// lagre alle til db
 
-				.split(body(), new RapportAggregator()).streaming().parallelProcessing()
-				.to("direct:behandle_journaldata")
-				.end()
-
-				.to("direct:file")
-
-				.log(INFO, log, "Behandlet ferdig ${file:absolute.path}.")
-				.to("direct:shutdown");
+//				.split(body(), new RapportAggregator()).streaming().parallelProcessing()
+//					.to("direct:behandle_journaldata")
+//				.end()
+//				.to("direct:lag_rapport")
+//				.log(INFO, log, "Behandlet ferdig ${file:absolute.path}.")
+//				.end();
 
 		from("direct:map_journaldata")
 				.routeId("map_journaldata")
@@ -113,24 +101,21 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 
 		from("direct:lagre_journaldata")
 				.routeId("lagre_journaldata")
-				//.bean(journaldataLagrer)
-				// lagre i db
+				.bean(journaldataService)
 				.end();
 
-		from("direct:behandle_journaldata")
-				.routeId("behandle_journaldata")
-				.bean(new JournaldataMapper())
-				// lagre i db
-				.bean(journaldataValidator)
-				.bean(arenaOndemandToJoarkService)
-				.end();
+//		from("direct:behandle_journaldata")
+//				.routeId("behandle_journaldata")
+//				.bean(journaldataValidator)
+//				.bean(arenaOndemandToJoarkService)
+//				.end();
 
-		from("direct:file")
-				.marshal(new JaxbDataFormat(JAXBContext.newInstance(Journalpostrapport.class)))
-				.to("{{arenaondemandtojoark.endpointuri}}/rapport" +
-					"?{{arenaondemandtojoark.endpointconfig}}" +
-					"&fileName=placeholder.xml" //FIXME
-				);
+//		from("direct:lag_rapport")
+//				.marshal(new JaxbDataFormat(JAXBContext.newInstance(Journalpostrapport.class)))
+//				.to("{{arenaondemandtojoark.endpointuri}}/rapport" +
+//					"?{{arenaondemandtojoark.endpointconfig}}" +
+//					"&fileName=placeholder.xml" //FIXME
+//				);
 
 		this.shutdownSetup();
 		//@formatter:on
@@ -174,7 +159,7 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 					Thread stop;
 
 					@Override
-					public void process(final Exchange exchange) throws Exception {
+					public void process(final Exchange exchange) {
 						// stop this route using a thread that will stop
 						// this route gracefully while we are still running
 						if (stop == null) {
@@ -196,6 +181,23 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 						stop.start();
 					}
 				});
+	}
+
+	private static class JournalpostAggregator implements AggregationStrategy {
+
+		private final List<Journaldata> journalposter = new ArrayList<>();
+
+		@Override
+		public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
+			journalposter.add((Journaldata) newExchange.getIn().getBody());
+
+			return newExchange;
+		}
+
+		@Override
+		public void onCompletion(Exchange exchange) {
+			exchange.getIn().setBody(journalposter);
+		}
 	}
 
 	private static class RapportAggregator implements AggregationStrategy {

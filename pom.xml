@@ -26,6 +26,7 @@
 
 		<spring-cloud-contract-wiremock.version>4.0.4</spring-cloud-contract-wiremock.version>
 		<sshd-core.version>2.11.0</sshd-core.version>
+		<datasource-proxy-spring-boot-starter.version>1.9.0</datasource-proxy-spring-boot-starter.version>
 	</properties>
 
 	<dependencyManagement>
@@ -71,6 +72,12 @@
 				<groupId>org.apache.sshd</groupId>
 				<artifactId>sshd-scp</artifactId>
 				<version>${sshd-core.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>com.github.gavlyukovskiy</groupId>
+				<artifactId>datasource-proxy-spring-boot-starter</artifactId>
+				<version>${datasource-proxy-spring-boot-starter.version}</version>
 				<scope>test</scope>
 			</dependency>
 		</dependencies>
