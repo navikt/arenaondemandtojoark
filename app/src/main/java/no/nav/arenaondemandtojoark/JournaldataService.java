@@ -24,4 +24,8 @@ public class JournaldataService {
 
 		journaldataRepository.saveAll(journaldata);
 	}
+
+	public void lagJournalpostrapport(String filnavn) {
+		journaldataRepository.getAllByFilnavn(filnavn);
+	}
 }

@@ -82,10 +82,8 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.split(body(), new JournalpostAggregator()).streaming().parallelProcessing() //map alle journaldata-elementa til db-entitetar
 					.to("direct:map_journaldata")
 				.end()
-				.log(INFO, log, "Før lagring")
-				.to("direct:lagre_journaldata")
+				.to("direct:lagre_journaldata_i_bulk")
 				.end();
-
 
 //				.split(body(), new RapportAggregator()).streaming().parallelProcessing()
 //					.to("direct:behandle_journaldata")
@@ -99,10 +97,16 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.bean(journaldataMapper)
 				.end();
 
-		from("direct:lagre_journaldata")
-				.routeId("lagre_journaldata")
+		// Lagring i bulk
+		from("direct:lagre_journaldata_i_bulk")
+				.routeId("lagre_journaldata_i_bulk")
 				.bean(journaldataService)
 				.end();
+
+		// hent ut 1000 og 1000 element frå gitt filnamn frå db
+		// behandle desse elementa
+		// lagre nye id-ar (rapportdata) til Journaldata-entiteten: journalpostId, dokumentInfoId, ondemandId
+		// lagre ny status til Journaldata-entitet: PROSESSERT
 
 //		from("direct:behandle_journaldata")
 //				.routeId("behandle_journaldata")
@@ -190,6 +194,7 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 		@Override
 		public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
 			journalposter.add((Journaldata) newExchange.getIn().getBody());
+			log.info("Har aggregert {}", ((Journaldata) newExchange.getIn().getBody()).getOnDemandId());
 
 			return newExchange;
 		}

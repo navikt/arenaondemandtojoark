@@ -27,8 +27,9 @@ import static lombok.AccessLevel.NONE;
 @Getter
 public class Journaldata {
 
+	// TODO: SequenceGenerator?
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
 	@Column(name = "journaldata_id")
 	@Setter(NONE)
 	private Long journaldataId;
@@ -87,6 +88,9 @@ public class Journaldata {
 
 	@Column(name = "status")
 	String status;
+
+	@Column(name = "filnavn")
+	String filnavn;
 
 	// Status -> (default) INNLEST, HAR_HENTET_ONDEMAND_DOKUMENT (avvik), HAR_FÅTT_OPPRETTET_JOURNALPOST, HAR_FERDIGSTILT_JOURNALPOST, HAR_LAGET_JOURNALPOSTRAPPORT
 	// Status -> INNLEST, AVLEVERT, FEILET

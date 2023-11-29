@@ -72,9 +72,9 @@ public class TestUtils {
 				.build();
 	}
 
-	public static no.nav.arenaondemandtojoark.domain.db.Journaldata lagJournaldataentitet() {
+	public static no.nav.arenaondemandtojoark.domain.db.Journaldata lagJournaldataentitet(String ondemandId, String filnavn) {
 		return no.nav.arenaondemandtojoark.domain.db.Journaldata.builder()
-				.onDemandId("ODAP08031000123")
+				.onDemandId(ondemandId)
 				.saksnummer("3133123")
 				.brukerId("11114928123")
 				.brukertype("PERSON")
@@ -91,6 +91,7 @@ public class TestUtils {
 				.dokumentkategori(B)
 				.brevkode("brevkode1")
 				.status("INNLASTING")
+				.filnavn(filnavn)
 				.build();
 	}
 

@@ -11,7 +11,6 @@ import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.UserAuthNoneFactory;
 import org.apache.sshd.server.auth.pubkey.AcceptAllPublickeyAuthenticator;
 import org.apache.sshd.sftp.server.SftpSubsystemFactory;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -37,6 +36,7 @@ public class TestConfig {
     static class CamelTestStartupConfig {
 
         private final AtomicInteger sshServerStartupCounter = new AtomicInteger(0);
+
         @Bean
         CamelContextConfiguration contextConfiguration(SshServer sshServer) {
             return new CamelContextConfiguration() {
@@ -64,6 +64,7 @@ public class TestConfig {
 
     @Configuration
     static class SshdSftpServerConfig {
+
         @Bean
         public Path sshdPath() throws IOException {
             return Files.createTempDirectory("sshd");

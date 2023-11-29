@@ -31,30 +31,34 @@ public abstract class AbstractIt {
 
 	void stubHentOndemandDokument(String ondemandId) {
 
-		stubFor(get(HENT_ONDEMAND_DOKUMENT_URL.formatted(ondemandId)).willReturn(aResponse()
-				.withStatus(OK.value())
-				.withHeader(CONTENT_TYPE, APPLICATION_PDF_VALUE)
-				.withBodyFile("ondemand/ODIQ613100900011.pdf")));
+		stubFor(get(HENT_ONDEMAND_DOKUMENT_URL.formatted(ondemandId))
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_PDF_VALUE)
+						.withBodyFile("ondemand/ODIQ613100900011.pdf")));
 	}
 
 	void stubHentOndemandDokumentNotFound() {
-		stubFor(get(HENT_ONDEMAND_DOKUMENT_URL).willReturn(aResponse()
-				.withStatus(NOT_FOUND.value())
-				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
+		stubFor(get(HENT_ONDEMAND_DOKUMENT_URL)
+				.willReturn(aResponse()
+						.withStatus(NOT_FOUND.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));
 	}
 
 	void stubFerdigstillJournalpost(String journalpostId) {
-		stubFor(patch(urlPathEqualTo(FERDIGSTILL_JOURNALPOST_URL.formatted(journalpostId))).willReturn(aResponse()
-				.withStatus(OK.value())
-				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.withBody("Journalpost ferdigstilt")));
+		stubFor(patch(urlPathEqualTo(FERDIGSTILL_JOURNALPOST_URL.formatted(journalpostId)))
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBody("Journalpost ferdigstilt")));
 	}
 
 	void stubOpprettJournalpost() {
-		stubFor(post(OPPRETT_JOURNALPOST_URL).willReturn(aResponse()
-				.withStatus(OK.value())
-				.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
-				.withBodyFile("journalpost/happyresponse.json")));
+		stubFor(post(OPPRETT_JOURNALPOST_URL)
+				.willReturn(aResponse()
+						.withStatus(OK.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("journalpost/happyresponse.json")));
 	}
 
 	void stubAzure() {

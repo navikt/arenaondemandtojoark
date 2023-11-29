@@ -7,17 +7,15 @@ import no.nav.arenaondemandtojoark.domain.xml.Innlasting;
 import no.nav.arenaondemandtojoark.domain.xml.rapport.Journalpostrapport;
 import no.nav.arenaondemandtojoark.domain.xml.rapport.JournalpostrapportElement;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.List;
 
+import static jakarta.xml.bind.Marshaller.JAXB_FORMATTED_OUTPUT;
+import static java.lang.Boolean.TRUE;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
-@ActiveProfiles("itest")
 public class XmlTest {
 
 	@Test
@@ -43,8 +41,7 @@ public class XmlTest {
 
 		JAXBContext context = JAXBContext.newInstance(Journalpostrapport.class);
 		Marshaller marshaller = context.createMarshaller();
-		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+		marshaller.setProperty(JAXB_FORMATTED_OUTPUT, TRUE);
 		marshaller.marshal(liste, System.out);
-
 	}
 }
