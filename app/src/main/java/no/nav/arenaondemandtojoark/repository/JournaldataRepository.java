@@ -1,6 +1,7 @@
 package no.nav.arenaondemandtojoark.repository;
 
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
+import no.nav.arenaondemandtojoark.domain.db.projections.Rapportelement;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -16,11 +17,11 @@ public interface JournaldataRepository extends CrudRepository<Journaldata, Long>
 
 	// Rapportlaging
 	@Query("""
-				select new no.nav.arenaondemandtojoark.repository.Journalpostrapportelement(j.onDemandId, j.journalpostId, j.dokumentInfoId) from Journaldata j
+				select new no.nav.arenaondemandtojoark.domain.db.projections.Rapportelement(j.onDemandId, j.journalpostId, j.dokumentInfoId) from Journaldata j
 				where j.filnavn = :filnavn
 				and j.status = :status
 			""")
-	List<Journalpostrapportelement> getRapportdataByFilnavnAndStatus(
+	List<Rapportelement> getRapportdataByFilnavnAndStatus(
 			@Param("filnavn") String filnavn,
 			@Param("status") String status
 	);

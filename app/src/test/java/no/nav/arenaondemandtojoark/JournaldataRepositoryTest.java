@@ -2,7 +2,7 @@ package no.nav.arenaondemandtojoark;
 
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
-import no.nav.arenaondemandtojoark.repository.Journalpostrapportelement;
+import no.nav.arenaondemandtojoark.domain.db.projections.Rapportelement;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,12 +53,12 @@ class JournaldataRepositoryTest {
 
 	@ParameterizedTest
 	@MethodSource
-	void skalHenteJournaldata(List<String> forventedeOndemandIder, String status) {
+	void skalHenteJournaldata(List<String> forventet, String status) {
 
-		var result = journaldataRepository.getAllByFilnavnAndStatus(RELEVANT_FILNAVN, status);
-		var faktiskeOndemandIder = result.stream().map(Journaldata::getOnDemandId).toList();
+		var journaldata = journaldataRepository.getAllByFilnavnAndStatus(RELEVANT_FILNAVN, status);
+		var faktisk = journaldata.stream().map(Journaldata::getOnDemandId).toList();
 
-		assertThat(faktiskeOndemandIder).containsExactlyInAnyOrderElementsOf(forventedeOndemandIder);
+		assertThat(faktisk).containsExactlyInAnyOrderElementsOf(forventet);
 	}
 
 	private static Stream<Arguments> skalHenteJournaldata() {
@@ -72,45 +72,45 @@ class JournaldataRepositoryTest {
 	@ValueSource(strings = {STATUS_INNLEST, STATUS_PROSESSERT})
 	void skalReturnereTomJournaldatalisteForUbruktFilnavn(String status) {
 
-		var result = journaldataRepository.getAllByFilnavnAndStatus(FEIL_FILNAVN, status);
+		var journaldataliste = journaldataRepository.getAllByFilnavnAndStatus(FEIL_FILNAVN, status);
 
-		assertThat(result).isEmpty();
+		assertThat(journaldataliste).isEmpty();
 	}
 
 	@Test
 	void skalReturnereTomJournaldatalisteDersomStatusErUgyldig() {
 
-		var result = journaldataRepository.getAllByFilnavnAndStatus(RELEVANT_FILNAVN, STATUS_UGYLDIG);
+		var journaldataliste = journaldataRepository.getAllByFilnavnAndStatus(RELEVANT_FILNAVN, STATUS_UGYLDIG);
 
-		assertThat(result).isEmpty();
+		assertThat(journaldataliste).isEmpty();
 	}
 
 	@Test
-	void skalHenteListeMedJournalpostrapportelementer() {
+	void skalHenteRapportelementliste() {
 
-		var forventetJournaldatarapportelementer = List.of(
-				new Journalpostrapportelement("ODAP08031000456", "1234", "123"),
-				new Journalpostrapportelement("ODAP08031000567", "2345", "234")
+		var forventet = List.of(
+				new Rapportelement("ODAP08031000456", "1234", "123"),
+				new Rapportelement("ODAP08031000567", "2345", "234")
 		);
 
-		var result = journaldataRepository.getRapportdataByFilnavnAndStatus(RELEVANT_FILNAVN, STATUS_PROSESSERT);
+		var rapportdata = journaldataRepository.getRapportdataByFilnavnAndStatus(RELEVANT_FILNAVN, STATUS_PROSESSERT);
 
-		assertThat(result.stream().toList()).containsExactlyInAnyOrderElementsOf(forventetJournaldatarapportelementer);
+		assertThat(rapportdata.stream().toList()).containsExactlyInAnyOrderElementsOf(forventet);
 	}
 
 	@Test
-	void skalReturnereTomListeMedJournalpostrapportelementerForUbruktFilnavn() {
+	void skalReturnereTomRapportelementlisteForUbruktFilnavn() {
 
-		var result = journaldataRepository.getRapportdataByFilnavnAndStatus(FEIL_FILNAVN, STATUS_PROSESSERT);
+		var rapportdata = journaldataRepository.getRapportdataByFilnavnAndStatus(FEIL_FILNAVN, STATUS_PROSESSERT);
 
-		assertThat(result).isEmpty();
+		assertThat(rapportdata).isEmpty();
 	}
 
 	@Test
-	void skalReturnereTomListeMedJournalpostrapportelementerForUgyldigStatus() {
+	void skalReturnereTomRapportelementlisteForUgyldigStatus() {
 
-		var result = journaldataRepository.getRapportdataByFilnavnAndStatus(RELEVANT_FILNAVN, STATUS_UGYLDIG);
+		var rapportdata = journaldataRepository.getRapportdataByFilnavnAndStatus(RELEVANT_FILNAVN, STATUS_UGYLDIG);
 
-		assertThat(result).isEmpty();
+		assertThat(rapportdata).isEmpty();
 	}
 }

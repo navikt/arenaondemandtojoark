@@ -3,7 +3,7 @@ package no.nav.arenaondemandtojoark;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
-import no.nav.arenaondemandtojoark.repository.Journalpostrapportelement;
+import no.nav.arenaondemandtojoark.domain.db.projections.Rapportelement;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,7 +36,7 @@ public class JournaldataService {
 		journaldataRepository.getAllByFilnavnAndStatus(filnavn, STATUS_INNLEST);
 	}
 
-	public List<Journalpostrapportelement> lagJournalpostrapport(String filnavn) {
+	public List<Rapportelement> lagJournalpostrapport(String filnavn) {
 		log.info("Henter journalpostrapportelement-liste for filnavn={}", filnavn);
 
 		return journaldataRepository.getRapportdataByFilnavnAndStatus(filnavn, STATUS_PROSESSERT);

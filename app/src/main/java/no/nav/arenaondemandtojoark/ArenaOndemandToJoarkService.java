@@ -46,7 +46,7 @@ public class ArenaOndemandToJoarkService {
 	}
 
 	@Handler
-	public JournalpostrapportElement prosesserJournaldata(Journaldata journaldata) {
+	public void prosesserJournaldata(Journaldata journaldata) {
 		byte[] pdfDocument = hentDokument(journaldata.getOnDemandId());
 
 		OpprettJournalpostRequest journalpost = OpprettJournalpostRequestMapper.map(journaldata, pdfDocument);
@@ -55,13 +55,16 @@ public class ArenaOndemandToJoarkService {
 		if (opprettJournalpostResponse.dokumenter().size() != 1)
 			throw new DokarkivFunctionalException("Forventet akkurat ett dokument i opprettJournalpostResponse");
 
+		log.info("Har opprettet journalpost for journaldata med onDemandId={}, journalpostId={} og dokumentInfoId={}",
+				journaldata.getOnDemandId(), opprettJournalpostResponse.journalpostId(), opprettJournalpostResponse.dokumenter().get(0).dokumentInfoId());
+
 		FerdigstillJournalpostRequest ferdigstillJournalpostRequest = FerdigstillJournalpostRequestMapper.map(journaldata);
-
 		dokarkivConsumer.ferdigstillJournalpost(opprettJournalpostResponse.journalpostId(), ferdigstillJournalpostRequest);
+		log.info("Har ferdigstilt journalpost for journaldata med onDemandId={}, journalpostId={} og dokumentInfoId={}",
+				journaldata.getOnDemandId(), opprettJournalpostResponse.journalpostId(), opprettJournalpostResponse.dokumenter().get(0).dokumentInfoId());
 
-		return new JournalpostrapportElement(opprettJournalpostResponse.journalpostId(),
-				opprettJournalpostResponse.dokumenter().get(0).dokumentInfoId(),
-				journaldata.getOnDemandId());
+		log.info("Har prosessert ferdig journaldata med onDemandId={}", journaldata.getOnDemandId());
+		// Oppdater entitet med journalpostId og dokumentInfoId
 	}
 
 	private byte[] hentDokument(String ondemandId) {
