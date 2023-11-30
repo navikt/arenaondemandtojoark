@@ -100,10 +100,10 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 		// Lagring i bulk
 		from("direct:lagre_journaldata_i_bulk")
 				.routeId("lagre_journaldata_i_bulk")
-				.bean(journaldataService)
+				.bean(journaldataService, "lagreJournaldata")
 				.end();
 
-		// hent ut 1000 og 1000 element frå gitt filnamn frå db
+		// hent ut 1000 og 1000 element frå gitt filnamn frå db: hentJournaldata i JournaldataService
 		// behandle desse elementa
 		// lagre nye id-ar (rapportdata) til Journaldata-entiteten: journalpostId, dokumentInfoId, ondemandId
 		// lagre ny status til Journaldata-entitet: PROSESSERT

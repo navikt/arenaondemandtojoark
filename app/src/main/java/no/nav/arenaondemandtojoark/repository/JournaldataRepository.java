@@ -1,7 +1,9 @@
 package no.nav.arenaondemandtojoark.repository;
 
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -9,6 +11,18 @@ import java.util.List;
 @Repository
 public interface JournaldataRepository extends CrudRepository<Journaldata, Long> {
 
-	List<Journaldata> getAllByFilnavn(String filnavn);
+	// Uthenting før prosesseringssteget
+	List<Journaldata> getAllByFilnavnAndStatus(String filnavn, String status);
+
+	// Rapportlaging
+	@Query("""
+				select new no.nav.arenaondemandtojoark.repository.Journalpostrapportelement(j.onDemandId, j.journalpostId, j.dokumentInfoId) from Journaldata j
+				where j.filnavn = :filnavn
+				and j.status = :status
+			""")
+	List<Journalpostrapportelement> getRapportdataByFilnavnAndStatus(
+			@Param("filnavn") String filnavn,
+			@Param("status") String status
+	);
 
 }

@@ -3,15 +3,20 @@ package no.nav.arenaondemandtojoark;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
+import no.nav.arenaondemandtojoark.repository.Journalpostrapportelement;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
 @Transactional
 public class JournaldataService {
+
+	private static final String STATUS_INNLEST = "INNLEST";
+	private static final String STATUS_PROSESSERT = "PROSESSERT";
 
 	private final JournaldataRepository journaldataRepository;
 
@@ -25,7 +30,15 @@ public class JournaldataService {
 		journaldataRepository.saveAll(journaldata);
 	}
 
-	public void lagJournalpostrapport(String filnavn) {
-		journaldataRepository.getAllByFilnavn(filnavn);
+	public void hentJournaldata(String filnavn) {
+		log.info("Henter journaldataliste med filnavn={}", filnavn);
+
+		journaldataRepository.getAllByFilnavnAndStatus(filnavn, STATUS_INNLEST);
+	}
+
+	public List<Journalpostrapportelement> lagJournalpostrapport(String filnavn) {
+		log.info("Henter journalpostrapportelement-liste for filnavn={}", filnavn);
+
+		return journaldataRepository.getRapportdataByFilnavnAndStatus(filnavn, STATUS_PROSESSERT);
 	}
 }
