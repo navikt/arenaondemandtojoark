@@ -1,4 +1,4 @@
-name: Build, deploy dev, draft main
+name: Build and deploy to prod
 
 on:
   workflow_dispatch:
