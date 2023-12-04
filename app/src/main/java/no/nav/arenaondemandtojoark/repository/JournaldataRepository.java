@@ -1,7 +1,9 @@
 package no.nav.arenaondemandtojoark.repository;
 
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
+import no.nav.arenaondemandtojoark.domain.db.JournaldataStatus;
 import no.nav.arenaondemandtojoark.domain.db.projections.Rapportelement;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
@@ -24,6 +26,17 @@ public interface JournaldataRepository extends CrudRepository<Journaldata, Long>
 	List<Rapportelement> getRapportdataByFilnavnAndStatus(
 			@Param("filnavn") String filnavn,
 			@Param("status") String status
+	);
+
+	@Modifying
+	@Query("""
+				update Journaldata j
+				set j.status = :status
+				where j.onDemandId = :onDemandId
+			""")
+	void updateStatus(
+			@Param("onDemandId") String onDemandId,
+			@Param("status") JournaldataStatus status
 	);
 
 }

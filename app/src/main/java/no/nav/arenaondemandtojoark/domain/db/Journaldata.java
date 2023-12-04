@@ -25,6 +25,7 @@ import static lombok.AccessLevel.NONE;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
+@Setter
 public class Journaldata {
 
 	// TODO: SequenceGenerator?
@@ -86,8 +87,9 @@ public class Journaldata {
 	@Column(name = "brevkode")
 	String brevkode;
 
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status")
-	String status;
+	JournaldataStatus status;
 
 	@Column(name = "filnavn")
 	String filnavn;

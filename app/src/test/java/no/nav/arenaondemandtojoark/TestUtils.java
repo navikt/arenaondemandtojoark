@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 
 import static no.nav.arenaondemandtojoark.domain.db.Dokumentkategori.B;
 import static no.nav.arenaondemandtojoark.domain.db.Fagomraade.OPP;
+import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.INNLEST;
 import static no.nav.arenaondemandtojoark.domain.db.Journalposttype.U;
 import static no.nav.arenaondemandtojoark.domain.db.Utsendingskanal.L;
 
@@ -33,6 +34,26 @@ public class TestUtils {
 
 		return journaldata;
 	}
+
+	public static no.nav.arenaondemandtojoark.domain.xml.Journaldata lagXmlJournaldataMedJournalposttypeU() {
+		var journaldata = new no.nav.arenaondemandtojoark.domain.xml.Journaldata();
+
+		journaldata.setOnDemandId("ODAP08031000123");
+		journaldata.setSaksnummer("3133123");
+		journaldata.setBrukerId("11114928123");
+		journaldata.setBrukerType("PERSON");
+		journaldata.setJournalpostType("U");
+		journaldata.setFagomraade("OPP");
+		journaldata.setJournaldato("2008-03-10T17:19:22");
+		journaldata.setInnhold("Innk. til dialogmøte innen 26 uker der mottaker er arb.giver");
+		journaldata.setJournalfoerendeEnhet("0211");
+		journaldata.setOpprettetAvNavn("Tryll, Magika Von");
+		journaldata.setDokumentkategori("B");
+		journaldata.setBrevkode("brevkode1");
+
+		return journaldata;
+	}
+
 
 	public static Journaldata lagJournaldata() {
 		return Journaldata.builder()
@@ -92,7 +113,7 @@ public class TestUtils {
 				.opprettetAvNavn("Tryll, Magika Von")
 				.dokumentkategori(B)
 				.brevkode("brevkode1")
-				.status("INNLEST")
+				.status(INNLEST)
 				.filnavn(filnavn)
 				.build();
 	}
@@ -117,7 +138,7 @@ public class TestUtils {
 				.opprettetAvNavn("Tryll, Magika Von")
 				.dokumentkategori(B)
 				.brevkode("brevkode1")
-				.status("PROSESSERT")
+				.status(INNLEST)
 				.filnavn(filnavn)
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)

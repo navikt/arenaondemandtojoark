@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.domain.db.Dokumentkategori;
 import no.nav.arenaondemandtojoark.domain.db.Fagomraade;
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
+import no.nav.arenaondemandtojoark.domain.db.JournaldataStatus;
 import no.nav.arenaondemandtojoark.domain.db.Journalposttype;
 import no.nav.arenaondemandtojoark.domain.db.Utsendingskanal;
 import no.nav.arenaondemandtojoark.exception.JournaldataMappingException;
@@ -16,7 +17,6 @@ import java.time.format.DateTimeParseException;
 public class JournaldataMapper {
 
 	private static final String KAN_IKKE_MAPPE_FEILMELDING = "Kan ikke mappe til journaldata. Ugyldig verdi for %s=%s";
-	private static final String INNLEST = "INNLEST";
 
 	@Handler
 	public Journaldata map(no.nav.arenaondemandtojoark.domain.xml.Journaldata journaldata) {
@@ -39,7 +39,7 @@ public class JournaldataMapper {
 			.opprettetAvNavn(journaldata.getOpprettetAvNavn())
 			.dokumentkategori(toEnum(Dokumentkategori.class, journaldata.getDokumentkategori()))
 			.brevkode(journaldata.getBrevkode())
-			.status(INNLEST)
+			.status(JournaldataStatus.INNLEST)
 			.build();
 	}
 

@@ -3,9 +3,9 @@ package no.nav.arenaondemandtojoark.consumer.ondemandbrev;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.config.ArenaondemandtojoarkProperties;
 import no.nav.arenaondemandtojoark.exception.OndemandDokumentIkkeFunnetException;
-import no.nav.arenaondemandtojoark.exception.OndemandFunctionalException;
-import no.nav.arenaondemandtojoark.exception.OndemandTechnicalException;
-import no.nav.arenaondemandtojoark.exception.OndemandTomResponseException;
+import no.nav.arenaondemandtojoark.exception.OndemandNonRetryableException;
+import no.nav.arenaondemandtojoark.exception.retryable.OndemandRetryableException;
+import no.nav.arenaondemandtojoark.exception.retryable.OndemandTomResponseException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -50,8 +50,8 @@ public class OndemandBrevConsumer {
 				.bodyToMono(byte[].class)
 				.switchIfEmpty(Mono.error(new OndemandTomResponseException("Payload fra ondemandbrev var tom.")))
 				.doOnError(this::handleError)
-				.retryWhen(Retry.backoff(10, Duration.ofMillis(2000))
-						.filter(e -> e instanceof OndemandTechnicalException)
+				.retryWhen(Retry.backoff(1, Duration.ofMillis(1000)) //TODO Sett dette til fornuftige verdier
+						.filter(e -> e instanceof OndemandRetryableException)
 						.onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> retrySignal.failure()))
 				.block();
 	}
@@ -62,7 +62,7 @@ public class OndemandBrevConsumer {
 
 			log.warn(feilmelding);
 
-			throw new OndemandTechnicalException(feilmelding, error);
+			throw new OndemandRetryableException(feilmelding, error);
 		}
 
 		String feilmelding = format("Kall mot ondemand feilet %s med status=%s, feilmelding=%s, response=%s",
@@ -75,10 +75,10 @@ public class OndemandBrevConsumer {
 
 		if (response.getStatusCode().is4xxClientError()) {
 			if (response.getStatusCode().isSameCodeAs(NOT_FOUND))
-				throw new OndemandDokumentIkkeFunnetException("Dokument ikke funnet i Ondemand");
-			throw new OndemandFunctionalException(feilmelding, error);
+				throw new OndemandDokumentIkkeFunnetException("Dokument ikke funnet i Ondemand", error);
+			throw new OndemandNonRetryableException(feilmelding, error);
 		} else {
-			throw new OndemandTechnicalException(feilmelding, error);
+			throw new OndemandRetryableException(feilmelding, error);
 		}
 	}
 

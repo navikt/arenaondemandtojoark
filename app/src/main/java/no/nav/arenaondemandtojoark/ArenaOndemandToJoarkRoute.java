@@ -9,8 +9,8 @@ import no.nav.arenaondemandtojoark.domain.db.validate.JournaldataValidator;
 import no.nav.arenaondemandtojoark.domain.xml.Innlasting;
 import no.nav.arenaondemandtojoark.domain.xml.rapport.Journalpostrapport;
 import no.nav.arenaondemandtojoark.domain.xml.rapport.JournalpostrapportElement;
-import no.nav.arenaondemandtojoark.exception.ArenaondemandtojoarkFunctionalException;
-import no.nav.arenaondemandtojoark.exception.ArenaondemandtojoarkTechnicalException;
+import no.nav.arenaondemandtojoark.exception.ArenaondemandtojoarkNonRetryableException;
+import no.nav.arenaondemandtojoark.exception.retryable.ArenaondemandtojoarkRetryableException;
 import no.nav.arenaondemandtojoark.util.MDCGenerate;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
@@ -25,30 +25,35 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.camel.LoggingLevel.INFO;
-import static org.apache.camel.LoggingLevel.WARN;
 
 @Slf4j
 @Component
 public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 
-	private static final String PROPERTY_ORIGINAL_CSV_LINE = "OriginalCsvLine";
-	private static final String PROPERTY_ONDEMAND_ID = "OndemandId";
+	public static final String PROPERTY_ONDEMAND_ID = "OndemandId";
+	public static final String PROPERTY_FILNAVN = "Filnavn";
+
+	private static final String PROPERTY_ORIGINAL_CSV_LINE = "OriginalCsvLine"; //TODO fjern denne
 	private static final String PROPERTY_OUTPUT_FOLDER = "OutputFolder";
+
 	private static final String TECHNICAL_AVVIKSFIL = "technical_avvik";
 	private static final String FUNCTIONAL_AVVIKSFIL = "functional_avvik";
 	private static final String FUNCTIONAL_JOURNALPOST_FERDIGSTILT_FUNCTIONAL_AVVIK = "journalpost_ferdigstilt_functional_avvik";
-	private static final String PROPERTY_FILNAVN = "PROPERTY_FILNAVN";
+
 
 	private final ArenaOndemandToJoarkService arenaOndemandToJoarkService;
 	private final ApplicationContext springContext;
 	private final JournaldataMapper journaldataMapper;
 	private final JournaldataValidator journaldataValidator;
 	private final JournaldataService journaldataService;
+	private final AvvikService avvikService;
 
 	public ArenaOndemandToJoarkRoute(ArenaOndemandToJoarkService arenaOndemandToJoarkService,
 									 ApplicationContext springContext,
-									 JournaldataService journaldataService) {
+									 JournaldataService journaldataService,
+									 AvvikService avvikService) {
 		this.arenaOndemandToJoarkService = arenaOndemandToJoarkService;
+		this.avvikService = avvikService;
 		this.springContext = springContext;
 		this.journaldataService = journaldataService;
 		MDCGenerate.generateNewCallId();
@@ -70,6 +75,19 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 
 //		avviksFilSetup();
 
+		onException(ArenaondemandtojoarkRetryableException.class,
+				ArenaondemandtojoarkNonRetryableException.class)
+				.log("Håndterer definerte exceptions: ${exception}")
+				.bean(avvikService)
+				.handled(true)
+				.end();
+
+		onException(Exception.class)
+				.log("Håndterer alle exceptions: ${exception}")
+				.bean(avvikService)
+				.handled(true)
+				.end();
+
 		from("{{arenaondemandtojoark.endpointuri}}" +
 			 "?{{arenaondemandtojoark.endpointconfig}}" +
 			 "&antInclude=*.xml" +
@@ -78,16 +96,15 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.log(INFO, log, "Starter lesing av ${file:absolute.path}.")
 				.setProperty(PROPERTY_FILNAVN, simple("${file:name}"))
 				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
-				.setBody(simple("${body.journaldataList}")) // List<Journaldata>
-				.split(body(), new JournalpostAggregator()).streaming().parallelProcessing() //map alle journaldata-elementa til db-entitetar
+				.setBody(simple("${body.journaldataList}")) // List<xml.Journaldata>
+				.split(body(), new JournalpostAggregator()).streaming().parallelProcessing() //map alle journaldata-elementa til db-entitetar, og valider påkrevde felt
 					.to("direct:map_journaldata")
 				.end()
 				.to("direct:lagre_journaldata_i_bulk")
+				.split(body()).streaming().parallelProcessing()
+				    .setProperty(PROPERTY_ONDEMAND_ID, simple("${body.onDemandId}"))
+				    .to("direct:behandle_journaldata")
 				.end();
-
-//				.split(body(), new RapportAggregator()).streaming().parallelProcessing()
-//					.to("direct:behandle_journaldata")
-//				.end()
 //				.to("direct:lag_rapport")
 //				.log(INFO, log, "Behandlet ferdig ${file:absolute.path}.")
 //				.end();
@@ -108,11 +125,11 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 		// lagre nye id-ar (rapportdata) til Journaldata-entiteten: journalpostId, dokumentInfoId, ondemandId
 		// lagre ny status til Journaldata-entitet: PROSESSERT
 
-//		from("direct:behandle_journaldata")
-//				.routeId("behandle_journaldata")
-//				.bean(journaldataValidator)
-//				.bean(arenaOndemandToJoarkService)
-//				.end();
+		from("direct:behandle_journaldata")
+				.routeId("behandle_journaldata")
+				.bean(journaldataValidator)
+				.bean(arenaOndemandToJoarkService)
+				.end();
 
 //		from("direct:lag_rapport")
 //				.marshal(new JaxbDataFormat(JAXBContext.newInstance(Journalpostrapport.class)))
@@ -127,34 +144,34 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 
 
 	// AvviksFilSetup er for å differensiere exception for ferdigstill og resten av prossesen for journalpost. Dette er for å unngå å lage duplisering i databasen.
-	public void avviksFilSetup() {
-		onException(ArenaondemandtojoarkTechnicalException.class)
-				.handled(true)
-				.to("direct:" + TECHNICAL_AVVIKSFIL);
-
-//		onException(JournalpostFerdigstillingFunctionalException.class)
+//	public void avviksFilSetup() {
+//		onException(ArenaondemandtojoarkRetryableException.class)
 //				.handled(true)
-//				.to("direct:" + FUNCTIONAL_JOURNALPOST_FERDIGSTILT_FUNCTIONAL_AVVIK);
-
-		onException(ArenaondemandtojoarkFunctionalException.class)
-				.handled(true)
-				.log(WARN, "Funksjonell feil.")
-				.to("direct:" + FUNCTIONAL_AVVIKSFIL);
-
-		buildAvvikFrom(TECHNICAL_AVVIKSFIL);
-		buildAvvikFrom(FUNCTIONAL_JOURNALPOST_FERDIGSTILT_FUNCTIONAL_AVVIK);
-		buildAvvikFrom(FUNCTIONAL_AVVIKSFIL);
-	}
-
-	public void buildAvvikFrom(String avviksFil) {
-		from("direct:" + avviksFil)
-				.routeId(avviksFil)
-				.setBody(exchangeProperty(PROPERTY_ORIGINAL_CSV_LINE))
-				.transform(body().append("\n"))
-				.setHeader(Exchange.FILE_NAME, simple("${exchangeProperty." + PROPERTY_OUTPUT_FOLDER + "}_" + avviksFil + ".csv"))
-				.to("file://{{odtojoark.workdir}}/?fileExist=Append")
-				.log(WARN, log, "ondemandId=${exchangeProperty." + PROPERTY_ONDEMAND_ID + "} sendt til " + avviksFil + ". Exception=${exception}");
-	}
+//				.to("direct:" + TECHNICAL_AVVIKSFIL);
+//
+////		onException(JournalpostFerdigstillingFunctionalException.class)
+////				.handled(true)
+////				.to("direct:" + FUNCTIONAL_JOURNALPOST_FERDIGSTILT_FUNCTIONAL_AVVIK);
+//
+//		onException(ArenaondemandtojoarkFunctionalException.class)
+//				.handled(true)
+//				.log(WARN, "Funksjonell feil.")
+//				.to("direct:" + FUNCTIONAL_AVVIKSFIL);
+//
+//		buildAvvikFrom(TECHNICAL_AVVIKSFIL);
+//		buildAvvikFrom(FUNCTIONAL_JOURNALPOST_FERDIGSTILT_FUNCTIONAL_AVVIK);
+//		buildAvvikFrom(FUNCTIONAL_AVVIKSFIL);
+//	}
+//
+//	public void buildAvvikFrom(String avviksFil) {
+//		from("direct:" + avviksFil)
+//				.routeId(avviksFil)
+//				.setBody(exchangeProperty(PROPERTY_ORIGINAL_CSV_LINE))
+//				.transform(body().append("\n"))
+//				.setHeader(Exchange.FILE_NAME, simple("${exchangeProperty." + PROPERTY_OUTPUT_FOLDER + "}_" + avviksFil + ".csv"))
+//				.to("file://{{odtojoark.workdir}}/?fileExist=Append")
+//				.log(WARN, log, "ondemandId=${exchangeProperty." + PROPERTY_ONDEMAND_ID + "} sendt til " + avviksFil + ". Exception=${exception}");
+//	}
 
 	public void shutdownSetup() {
 		from("direct:shutdown")

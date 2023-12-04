@@ -6,9 +6,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
 
+@Builder
 @Entity
 @Table
+@NoArgsConstructor
+@AllArgsConstructor
 public class Avvik {
 
 	@Id
@@ -23,9 +29,8 @@ public class Avvik {
 	private String filnavn; //property i camel?
 
 	@Column(name = "feiltype")
-	private String feiltype; // TEKNISK eller FUNKSJONELL?
+	private String feiltype; // TEKNISK eller FUNKSJONELL? Retryable?
 
 	@Column(name = "feilmelding")
 	private String feilmelding;
-
 }

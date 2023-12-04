@@ -2,8 +2,8 @@ package no.nav.arenaondemandtojoark.consumer.dokarkiv;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.config.ArenaondemandtojoarkProperties;
-import no.nav.arenaondemandtojoark.exception.DokarkivFunctionalException;
-import no.nav.arenaondemandtojoark.exception.DokarkivTechnicalException;
+import no.nav.arenaondemandtojoark.exception.DokarkivNonRetryableException;
+import no.nav.arenaondemandtojoark.exception.retryable.DokarkivRetryableException;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientManager;
 import org.springframework.stereotype.Component;
@@ -70,7 +70,7 @@ public class DokarkivConsumer {
 
 			log.warn(feilmelding);
 
-			throw new DokarkivTechnicalException(feilmelding, error);
+			throw new DokarkivRetryableException(feilmelding, error);
 		}
 
 		String feilmelding = format("Kall mot journalpostapi feilet %s med status=%s, feilmelding=%s, response=%s",
@@ -82,9 +82,9 @@ public class DokarkivConsumer {
 		log.warn(feilmelding);
 
 		if (response.getStatusCode().is4xxClientError()) {
-			throw new DokarkivFunctionalException(feilmelding, error);
+			throw new DokarkivNonRetryableException(feilmelding, error);
 		} else {
-			throw new DokarkivTechnicalException(feilmelding, error);
+			throw new DokarkivRetryableException(feilmelding, error);
 		}
 	}
 

@@ -2,8 +2,8 @@ package no.nav.arenaondemandtojoark;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
-import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
 import no.nav.arenaondemandtojoark.domain.db.projections.Rapportelement;
+import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,10 +24,10 @@ public class JournaldataService {
 		this.journaldataRepository = journaldataRepository;
 	}
 
-	public void lagreJournaldata(ArrayList<Journaldata> journaldata) {
+	public Iterable<Journaldata> lagreJournaldata(ArrayList<Journaldata> journaldata) {
 		log.info("Lagrer journaldataliste med ondemandId={}", journaldata.stream().map(Journaldata::getOnDemandId).toList());
 
-		journaldataRepository.saveAll(journaldata);
+		return journaldataRepository.saveAll(journaldata);
 	}
 
 	public void hentJournaldata(String filnavn) {
