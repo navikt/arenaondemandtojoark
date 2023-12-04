@@ -36,13 +36,12 @@ public class AvvikService {
 
 		var ondemandId = exchange.getProperty(PROPERTY_ONDEMAND_ID, String.class);
 		var filnavn = exchange.getProperty(PROPERTY_FILNAVN, String.class);
-		var feilmelding = exception.getMessage();
 
-		 var avvik = Avvik.builder()
+		var avvik = Avvik.builder()
 				.ondemandId(ondemandId)
 				.filnavn(filnavn)
 				.feiltype(getFeiltype(exception))
-				.feilmelding(feilmelding)
+				.feilmelding(exception.getMessage())
 				.build();
 
 		avvikRepository.save(avvik);
@@ -50,11 +49,11 @@ public class AvvikService {
 	}
 
 	private String getFeiltype(Exception exception) {
-		if (exception instanceof ArenaondemandtojoarkRetryableException)
-			return "Retryable";
-		else if (exception instanceof ArenaondemandtojoarkNonRetryableException)
-			return "NonRetryable";
-		else
-			return "Unknown";
+
+		return switch (exception) {
+			case ArenaondemandtojoarkRetryableException e -> "Retryable";
+			case ArenaondemandtojoarkNonRetryableException e -> "NonRetryable";
+			default -> "Unknown";
+		};
 	}
 }

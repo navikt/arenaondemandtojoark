@@ -2,6 +2,7 @@ package no.nav.arenaondemandtojoark;
 
 import no.nav.arenaondemandtojoark.repository.AvvikRepository;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,13 +20,15 @@ import static org.awaitility.Awaitility.await;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
-public class AvvikITest extends AbstractIt{
+public class AvvikITest extends AbstractIt {
 
-	private static final List<String> ONDEMAND_IDER = List.of(
-			"ODAP08031000123",
-			"ODAP08031000456",
-			"ODAP08031000789"
-	);
+	private static final String ONDEMAND_ID_1 = "ODAP08031000123";
+	private static final String ONDEMAND_ID_2 = "ODAP08031000456";
+	private static final String ONDEMAND_ID_3 = "ODAP08031000789";
+
+	private static final String JOURNALPOST_ID = "467010363";
+
+	private static final List<String> ONDEMAND_IDER = List.of(ONDEMAND_ID_1, ONDEMAND_ID_2, ONDEMAND_ID_3);
 
 	@Autowired
 	private Path sshdPath;
@@ -51,6 +54,12 @@ public class AvvikITest extends AbstractIt{
 		});
 	}
 
+	private Tuple[] getOndemandIdAndFeiltype(String feiltype) {
+		return ONDEMAND_IDER.stream()
+				.map(ondemandId -> tuple(ondemandId, feiltype))
+				.toArray(Tuple[]::new);
+	}
+
 	@Test
 	void skalLagreAvvikVedNonRetryableFeilFraOnDemandBrev() throws IOException {
 		stubHentOndemandDokumentMedStatus(HttpStatus.BAD_REQUEST);
@@ -63,9 +72,9 @@ public class AvvikITest extends AbstractIt{
 					.hasSize(3)
 					.extracting("ondemandId", "feiltype")
 					.containsExactlyInAnyOrder(
-							tuple("ODAP08031000123", "NonRetryable"),
-							tuple("ODAP08031000456", "NonRetryable"),
-							tuple("ODAP08031000789", "NonRetryable")
+							tuple(ONDEMAND_ID_1, "NonRetryable"),
+							tuple(ONDEMAND_ID_2, "NonRetryable"),
+							tuple(ONDEMAND_ID_3, "NonRetryable")
 					);
 
 			var journaldata = journaldataRepository.findAll();
@@ -73,9 +82,9 @@ public class AvvikITest extends AbstractIt{
 					.hasSize(3)
 					.extracting("onDemandId", "status")
 					.containsExactlyInAnyOrder(
-							tuple("ODAP08031000123", AVVIK),
-							tuple("ODAP08031000456", AVVIK),
-							tuple("ODAP08031000789", AVVIK)
+							tuple(ONDEMAND_ID_1, AVVIK),
+							tuple(ONDEMAND_ID_2, AVVIK),
+							tuple(ONDEMAND_ID_3, AVVIK)
 					);
 		});
 	}
@@ -85,7 +94,7 @@ public class AvvikITest extends AbstractIt{
 		stubHentOndemandDokumentMedStatus(NOT_FOUND);
 
 		stubOpprettJournalpost();
-		stubFerdigstillJournalpost("467010363");
+		stubFerdigstillJournalpost(JOURNALPOST_ID);
 
 		copyFileFromClasspathToInngaaende("journaldata-ett-element.xml", sshdPath);
 
@@ -94,7 +103,7 @@ public class AvvikITest extends AbstractIt{
 			assertThat(result)
 					.hasSize(1)
 					.extracting("onDemandId", "status")
-					.containsExactly(tuple("ODAP08031000123", PROSESSERT));
+					.containsExactly(tuple(ONDEMAND_ID_1, PROSESSERT));
 		});
 	}
 }

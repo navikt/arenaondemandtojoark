@@ -33,14 +33,6 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 	public static final String PROPERTY_ONDEMAND_ID = "OndemandId";
 	public static final String PROPERTY_FILNAVN = "Filnavn";
 
-	private static final String PROPERTY_ORIGINAL_CSV_LINE = "OriginalCsvLine"; //TODO fjern denne
-	private static final String PROPERTY_OUTPUT_FOLDER = "OutputFolder";
-
-	private static final String TECHNICAL_AVVIKSFIL = "technical_avvik";
-	private static final String FUNCTIONAL_AVVIKSFIL = "functional_avvik";
-	private static final String FUNCTIONAL_JOURNALPOST_FERDIGSTILT_FUNCTIONAL_AVVIK = "journalpost_ferdigstilt_functional_avvik";
-
-
 	private final ArenaOndemandToJoarkService arenaOndemandToJoarkService;
 	private final ApplicationContext springContext;
 	private final JournaldataMapper journaldataMapper;
@@ -64,16 +56,6 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 	@Override
 	public void configure() throws JAXBException {
 		//@formatter:off
-
-		// Alle andre exceptions havner også her med ekstra logging.
-//		errorHandler(deadLetterChannel("direct:avviksfil")
-//				.log(log)
-//				.loggingLevel(ERROR)
-//				.logHandled(true)
-//				.logExhausted(true)
-//				.logExhaustedMessageHistory(false));
-
-//		avviksFilSetup();
 
 		onException(ArenaondemandtojoarkRetryableException.class,
 				ArenaondemandtojoarkNonRetryableException.class)
@@ -143,35 +125,7 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 	}
 
 
-	// AvviksFilSetup er for å differensiere exception for ferdigstill og resten av prossesen for journalpost. Dette er for å unngå å lage duplisering i databasen.
-//	public void avviksFilSetup() {
-//		onException(ArenaondemandtojoarkRetryableException.class)
-//				.handled(true)
-//				.to("direct:" + TECHNICAL_AVVIKSFIL);
-//
-////		onException(JournalpostFerdigstillingFunctionalException.class)
-////				.handled(true)
-////				.to("direct:" + FUNCTIONAL_JOURNALPOST_FERDIGSTILT_FUNCTIONAL_AVVIK);
-//
-//		onException(ArenaondemandtojoarkFunctionalException.class)
-//				.handled(true)
-//				.log(WARN, "Funksjonell feil.")
-//				.to("direct:" + FUNCTIONAL_AVVIKSFIL);
-//
-//		buildAvvikFrom(TECHNICAL_AVVIKSFIL);
-//		buildAvvikFrom(FUNCTIONAL_JOURNALPOST_FERDIGSTILT_FUNCTIONAL_AVVIK);
-//		buildAvvikFrom(FUNCTIONAL_AVVIKSFIL);
-//	}
-//
-//	public void buildAvvikFrom(String avviksFil) {
-//		from("direct:" + avviksFil)
-//				.routeId(avviksFil)
-//				.setBody(exchangeProperty(PROPERTY_ORIGINAL_CSV_LINE))
-//				.transform(body().append("\n"))
-//				.setHeader(Exchange.FILE_NAME, simple("${exchangeProperty." + PROPERTY_OUTPUT_FOLDER + "}_" + avviksFil + ".csv"))
-//				.to("file://{{odtojoark.workdir}}/?fileExist=Append")
-//				.log(WARN, log, "ondemandId=${exchangeProperty." + PROPERTY_ONDEMAND_ID + "} sendt til " + avviksFil + ". Exception=${exception}");
-//	}
+	//TODO Spesialhåndtering av feil ved ferdigstilling, for å unngå opprettelse av duplikat i databasen
 
 	public void shutdownSetup() {
 		from("direct:shutdown")

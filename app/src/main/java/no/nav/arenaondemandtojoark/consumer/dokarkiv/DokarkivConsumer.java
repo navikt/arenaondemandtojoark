@@ -51,6 +51,7 @@ public class DokarkivConsumer {
 				.block();
 	}
 
+	//TODO Denne må kaste en egen type exception for å kunne differensiere mellom ferdigstill og opprett. Dersom ferdigstill feiler vil vi kun prøve å ferdigstille igjen ved håndtering av avvik, eller?
 	public void ferdigstillJournalpost(String journalpostId, FerdigstillJournalpostRequest request) {
 		webClient.patch()
 				.uri(uriBuilder -> uriBuilder

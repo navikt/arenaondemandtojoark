@@ -66,6 +66,8 @@ public class ArenaOndemandToJoarkService {
 		log.info("Har opprettet journalpost for journaldata med onDemandId={}, journalpostId={} og dokumentInfoId={}",
 				journaldata.getOnDemandId(), journalpostId, dokumentInfoId);
 
+		//TODO Kanskje det hadde vært lurt å lagre journalpostId og dokumentInfoId i databasen her? Slik at vi kan behandle feil i ferdigstillJournalpost, uten å opprette på nytt.
+
 		FerdigstillJournalpostRequest ferdigstillJournalpostRequest = FerdigstillJournalpostRequestMapper.map(journaldata);
 		dokarkivConsumer.ferdigstillJournalpost(journalpostId, ferdigstillJournalpostRequest);
 
