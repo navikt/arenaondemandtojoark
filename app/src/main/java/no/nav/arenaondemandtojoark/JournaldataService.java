@@ -10,13 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.INNLEST;
+import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
+
 @Slf4j
 @Service
 @Transactional
 public class JournaldataService {
-
-	private static final String STATUS_INNLEST = "INNLEST";
-	private static final String STATUS_PROSESSERT = "PROSESSERT";
 
 	private final JournaldataRepository journaldataRepository;
 
@@ -30,15 +30,15 @@ public class JournaldataService {
 		return journaldataRepository.saveAll(journaldata);
 	}
 
-	public void hentJournaldata(String filnavn) {
+	public List<Journaldata> hentJournaldata(String filnavn) {
 		log.info("Henter journaldataliste med filnavn={}", filnavn);
 
-		journaldataRepository.getAllByFilnavnAndStatus(filnavn, STATUS_INNLEST);
+		return journaldataRepository.getAllByFilnavnAndStatus(filnavn, INNLEST);
 	}
 
 	public List<Rapportelement> lagJournalpostrapport(String filnavn) {
 		log.info("Henter journalpostrapportelement-liste for filnavn={}", filnavn);
 
-		return journaldataRepository.getRapportdataByFilnavnAndStatus(filnavn, STATUS_PROSESSERT);
+		return journaldataRepository.getRapportdataByFilnavnAndStatus(filnavn, PROSESSERT);
 	}
 }

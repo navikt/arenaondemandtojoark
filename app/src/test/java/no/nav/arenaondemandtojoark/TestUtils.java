@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import static no.nav.arenaondemandtojoark.domain.db.Dokumentkategori.B;
 import static no.nav.arenaondemandtojoark.domain.db.Fagomraade.OPP;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.INNLEST;
+import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
 import static no.nav.arenaondemandtojoark.domain.db.Journalposttype.U;
 import static no.nav.arenaondemandtojoark.domain.db.Utsendingskanal.L;
 
@@ -138,7 +139,7 @@ public class TestUtils {
 				.opprettetAvNavn("Tryll, Magika Von")
 				.dokumentkategori(B)
 				.brevkode("brevkode1")
-				.status(INNLEST)
+				.status(PROSESSERT)
 				.filnavn(filnavn)
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)

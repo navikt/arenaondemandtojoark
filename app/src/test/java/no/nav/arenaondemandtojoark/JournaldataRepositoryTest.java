@@ -1,15 +1,16 @@
 package no.nav.arenaondemandtojoark;
 
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
-import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
+import no.nav.arenaondemandtojoark.domain.db.JournaldataStatus;
 import no.nav.arenaondemandtojoark.domain.db.projections.Rapportelement;
+import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -19,6 +20,8 @@ import java.util.stream.Stream;
 
 import static no.nav.arenaondemandtojoark.TestUtils.lagJournaldataentitetMedStatusInnlest;
 import static no.nav.arenaondemandtojoark.TestUtils.lagJournaldataentitetMedStatusProsessert;
+import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.INNLEST;
+import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -28,9 +31,6 @@ class JournaldataRepositoryTest {
 	private static final String RELEVANT_FILNAVN = "relevantFilnavn.xml";
 	private static final String IRRELEVANT_FILNAVN = "irrelevantFilnavn.xml";
 	private static final String FEIL_FILNAVN = "feilfilnavn.xml";
-	private static final String STATUS_INNLEST = "INNLEST";
-	private static final String STATUS_PROSESSERT = "PROSESSERT";
-	private static final String STATUS_UGYLDIG = "UGYLDIG";
 
 	@Autowired
 	JournaldataRepository journaldataRepository;
@@ -53,7 +53,7 @@ class JournaldataRepositoryTest {
 
 	@ParameterizedTest
 	@MethodSource
-	void skalHenteJournaldata(List<String> forventet, String status) {
+	void skalHenteJournaldata(List<String> forventet, JournaldataStatus status) {
 
 		var journaldata = journaldataRepository.getAllByFilnavnAndStatus(RELEVANT_FILNAVN, status);
 		var faktisk = journaldata.stream().map(Journaldata::getOnDemandId).toList();
@@ -63,24 +63,16 @@ class JournaldataRepositoryTest {
 
 	private static Stream<Arguments> skalHenteJournaldata() {
 		return Stream.of(
-				Arguments.of(List.of("ODAP08031000123", "ODAP08031000234"), STATUS_INNLEST),
-				Arguments.of(List.of("ODAP08031000456", "ODAP08031000567"), STATUS_PROSESSERT)
+				Arguments.of(List.of("ODAP08031000123", "ODAP08031000234"), INNLEST),
+				Arguments.of(List.of("ODAP08031000456", "ODAP08031000567"), PROSESSERT)
 		);
 	}
 
 	@ParameterizedTest
-	@ValueSource(strings = {STATUS_INNLEST, STATUS_PROSESSERT})
-	void skalReturnereTomJournaldatalisteForUbruktFilnavn(String status) {
+	@EnumSource(value = JournaldataStatus.class, names = {"INNLEST", "PROSESSERT"})
+	void skalReturnereTomJournaldatalisteForUbruktFilnavn(JournaldataStatus status) {
 
 		var journaldataliste = journaldataRepository.getAllByFilnavnAndStatus(FEIL_FILNAVN, status);
-
-		assertThat(journaldataliste).isEmpty();
-	}
-
-	@Test
-	void skalReturnereTomJournaldatalisteDersomStatusErUgyldig() {
-
-		var journaldataliste = journaldataRepository.getAllByFilnavnAndStatus(RELEVANT_FILNAVN, STATUS_UGYLDIG);
 
 		assertThat(journaldataliste).isEmpty();
 	}
@@ -93,7 +85,7 @@ class JournaldataRepositoryTest {
 				new Rapportelement("ODAP08031000567", "2345", "234")
 		);
 
-		var rapportdata = journaldataRepository.getRapportdataByFilnavnAndStatus(RELEVANT_FILNAVN, STATUS_PROSESSERT);
+		var rapportdata = journaldataRepository.getRapportdataByFilnavnAndStatus(RELEVANT_FILNAVN, PROSESSERT);
 
 		assertThat(rapportdata.stream().toList()).containsExactlyInAnyOrderElementsOf(forventet);
 	}
@@ -101,15 +93,7 @@ class JournaldataRepositoryTest {
 	@Test
 	void skalReturnereTomRapportelementlisteForUbruktFilnavn() {
 
-		var rapportdata = journaldataRepository.getRapportdataByFilnavnAndStatus(FEIL_FILNAVN, STATUS_PROSESSERT);
-
-		assertThat(rapportdata).isEmpty();
-	}
-
-	@Test
-	void skalReturnereTomRapportelementlisteForUgyldigStatus() {
-
-		var rapportdata = journaldataRepository.getRapportdataByFilnavnAndStatus(RELEVANT_FILNAVN, STATUS_UGYLDIG);
+		var rapportdata = journaldataRepository.getRapportdataByFilnavnAndStatus(FEIL_FILNAVN, PROSESSERT);
 
 		assertThat(rapportdata).isEmpty();
 	}

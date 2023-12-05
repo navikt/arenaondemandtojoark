@@ -15,7 +15,7 @@ import java.util.List;
 public interface JournaldataRepository extends CrudRepository<Journaldata, Long> {
 
 	// Uthenting før prosesseringssteget
-	List<Journaldata> getAllByFilnavnAndStatus(String filnavn, String status);
+	List<Journaldata> getAllByFilnavnAndStatus(String filnavn, JournaldataStatus status);
 
 	// Rapportlaging
 	@Query("""
@@ -25,7 +25,7 @@ public interface JournaldataRepository extends CrudRepository<Journaldata, Long>
 			""")
 	List<Rapportelement> getRapportdataByFilnavnAndStatus(
 			@Param("filnavn") String filnavn,
-			@Param("status") String status
+			@Param("status") JournaldataStatus status
 	);
 
 	@Modifying

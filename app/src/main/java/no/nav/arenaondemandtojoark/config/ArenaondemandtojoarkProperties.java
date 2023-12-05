@@ -12,6 +12,11 @@ import org.springframework.validation.annotation.Validated;
 @ConfigurationProperties("arenaondemandtojoark")
 public class ArenaondemandtojoarkProperties {
 
+	@NotEmpty
+	private String filnavn;
+	@NotEmpty
+	private String operasjon;
+
 	private final Endpoints endpoints = new Endpoints();
 	private final SftpProperties sftp = new SftpProperties();
 

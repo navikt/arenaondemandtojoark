@@ -1,12 +1,7 @@
 package no.nav.arenaondemandtojoark;
 
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBException;
 import lombok.extern.slf4j.Slf4j;
-import no.nav.arenaondemandtojoark.domain.db.Journaldata;
-import no.nav.arenaondemandtojoark.domain.db.map.JournaldataMapper;
-import no.nav.arenaondemandtojoark.domain.db.validate.JournaldataValidator;
-import no.nav.arenaondemandtojoark.domain.xml.Innlasting;
+import no.nav.arenaondemandtojoark.config.ArenaondemandtojoarkProperties;
 import no.nav.arenaondemandtojoark.domain.xml.rapport.Journalpostrapport;
 import no.nav.arenaondemandtojoark.domain.xml.rapport.JournalpostrapportElement;
 import no.nav.arenaondemandtojoark.exception.ArenaondemandtojoarkNonRetryableException;
@@ -16,7 +11,6 @@ import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
@@ -25,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.camel.LoggingLevel.INFO;
+import static org.apache.camel.LoggingLevel.WARN;
 
 @Slf4j
 @Component
@@ -33,28 +28,24 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 	public static final String PROPERTY_ONDEMAND_ID = "OndemandId";
 	public static final String PROPERTY_FILNAVN = "Filnavn";
 
-	private final ArenaOndemandToJoarkService arenaOndemandToJoarkService;
-	private final ApplicationContext springContext;
-	private final JournaldataMapper journaldataMapper;
-	private final JournaldataValidator journaldataValidator;
-	private final JournaldataService journaldataService;
-	private final AvvikService avvikService;
+	public static final String RUTE_INNLESING = "direct:innlesing";
+	public static final String RUTE_PROSESSERING = "direct:prosessering";
 
-	public ArenaOndemandToJoarkRoute(ArenaOndemandToJoarkService arenaOndemandToJoarkService,
-									 ApplicationContext springContext,
-									 JournaldataService journaldataService,
-									 AvvikService avvikService) {
-		this.arenaOndemandToJoarkService = arenaOndemandToJoarkService;
+	private final ApplicationContext springContext;
+	private final AvvikService avvikService;
+	private final ArenaondemandtojoarkProperties arenaondemandtojoarkProperties;
+
+	public ArenaOndemandToJoarkRoute(ApplicationContext springContext,
+									 AvvikService avvikService,
+									 ArenaondemandtojoarkProperties arenaondemandtojoarkProperties) {
 		this.avvikService = avvikService;
 		this.springContext = springContext;
-		this.journaldataService = journaldataService;
+		this.arenaondemandtojoarkProperties = arenaondemandtojoarkProperties;
 		MDCGenerate.generateNewCallId();
-		journaldataMapper = new JournaldataMapper();
-		journaldataValidator = new JournaldataValidator();
 	}
 
 	@Override
-	public void configure() throws JAXBException {
+	public void configure() {
 		//@formatter:off
 
 		onException(ArenaondemandtojoarkRetryableException.class,
@@ -70,48 +61,26 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 				.handled(true)
 				.end();
 
-		from("{{arenaondemandtojoark.endpointuri}}" +
-			 "?{{arenaondemandtojoark.endpointconfig}}" +
-			 "&antInclude=*.xml" +
-			 "&move=processed/${date:now:yyyyMMdd}/${file:name}")
-				.routeId("lese_fil")
-				.log(INFO, log, "Starter lesing av ${file:absolute.path}.")
-				.setProperty(PROPERTY_FILNAVN, simple("${file:name}"))
-				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
-				.setBody(simple("${body.journaldataList}")) // List<xml.Journaldata>
-				.split(body(), new JournalpostAggregator()).streaming().parallelProcessing() //map alle journaldata-elementa til db-entitetar, og valider påkrevde felt
-					.to("direct:map_journaldata")
-				.end()
-				.to("direct:lagre_journaldata_i_bulk")
-				.split(body()).streaming().parallelProcessing()
-				    .setProperty(PROPERTY_ONDEMAND_ID, simple("${body.onDemandId}"))
-				    .to("direct:behandle_journaldata")
+		from("timer://runOnce?repeatCount=1&delay=1000")
+				.routeId("start_operation")
+				.setProperty("operasjon", constant(arenaondemandtojoarkProperties.getOperasjon()))
+				.setProperty("filnavn", constant(arenaondemandtojoarkProperties.getFilnavn()))
+				.choice()
+					.when(simple("${exchangeProperty.operasjon} == 'innlesing'"))
+						.log(INFO, "Starter innlesing av fil")
+						.to(RUTE_INNLESING)
+					.when(simple("${exchangeProperty.operasjon} == 'prosessering'"))
+						.log(INFO, "Starter prosessering av fil")
+						.to(RUTE_PROSESSERING)
+					.otherwise()
+						.log(WARN, "Ugyldig operasjon mottatt med verdi ${exchangeProperty.operasjon}.")
 				.end();
+
 //				.to("direct:lag_rapport")
 //				.log(INFO, log, "Behandlet ferdig ${file:absolute.path}.")
 //				.end();
 
-		from("direct:map_journaldata")
-				.routeId("map_journaldata")
-				.bean(journaldataMapper)
-				.end();
 
-		// Lagring i bulk
-		from("direct:lagre_journaldata_i_bulk")
-				.routeId("lagre_journaldata_i_bulk")
-				.bean(journaldataService, "lagreJournaldata")
-				.end();
-
-		// hent ut 1000 og 1000 element frå gitt filnamn frå db: hentJournaldata i JournaldataService
-		// behandle desse elementa
-		// lagre nye id-ar (rapportdata) til Journaldata-entiteten: journalpostId, dokumentInfoId, ondemandId
-		// lagre ny status til Journaldata-entitet: PROSESSERT
-
-		from("direct:behandle_journaldata")
-				.routeId("behandle_journaldata")
-				.bean(journaldataValidator)
-				.bean(arenaOndemandToJoarkService)
-				.end();
 
 //		from("direct:lag_rapport")
 //				.marshal(new JaxbDataFormat(JAXBContext.newInstance(Journalpostrapport.class)))
@@ -119,13 +88,10 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 //					"?{{arenaondemandtojoark.endpointconfig}}" +
 //					"&fileName=placeholder.xml" //FIXME
 //				);
-
-		this.shutdownSetup();
+//
+//		this.shutdownSetup();
 		//@formatter:on
 	}
-
-
-	//TODO Spesialhåndtering av feil ved ferdigstilling, for å unngå opprettelse av duplikat i databasen
 
 	public void shutdownSetup() {
 		from("direct:shutdown")
@@ -156,24 +122,6 @@ public class ArenaOndemandToJoarkRoute extends RouteBuilder {
 						stop.start();
 					}
 				});
-	}
-
-	private static class JournalpostAggregator implements AggregationStrategy {
-
-		private final List<Journaldata> journalposter = new ArrayList<>();
-
-		@Override
-		public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-			journalposter.add((Journaldata) newExchange.getIn().getBody());
-			log.info("Har aggregert {}", ((Journaldata) newExchange.getIn().getBody()).getOnDemandId());
-
-			return newExchange;
-		}
-
-		@Override
-		public void onCompletion(Exchange exchange) {
-			exchange.getIn().setBody(journalposter);
-		}
 	}
 
 	private static class RapportAggregator implements AggregationStrategy {
