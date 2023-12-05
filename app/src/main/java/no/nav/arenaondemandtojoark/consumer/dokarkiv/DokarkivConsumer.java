@@ -18,6 +18,7 @@ import static java.lang.String.format;
 import static no.nav.arenaondemandtojoark.config.AzureTokenProperties.CLIENT_REGISTRATION_DOKARKIV;
 import static no.nav.arenaondemandtojoark.config.AzureTokenProperties.getOAuth2AuthorizeRequestForAzure;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
+import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.oauth2AuthorizedClient;
 
@@ -46,12 +47,12 @@ public class DokarkivConsumer {
 				.attributes(getOAuth2AuthorizedClient())
 				.bodyValue(request)
 				.retrieve()
+				.onStatus(httpStatus -> httpStatus.isSameCodeAs(CONFLICT), response -> Mono.empty())
 				.bodyToMono(OpprettJournalpostResponse.class)
 				.doOnError(this::handleError)
 				.block();
 	}
 
-	//TODO Denne må kaste en egen type exception for å kunne differensiere mellom ferdigstill og opprett. Dersom ferdigstill feiler vil vi kun prøve å ferdigstille igjen ved håndtering av avvik, eller?
 	public void ferdigstillJournalpost(String journalpostId, FerdigstillJournalpostRequest request) {
 		webClient.patch()
 				.uri(uriBuilder -> uriBuilder

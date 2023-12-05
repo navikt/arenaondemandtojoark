@@ -79,6 +79,14 @@ public abstract class AbstractIt {
 						.withBodyFile("journalpost/happyresponse.json")));
 	}
 
+	void stubOpprettJournalpostMedStatus(HttpStatus status) {
+		stubFor(post(OPPRETT_JOURNALPOST_URL)
+				.willReturn(aResponse()
+						.withStatus(status.value())
+						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
+						.withBodyFile("journalpost/happyresponse.json")));
+	}
+
 	void stubAzure() {
 		stubFor(post("/azure_token")
 				.willReturn(aResponse()

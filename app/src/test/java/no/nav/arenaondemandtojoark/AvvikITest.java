@@ -3,6 +3,7 @@ package no.nav.arenaondemandtojoark;
 import no.nav.arenaondemandtojoark.repository.AvvikRepository;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
 import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,11 @@ public class AvvikITest extends AbstractIt {
 
 	@Autowired
 	private AvvikRepository avvikRepository;
+
+	@BeforeEach
+	void beforeEach() throws IOException {
+		preparePath(sshdPath);
+	}
 
 	@Test
 	void skalLagreAvvikVedRetryableFeilFraOnDemandBrev() throws IOException {
