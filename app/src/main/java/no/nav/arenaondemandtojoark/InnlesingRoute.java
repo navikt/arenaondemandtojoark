@@ -7,7 +7,6 @@ import no.nav.arenaondemandtojoark.domain.db.map.JournaldataMapper;
 import no.nav.arenaondemandtojoark.domain.xml.Innlasting;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
-import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import org.springframework.stereotype.Component;
 
@@ -19,7 +18,7 @@ import static org.apache.camel.LoggingLevel.INFO;
 
 @Slf4j
 @Component
-public class InnlesingRoute extends RouteBuilder {
+public class InnlesingRoute extends BaseRoute {
 
 	public static final String PROPERTY_FILNAVN = "Filnavn";
 	public static final String LES_FRA_FILOMRAADE_URI = "{{arenaondemandtojoark.endpointuri}}" +
@@ -30,7 +29,9 @@ public class InnlesingRoute extends RouteBuilder {
 	private final JournaldataMapper journaldataMapper;
 	private final JournaldataService journaldataService;
 
-	public InnlesingRoute(JournaldataService journaldataService) {
+	public InnlesingRoute(JournaldataService journaldataService,
+						  AvvikService avvikService) {
+		super(avvikService);
 		journaldataMapper = new JournaldataMapper();
 		this.journaldataService = journaldataService;
 	}

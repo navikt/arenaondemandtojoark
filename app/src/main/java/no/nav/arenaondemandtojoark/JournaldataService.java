@@ -41,4 +41,10 @@ public class JournaldataService {
 
 		return journaldataRepository.getRapportdataByFilnavnAndStatus(filnavn, PROSESSERT);
 	}
+
+	public void oppdaterStatusTilAvlevert(String filnavn) {
+		log.info("Oppdaterer status til AVLEVERT for filnavn={}", filnavn);
+
+		journaldataRepository.updateStatusToAvlevert(filnavn);
+	}
 }

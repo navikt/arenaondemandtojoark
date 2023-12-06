@@ -14,12 +14,14 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.transaction.TestTransaction;
 
 import java.util.List;
 import java.util.stream.Stream;
 
+import static no.nav.arenaondemandtojoark.TestUtils.lagJournaldataentitet;
 import static no.nav.arenaondemandtojoark.TestUtils.lagJournaldataentitetMedStatusInnlest;
-import static no.nav.arenaondemandtojoark.TestUtils.lagJournaldataentitetMedStatusProsessert;
+import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVLEVERT;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.INNLEST;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,8 +43,8 @@ class JournaldataRepositoryTest {
 				lagJournaldataentitetMedStatusInnlest("ODAP08031000123", RELEVANT_FILNAVN),
 				lagJournaldataentitetMedStatusInnlest("ODAP08031000234", RELEVANT_FILNAVN),
 				lagJournaldataentitetMedStatusInnlest("ODAP08031000345", IRRELEVANT_FILNAVN),
-				lagJournaldataentitetMedStatusProsessert(RELEVANT_FILNAVN, "ODAP08031000456", "1234", "123"),
-				lagJournaldataentitetMedStatusProsessert(RELEVANT_FILNAVN, "ODAP08031000567", "2345", "234")
+				lagJournaldataentitet(RELEVANT_FILNAVN, PROSESSERT, "ODAP08031000456", "1234", "123"),
+				lagJournaldataentitet(RELEVANT_FILNAVN, PROSESSERT, "ODAP08031000567", "2345", "234")
 		));
 	}
 
@@ -96,5 +98,26 @@ class JournaldataRepositoryTest {
 		var rapportdata = journaldataRepository.getRapportdataByFilnavnAndStatus(FEIL_FILNAVN, PROSESSERT);
 
 		assertThat(rapportdata).isEmpty();
+	}
+
+	@Test
+	void skalOppdatereStatusTilAvlevert() {
+		journaldataRepository.updateStatusToAvlevert(RELEVANT_FILNAVN);
+
+		commitAndBeginNewTransaction();
+
+		var journaldata = journaldataRepository.findAll();
+
+		assertThat(journaldata)
+				.filteredOn(j -> j.getStatus().equals(AVLEVERT))
+				.hasSize(2)
+				.extracting("onDemandId")
+				.containsExactlyInAnyOrder("ODAP08031000456", "ODAP08031000567");
+	}
+
+	private static void commitAndBeginNewTransaction() {
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
 	}
 }

@@ -2,36 +2,35 @@ package no.nav.arenaondemandtojoark;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.domain.db.validate.JournaldataValidator;
-import org.apache.camel.builder.RouteBuilder;
 import org.springframework.stereotype.Component;
 
 import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.PROPERTY_ONDEMAND_ID;
 import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.RUTE_PROSESSERING;
-import static org.apache.camel.LoggingLevel.INFO;
 
 @Slf4j
 @Component
-public class ProsesseringRoute extends RouteBuilder {
+public class ProsesseringRoute extends BaseRoute {
 
 	private final JournaldataService journaldataService;
 	private final JournaldataValidator journaldataValidator;
 	private final ArenaOndemandToJoarkService arenaOndemandToJoarkService;
 
 	public ProsesseringRoute(JournaldataService journaldataService,
-							 ArenaOndemandToJoarkService arenaOndemandToJoarkService) {
+							 ArenaOndemandToJoarkService arenaOndemandToJoarkService,
+							 AvvikService avvikService) {
+		super(avvikService);
 		this.journaldataService = journaldataService;
 		journaldataValidator = new JournaldataValidator();
 		this.arenaOndemandToJoarkService = arenaOndemandToJoarkService;
 	}
 
 	@Override
-	public void configure() {
+	public void configure() throws Exception{
 		//@formatter:off
+		super.configure();
 
 		from(RUTE_PROSESSERING)
-			.log(INFO, "Inni rute-prosessering")
 			.setBody(simple("${exchangeProperty.filnavn}"))
-			.log(INFO, "${body}")
 			.bean(journaldataService, "hentJournaldata")
 			.split(body()).streaming().parallelProcessing()
 				.setProperty(PROPERTY_ONDEMAND_ID, simple("${body.onDemandId}"))

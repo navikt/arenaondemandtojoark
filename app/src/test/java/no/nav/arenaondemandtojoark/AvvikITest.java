@@ -3,16 +3,21 @@ package no.nav.arenaondemandtojoark;
 import no.nav.arenaondemandtojoark.repository.AvvikRepository;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
 import org.assertj.core.groups.Tuple;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.transaction.TestTransaction;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static no.nav.arenaondemandtojoark.TestUtils.lagJournaldataentitetMedStatusInnlest;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVVIK;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,6 +26,10 @@ import static org.awaitility.Awaitility.await;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
+@SpringBootTest(
+		properties = {"arenaondemandtojoark.operasjon=prosessering", "arenaondemandtojoark.filnavn=journaldata.xml"}
+)
+@Transactional
 public class AvvikITest extends AbstractIt {
 
 	private static final String ONDEMAND_ID_1 = "ODAP08031000123";
@@ -32,24 +41,40 @@ public class AvvikITest extends AbstractIt {
 	private static final List<String> ONDEMAND_IDER = List.of(ONDEMAND_ID_1, ONDEMAND_ID_2, ONDEMAND_ID_3);
 
 	@Autowired
-	private Path sshdPath;
-
-	@Autowired
 	private JournaldataRepository journaldataRepository;
 
 	@Autowired
 	private AvvikRepository avvikRepository;
 
+	@Value("${arenaondemandtojoark.filnavn}")
+	String filnavn;
+
 	@BeforeEach
-	void beforeEach() throws IOException {
-		preparePath(sshdPath);
+	void beforeEach() {
+		System.out.println(sshdPath.toString());
+
+		journaldataRepository.saveAll(List.of(
+				lagJournaldataentitetMedStatusInnlest(ONDEMAND_ID_1, filnavn),
+				lagJournaldataentitetMedStatusInnlest(ONDEMAND_ID_2, filnavn),
+				lagJournaldataentitetMedStatusInnlest(ONDEMAND_ID_3, filnavn)
+		));
+
+		TestTransaction.flagForCommit();
+		TestTransaction.end();
+		TestTransaction.start();
+	}
+
+	@AfterEach
+	void afterEach() {
+		journaldataRepository.deleteAll();
+		avvikRepository.deleteAll();
 	}
 
 	@Test
 	void skalLagreAvvikVedRetryableFeilFraOnDemandBrev() throws IOException {
 		stubHentOndemandDokumentMedStatus(INTERNAL_SERVER_ERROR);
 
-		copyFileFromClasspathToInngaaende("journaldata.xml", sshdPath);
+		copyFileFromClasspathToInngaaende(filnavn, sshdPath);
 
 		await().atMost(10, SECONDS).untilAsserted(() -> {
 			var avvik = avvikRepository.findAll();
@@ -70,7 +95,7 @@ public class AvvikITest extends AbstractIt {
 	void skalLagreAvvikVedNonRetryableFeilFraOnDemandBrev() throws IOException {
 		stubHentOndemandDokumentMedStatus(HttpStatus.BAD_REQUEST);
 
-		copyFileFromClasspathToInngaaende("journaldata.xml", sshdPath);
+		copyFileFromClasspathToInngaaende(filnavn, sshdPath);
 
 		await().atMost(10, SECONDS).untilAsserted(() -> {
 			var avvik = avvikRepository.findAll();
@@ -102,14 +127,23 @@ public class AvvikITest extends AbstractIt {
 		stubOpprettJournalpost();
 		stubFerdigstillJournalpost(JOURNALPOST_ID);
 
-		copyFileFromClasspathToInngaaende("journaldata-ett-element.xml", sshdPath);
+		copyFileFromClasspathToInngaaende(filnavn, sshdPath);
 
 		await().atMost(10, SECONDS).untilAsserted(() -> {
+			var avvik = avvikRepository.findAll();
+			assertThat(avvik).hasSize(0);
+
 			var result = journaldataRepository.findAll();
 			assertThat(result)
-					.hasSize(1)
+					.hasSize(3)
 					.extracting("onDemandId", "status")
-					.containsExactly(tuple(ONDEMAND_ID_1, PROSESSERT));
+					.containsExactlyInAnyOrder(
+							tuple(ONDEMAND_ID_1, PROSESSERT),
+							tuple(ONDEMAND_ID_2, PROSESSERT),
+							tuple(ONDEMAND_ID_3, PROSESSERT)
+					);
+
+
 		});
 	}
 }

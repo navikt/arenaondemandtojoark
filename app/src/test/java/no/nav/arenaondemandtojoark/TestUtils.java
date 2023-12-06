@@ -1,13 +1,13 @@
 package no.nav.arenaondemandtojoark;
 
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
+import no.nav.arenaondemandtojoark.domain.db.JournaldataStatus;
 
 import java.time.LocalDateTime;
 
 import static no.nav.arenaondemandtojoark.domain.db.Dokumentkategori.B;
 import static no.nav.arenaondemandtojoark.domain.db.Fagomraade.OPP;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.INNLEST;
-import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
 import static no.nav.arenaondemandtojoark.domain.db.Journalposttype.U;
 import static no.nav.arenaondemandtojoark.domain.db.Utsendingskanal.L;
 
@@ -97,30 +97,14 @@ public class TestUtils {
 	public static no.nav.arenaondemandtojoark.domain.db.Journaldata lagJournaldataentitetMedStatusInnlest(
 			String ondemandId, String filnavn) {
 
-		return no.nav.arenaondemandtojoark.domain.db.Journaldata.builder()
-				.onDemandId(ondemandId)
-				.saksnummer("3133123")
-				.brukerId("11114928123")
-				.brukertype("PERSON")
-				.journalposttype(U)
-				.fagomraade(OPP)
-				.journaldato(LocalDateTime.parse("2008-03-10T17:19:22"))
-				.innhold("Innk. til dialogmøte innen 26 uker der mottaker er arb.giver")
-				.mottakernavn("DUCK DONALD")
-				.mottakerId("80000009123")
-				.utsendingskanal(L)
-				.journalfoerendeEnhet("0211")
-				.sendtPrintDato(LocalDateTime.parse("2011-12-08T15:07:48"))
-				.opprettetAvNavn("Tryll, Magika Von")
-				.dokumentkategori(B)
-				.brevkode("brevkode1")
-				.status(INNLEST)
-				.filnavn(filnavn)
-				.build();
+		return lagJournaldataentitet(filnavn, INNLEST, ondemandId, null, null);
 	}
 
-	public static no.nav.arenaondemandtojoark.domain.db.Journaldata lagJournaldataentitetMedStatusProsessert(
-			String filnavn, String ondemandId, String journalpostId, String dokumentInfoId) {
+	public static no.nav.arenaondemandtojoark.domain.db.Journaldata lagJournaldataentitet(String filnavn,
+																						  JournaldataStatus status,
+																						  String ondemandId,
+																						  String journalpostId,
+																						  String dokumentInfoId) {
 
 		return no.nav.arenaondemandtojoark.domain.db.Journaldata.builder()
 				.onDemandId(ondemandId)
@@ -139,7 +123,7 @@ public class TestUtils {
 				.opprettetAvNavn("Tryll, Magika Von")
 				.dokumentkategori(B)
 				.brevkode("brevkode1")
-				.status(PROSESSERT)
+				.status(status)
 				.filnavn(filnavn)
 				.journalpostId(journalpostId)
 				.dokumentInfoId(dokumentInfoId)

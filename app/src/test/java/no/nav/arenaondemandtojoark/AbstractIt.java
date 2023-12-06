@@ -1,6 +1,7 @@
 package no.nav.arenaondemandtojoark;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.core.io.ClassPathResource;
@@ -40,13 +41,16 @@ public abstract class AbstractIt {
 	private static final String FERDIGSTILL_JOURNALPOST_URL = "/rest/journalpostapi/v1/journalpost/%s/ferdigstill";
 	private static final String HENT_ONDEMAND_DOKUMENT_URL = "/ODBrevServlet?IDNR=%s&appID=AREP1";
 
+	@Autowired
+	public Path sshdPath;
+
 	@BeforeEach
-	void setup() {
+	void setup() throws IOException {
+		preparePath(sshdPath);
 		stubAzure();
 	}
 
 	void stubHentOndemandDokument(String ondemandId) {
-
 		stubFor(get(HENT_ONDEMAND_DOKUMENT_URL.formatted(ondemandId))
 				.willReturn(aResponse()
 						.withStatus(OK.value())
@@ -79,10 +83,10 @@ public abstract class AbstractIt {
 						.withBodyFile("journalpost/happyresponse.json")));
 	}
 
-	void stubOpprettJournalpostMedStatus(HttpStatus status) {
+	void stubOpprettJournalpostMedStatusConflict() {
 		stubFor(post(OPPRETT_JOURNALPOST_URL)
 				.willReturn(aResponse()
-						.withStatus(status.value())
+						.withStatus(HttpStatus.CONFLICT.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)
 						.withBodyFile("journalpost/happyresponse.json")));
 	}

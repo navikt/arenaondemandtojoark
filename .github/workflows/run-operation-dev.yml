@@ -13,6 +13,7 @@ on:
         options:
           - innlesing
           - prosessering
+          - rapportering
 
 jobs:
   build-app:
@@ -27,7 +28,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
-          java-version: 17
+          java-version: 21
           distribution: 'temurin'
       - name: Create m2-settings
         uses: whelk-io/maven-settings-xml-action@7c60eb95b2d5ec18f2e0e29f34c9ed69475e7a96 # v21

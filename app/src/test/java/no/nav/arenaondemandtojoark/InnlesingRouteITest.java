@@ -1,56 +1,54 @@
 package no.nav.arenaondemandtojoark;
 
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.INNLEST;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.awaitility.Awaitility.await;
 
 @SpringBootTest(
-		properties = {"arenaondemandtojoark.operasjon=prosessering", "arenaondemandtojoark.filnavn=journaldata.xml"}
+		properties = {"arenaondemandtojoark.operasjon=innlesing", "arenaondemandtojoark.filnavn=journaldata.xml"}
 )
-class InnlesingRouteTest extends AbstractIt {
+class InnlesingRouteITest extends AbstractIt {
 
-	@Autowired
-	private Path sshdPath;
+	private static final String ONDEMAND_ID_1 = "ODAP08031000123";
+	private static final String ONDEMAND_ID_2 = "ODAP08031000456";
+	private static final String ONDEMAND_ID_3 = "ODAP08031000789";
+
+	private static final String JOURNALPOST_ID = "467010363";
 
 	@Autowired
 	private JournaldataRepository journaldataRepository;
 
-	@BeforeEach
-	void beforeEach() throws IOException {
-		preparePath(sshdPath);
-	}
-
 	@Test
 	void skalLeseFilMedFlereElementerFraFilomraadeOgLagre() throws IOException {
-		var ondemandId = "ODAP08031000123";
-		var ondemandId2 = "ODAP08031000456";
-		var ondemandId3 = "ODAP08031000789";
-		var journalpostId = "467010363";
 
-		stubHentOndemandDokument(ondemandId);
-		stubHentOndemandDokument(ondemandId2);
-		stubHentOndemandDokument(ondemandId3);
+		stubHentOndemandDokument(ONDEMAND_ID_1);
+		stubHentOndemandDokument(ONDEMAND_ID_2);
+		stubHentOndemandDokument(ONDEMAND_ID_3);
 		stubOpprettJournalpost();
-		stubFerdigstillJournalpost(journalpostId);
+		stubFerdigstillJournalpost(JOURNALPOST_ID);
 
 		copyFileFromClasspathToInngaaende("journaldata.xml", sshdPath);
 
-		await().atMost(5, SECONDS).untilAsserted(() -> {
-			var result = new ArrayList<String>();
-			journaldataRepository.findAll().forEach(el -> result.add(el.getOnDemandId()));
-			// TODO: Sjekk at status er INNLEST
-			assertThat(result).hasSameElementsAs(List.of(ondemandId, ondemandId2, ondemandId3));
+		await().atMost(10, SECONDS).untilAsserted(() -> {
+			var result = journaldataRepository.findAll();
+
+			assertThat(result)
+					.hasSize(3)
+					.extracting("onDemandId", "status")
+					.containsExactlyInAnyOrder(
+							tuple(ONDEMAND_ID_1, INNLEST),
+							tuple(ONDEMAND_ID_2, INNLEST),
+							tuple(ONDEMAND_ID_3, INNLEST)
+					);
 		});
 	}
 }

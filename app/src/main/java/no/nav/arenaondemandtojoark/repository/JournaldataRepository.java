@@ -39,4 +39,14 @@ public interface JournaldataRepository extends CrudRepository<Journaldata, Long>
 			@Param("status") JournaldataStatus status
 	);
 
+	@Modifying
+	@Query("""
+				update Journaldata j
+				set j.status = 'AVLEVERT'
+				where j.filnavn = :filnavn
+				and j.status = 'PROSESSERT'
+			""")
+	void updateStatusToAvlevert(
+			@Param("filnavn") String filnavn
+	);
 }

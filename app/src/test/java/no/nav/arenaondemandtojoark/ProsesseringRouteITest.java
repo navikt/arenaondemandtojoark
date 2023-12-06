@@ -7,8 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -23,15 +21,10 @@ import static org.awaitility.Awaitility.await;
 class ProsesseringRouteITest extends AbstractIt {
 
 	@Autowired
-	private Path sshdPath;
-
-	@Autowired
 	private JournaldataRepository journaldataRepository;
 
 	@BeforeEach
-	void beforeEach() throws IOException {
-		preparePath(sshdPath);
-
+	void beforeEach() {
 		var RELEVANT_FILNAVN = "journaldata.xml";
 		journaldataRepository.saveAll(List.of(
 				lagJournaldataentitetMedStatusInnlest("ODAP08031000123", RELEVANT_FILNAVN),
