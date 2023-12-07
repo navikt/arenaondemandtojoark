@@ -25,11 +25,12 @@ public class ProsesseringRoute extends BaseRoute {
 	}
 
 	@Override
-	public void configure() throws Exception{
+	public void configure() throws Exception {
 		//@formatter:off
 		super.configure();
 
 		from(RUTE_PROSESSERING)
+				.routeId("prosessering")
 			.setBody(simple("${exchangeProperty.filnavn}"))
 			.bean(journaldataService, "hentJournaldata")
 			.split(body()).streaming().parallelProcessing()

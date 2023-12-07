@@ -1,73 +1,56 @@
 package no.nav.arenaondemandtojoark;
 
-import no.nav.arenaondemandtojoark.repository.AvvikRepository;
-import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
-import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.test.context.transaction.TestTransaction;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static no.nav.arenaondemandtojoark.TestUtils.JOURNALPOST_ID;
+import static no.nav.arenaondemandtojoark.TestUtils.ONDEMAND_ID_1;
+import static no.nav.arenaondemandtojoark.TestUtils.ONDEMAND_ID_2;
+import static no.nav.arenaondemandtojoark.TestUtils.ONDEMAND_ID_3;
 import static no.nav.arenaondemandtojoark.TestUtils.lagJournaldataentitetMedStatusInnlest;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVVIK;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 import static org.awaitility.Awaitility.await;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @SpringBootTest(
 		properties = {"arenaondemandtojoark.operasjon=prosessering", "arenaondemandtojoark.filnavn=journaldata.xml"}
 )
-@Transactional
 public class AvvikITest extends AbstractIt {
 
-	private static final String ONDEMAND_ID_1 = "ODAP08031000123";
-	private static final String ONDEMAND_ID_2 = "ODAP08031000456";
-	private static final String ONDEMAND_ID_3 = "ODAP08031000789";
-
-	private static final String JOURNALPOST_ID = "467010363";
-
 	private static final List<String> ONDEMAND_IDER = List.of(ONDEMAND_ID_1, ONDEMAND_ID_2, ONDEMAND_ID_3);
-
-	@Autowired
-	private JournaldataRepository journaldataRepository;
-
-	@Autowired
-	private AvvikRepository avvikRepository;
 
 	@Value("${arenaondemandtojoark.filnavn}")
 	String filnavn;
 
 	@BeforeEach
 	void beforeEach() {
-		System.out.println(sshdPath.toString());
-
 		journaldataRepository.saveAll(List.of(
 				lagJournaldataentitetMedStatusInnlest(ONDEMAND_ID_1, filnavn),
 				lagJournaldataentitetMedStatusInnlest(ONDEMAND_ID_2, filnavn),
 				lagJournaldataentitetMedStatusInnlest(ONDEMAND_ID_3, filnavn)
 		));
 
-		TestTransaction.flagForCommit();
-		TestTransaction.end();
-		TestTransaction.start();
+		commitAndBeginNewTransaction();
 	}
 
 	@AfterEach
 	void afterEach() {
 		journaldataRepository.deleteAll();
 		avvikRepository.deleteAll();
+
+		commitAndBeginNewTransaction();
 	}
 
 	@Test
@@ -85,15 +68,9 @@ public class AvvikITest extends AbstractIt {
 		});
 	}
 
-	private Tuple[] getOndemandIdAndFeiltype(String feiltype) {
-		return ONDEMAND_IDER.stream()
-				.map(ondemandId -> tuple(ondemandId, feiltype))
-				.toArray(Tuple[]::new);
-	}
-
 	@Test
 	void skalLagreAvvikVedNonRetryableFeilFraOnDemandBrev() throws IOException {
-		stubHentOndemandDokumentMedStatus(HttpStatus.BAD_REQUEST);
+		stubHentOndemandDokumentMedStatus(BAD_REQUEST);
 
 		copyFileFromClasspathToInngaaende(filnavn, sshdPath);
 

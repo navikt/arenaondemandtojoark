@@ -1,18 +1,20 @@
 package no.nav.arenaondemandtojoark;
 
-import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.io.IOException;
 import java.util.List;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static no.nav.arenaondemandtojoark.TestUtils.JOURNALPOST_ID;
+import static no.nav.arenaondemandtojoark.TestUtils.ONDEMAND_ID_1;
+import static no.nav.arenaondemandtojoark.TestUtils.ONDEMAND_ID_2;
 import static no.nav.arenaondemandtojoark.TestUtils.lagJournaldataentitetMedStatusInnlest;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.awaitility.Awaitility.await;
 
 @SpringBootTest(
@@ -20,29 +22,23 @@ import static org.awaitility.Awaitility.await;
 )
 class ProsesseringRouteITest extends AbstractIt {
 
-	@Autowired
-	private JournaldataRepository journaldataRepository;
 
-	@BeforeEach
-	void beforeEach() {
-		var RELEVANT_FILNAVN = "journaldata.xml";
-		journaldataRepository.saveAll(List.of(
-				lagJournaldataentitetMedStatusInnlest("ODAP08031000123", RELEVANT_FILNAVN),
-				lagJournaldataentitetMedStatusInnlest("ODAP08031000234", RELEVANT_FILNAVN)
-		));
-	}
-
-	@AfterEach
-	public void cleanup() {
-		journaldataRepository.deleteAll();
-	}
+	@Value("${arenaondemandtojoark.filnavn}")
+	String filnavn;
 
 	@Test
 	void skalProsessereJournaldata() {
-		stubHentOndemandDokument("ODAP08031000123");
-		stubHentOndemandDokument("ODAP08031000234");
+		stubHentOndemandDokument(ONDEMAND_ID_1);
+		stubHentOndemandDokument(ONDEMAND_ID_2);
 		stubOpprettJournalpost();
-		stubFerdigstillJournalpost("467010363");
+		stubFerdigstillJournalpost(JOURNALPOST_ID);
+
+		journaldataRepository.saveAll(List.of(
+				lagJournaldataentitetMedStatusInnlest(ONDEMAND_ID_1, filnavn),
+				lagJournaldataentitetMedStatusInnlest(ONDEMAND_ID_2, filnavn)
+		));
+
+		commitAndBeginNewTransaction();
 
 		await().atMost(10, SECONDS).untilAsserted(() -> {
 			var journaldata = journaldataRepository.findAll();
@@ -52,4 +48,26 @@ class ProsesseringRouteITest extends AbstractIt {
 					.containsOnly(PROSESSERT);
 		});
 	}
+
+	@Test
+	void skalHandtere409FraDokarkiv() throws IOException {
+		stubHentOndemandDokument(ONDEMAND_ID_1);
+		stubOpprettJournalpostMedStatusConflict();
+		stubFerdigstillJournalpost(JOURNALPOST_ID);
+
+		journaldataRepository.save(lagJournaldataentitetMedStatusInnlest(ONDEMAND_ID_1, filnavn));
+
+		commitAndBeginNewTransaction();
+
+		copyFileFromClasspathToInngaaende(filnavn, sshdPath);
+
+		await().atMost(10, SECONDS).untilAsserted(() -> {
+			var result = journaldataRepository.findAll();
+			assertThat(result)
+					.hasSize(1)
+					.extracting("onDemandId", "status")
+					.containsExactly(tuple(ONDEMAND_ID_1, PROSESSERT));
+		});
+	}
+
 }

@@ -1,13 +1,15 @@
 package no.nav.arenaondemandtojoark;
 
-import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static no.nav.arenaondemandtojoark.TestUtils.JOURNALPOST_ID;
+import static no.nav.arenaondemandtojoark.TestUtils.ONDEMAND_ID_1;
+import static no.nav.arenaondemandtojoark.TestUtils.ONDEMAND_ID_2;
+import static no.nav.arenaondemandtojoark.TestUtils.ONDEMAND_ID_3;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.INNLEST;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
@@ -17,15 +19,6 @@ import static org.awaitility.Awaitility.await;
 		properties = {"arenaondemandtojoark.operasjon=innlesing", "arenaondemandtojoark.filnavn=journaldata.xml"}
 )
 class InnlesingRouteITest extends AbstractIt {
-
-	private static final String ONDEMAND_ID_1 = "ODAP08031000123";
-	private static final String ONDEMAND_ID_2 = "ODAP08031000456";
-	private static final String ONDEMAND_ID_3 = "ODAP08031000789";
-
-	private static final String JOURNALPOST_ID = "467010363";
-
-	@Autowired
-	private JournaldataRepository journaldataRepository;
 
 	@Test
 	void skalLeseFilMedFlereElementerFraFilomraadeOgLagre() throws IOException {

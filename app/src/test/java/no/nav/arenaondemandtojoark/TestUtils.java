@@ -13,10 +13,16 @@ import static no.nav.arenaondemandtojoark.domain.db.Utsendingskanal.L;
 
 public class TestUtils {
 
+	public static final String ONDEMAND_ID_1 = "ODAP08031000123";
+	public static final String ONDEMAND_ID_2 = "ODAP08031000456";
+	public static final String ONDEMAND_ID_3 = "ODAP08031000789";
+	public static final String JOURNALPOST_ID = "467010363";
+	public static final String DOKUMENT_INFO_ID = "123";
+
 	public static no.nav.arenaondemandtojoark.domain.xml.Journaldata lagXmlJournaldata() {
 		var journaldata = new no.nav.arenaondemandtojoark.domain.xml.Journaldata();
 
-		journaldata.setOnDemandId("ODAP08031000123");
+		journaldata.setOnDemandId(ONDEMAND_ID_1);
 		journaldata.setSaksnummer("3133123");
 		journaldata.setBrukerId("11114928123");
 		journaldata.setBrukerType("PERSON");
@@ -39,7 +45,7 @@ public class TestUtils {
 	public static no.nav.arenaondemandtojoark.domain.xml.Journaldata lagXmlJournaldataMedJournalposttypeU() {
 		var journaldata = new no.nav.arenaondemandtojoark.domain.xml.Journaldata();
 
-		journaldata.setOnDemandId("ODAP08031000123");
+		journaldata.setOnDemandId(ONDEMAND_ID_1);
 		journaldata.setSaksnummer("3133123");
 		journaldata.setBrukerId("11114928123");
 		journaldata.setBrukerType("PERSON");
@@ -58,7 +64,7 @@ public class TestUtils {
 
 	public static Journaldata lagJournaldata() {
 		return Journaldata.builder()
-				.onDemandId("ODAP08031000123")
+				.onDemandId(ONDEMAND_ID_1)
 				.saksnummer("3133123")
 				.brukerId("11114928123")
 				.brukertype("PERSON")
@@ -79,7 +85,7 @@ public class TestUtils {
 
 	public static Journaldata lagJournaldataMedJournalposttypeU() {
 		return Journaldata.builder()
-				.onDemandId("ODAP08031000123")
+				.onDemandId(ONDEMAND_ID_1)
 				.saksnummer("3133123")
 				.brukerId("11114928123")
 				.brukertype("PERSON")
