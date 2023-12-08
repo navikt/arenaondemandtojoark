@@ -14,12 +14,12 @@ spec:
       value: {{ ARENAONDEMANDTOJOARK_ENDPOINTS_DOKARKIV_SCOPE }}
     - name: ARENAONDEMANDTOJOARK_ENDPOINTS_ONDEMAND
       value: {{ ARENAONDEMANDTOJOARK_ENDPOINTS_ONDEMAND }}
-    - name: FILNAVN
-      value: {{ filnavn }}
-    - name: OPERASJON
-      value: {{ operasjon }}
     - name: SPRING_DATASOURCE_URL
       value: {{ SPRING_DATASOURCE_URL }}
+    - name: FILNAVN
+      value: { { filnavn } }
+    - name: OPERASJON
+      value: { { operasjon } }
   azure:
     application:
       enabled: true
