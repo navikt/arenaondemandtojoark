@@ -11,6 +11,7 @@ import org.apache.sshd.server.SshServer;
 import org.apache.sshd.server.auth.UserAuthNoneFactory;
 import org.apache.sshd.server.auth.pubkey.AcceptAllPublickeyAuthenticator;
 import org.apache.sshd.sftp.server.SftpSubsystemFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -65,16 +66,18 @@ public class TestConfig {
     @Configuration
     static class SshdSftpServerConfig {
 
+        @Value("${arenaondemandtojoark.sftp.port}")
+        private int sftpPort;
+
         @Bean
         public Path sshdPath() throws IOException {
             return Files.createTempDirectory("sshd");
         }
 
         @Bean(initMethod = "start", destroyMethod = "stop")
-        public SshServer sshServer(Path sshdPath,
-                                   ArenaondemandtojoarkProperties arenaondemandtojoarkProperties) {
+        public SshServer sshServer(Path sshdPath) {
             SshServer sshd = SshServer.setUpDefaultServer();
-            sshd.setPort(parseInt(arenaondemandtojoarkProperties.getSftp().getPort()));
+            sshd.setPort(sftpPort);
             sshd.setKeyPairProvider(new ClassLoadableResourceKeyPairProvider("sftp/server_id_rsa"));
             sshd.setCommandFactory(new ScpCommandFactory());
             sshd.setSubsystemFactories(singletonList(new SftpSubsystemFactory()));

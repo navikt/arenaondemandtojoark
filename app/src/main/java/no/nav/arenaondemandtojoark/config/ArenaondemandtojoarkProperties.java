@@ -18,7 +18,6 @@ public class ArenaondemandtojoarkProperties {
 	private String operasjon;
 
 	private final Endpoints endpoints = new Endpoints();
-	private final SftpProperties sftp = new SftpProperties();
 
 	@Data
 	public static class Endpoints {
@@ -36,29 +35,5 @@ public class ArenaondemandtojoarkProperties {
 
 		@NotEmpty
 		private String scope;
-	}
-
-	@Data
-	@Validated
-	public static class SftpProperties {
-		@ToString.Exclude
-		@NotEmpty
-		private String host;
-
-		@ToString.Exclude
-		@NotEmpty
-		private String privateKey;
-
-		@ToString.Exclude
-		@NotEmpty
-		private String hostKey;
-
-		@ToString.Exclude
-		@NotEmpty
-		private String username;
-
-		@ToString.Exclude
-		@NotEmpty
-		private String port;
 	}
 }
