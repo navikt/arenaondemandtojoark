@@ -17,9 +17,9 @@ spec:
     - name: SPRING_DATASOURCE_URL
       value: {{ SPRING_DATASOURCE_URL }}
     - name: FILNAVN
-      value: { { filnavn } }
+      value: {{ filnavn }}
     - name: OPERASJON
-      value: { { operasjon } }
+      value: {{ operasjon }}
   azure:
     application:
       enabled: true
