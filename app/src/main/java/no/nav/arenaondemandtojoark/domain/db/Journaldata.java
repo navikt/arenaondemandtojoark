@@ -94,10 +94,10 @@ public class Journaldata {
 	@Column(name = "filnavn")
 	String filnavn;
 
-	@Column(name = "journalpostId")
+	@Column(name = "journalpost_id")
 	String journalpostId;
 
-	@Column(name = "dokumentInfoId")
+	@Column(name = "dokument_info_id")
 	String dokumentInfoId;
 
 	// Status -> (default) INNLEST, HAR_HENTET_ONDEMAND_DOKUMENT (avvik), HAR_FÅTT_OPPRETTET_JOURNALPOST, HAR_FERDIGSTILT_JOURNALPOST, HAR_LAGET_JOURNALPOSTRAPPORT

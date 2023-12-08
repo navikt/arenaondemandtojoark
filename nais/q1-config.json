@@ -1,5 +1,7 @@
 {
   "ARENAONDEMANDTOJOARK_ENDPOINTS_DOKARKIV_URL": "https://dokarkiv-q1.dev.intern.nav.no/rest/journalpostapi/v1/journalpost",
   "ARENAONDEMANDTOJOARK_ENDPOINTS_DOKARKIV_SCOPE": "api://dev-fss.teamdokumenthandtering.dokarkiv-q1/.default",
-  "ARENAONDEMANDTOJOARK_ENDPOINTS_ONDEMAND": "https://wasapp-q1.adeo.no/ODBrevServlet/ODBrevServlet"
+  "ARENAONDEMANDTOJOARK_ENDPOINTS_ONDEMAND": "https://wasapp-q1.adeo.no/ODBrevServlet/ODBrevServlet",
+  "SPRING_DATASOURCE_URL":"jdbc:oracle:thin:@a01dbfl042.adeo.no:1521/arenaondemandtojoark_q1",
+  "ARENAONDEMANDTOJOARK_DB":"/oracle/data/dev/creds/arenaondemandtojoark_q1-user"
 }

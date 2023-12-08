@@ -26,10 +26,10 @@ public class Avvik {
 	private String ondemandId;
 
 	@Column(name = "filnavn")
-	private String filnavn; //property i camel?
+	private String filnavn;
 
 	@Column(name = "feiltype")
-	private String feiltype; // TEKNISK eller FUNKSJONELL? Retryable?
+	private String feiltype;
 
 	@Column(name = "feilmelding")
 	private String feilmelding;
