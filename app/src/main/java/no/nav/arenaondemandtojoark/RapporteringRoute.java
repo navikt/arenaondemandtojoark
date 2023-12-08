@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.RUTE_RAPPORTERING;
 import static org.apache.camel.LoggingLevel.INFO;
 
 @Slf4j
@@ -36,7 +37,7 @@ public class RapporteringRoute extends BaseRoute {
 		//@formatter:off
 		super.configure();
 
-		from("direct:lag_rapport")
+		from(RUTE_RAPPORTERING)
 				.routeId("rapportering")
 				.log(INFO, log, "Starter generering av rapport for fil=${exchangeProperty.filnavn}")
 				.setBody(simple("${exchangeProperty.filnavn}"))

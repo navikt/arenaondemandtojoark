@@ -21,6 +21,8 @@ public class ArenaOndemandToJoarkRoute extends BaseRoute {
 
 	public static final String RUTE_INNLESING = "direct:innlesing";
 	public static final String RUTE_PROSESSERING = "direct:prosessering";
+	public static final String RUTE_RAPPORTERING = "direct:lag_rapport";
+	public static final String RUTE_SHUTDOWN = "direct:avslutt_jobb";
 
 	private final ApplicationContext springContext;
 	private final ArenaondemandtojoarkProperties arenaondemandtojoarkProperties;
@@ -52,18 +54,14 @@ public class ArenaOndemandToJoarkRoute extends BaseRoute {
 						.to(RUTE_PROSESSERING)
 				    .when(simple("${exchangeProperty.operasjon} == 'rapportering'"))
 				         .log(INFO, "Starter rapportering av fil")
-				         .to("direct:lag_rapport")
+				         .to(RUTE_RAPPORTERING)
 					.otherwise()
 						.log(WARN, "Ugyldig operasjon mottatt med verdi ${exchangeProperty.operasjon}.")
-				.end();
+				.end()
+				.to(RUTE_SHUTDOWN);
 
-//		this.shutdownSetup();
-		//@formatter:on
-	}
-
-	public void shutdownSetup() {
-		from("direct:shutdown")
-				.routeId("shutdown")
+		from("direct:avslutt_jobb")
+				.routeId("avslutt_jobb")
 				.process(new Processor() {
 					Thread stop;
 
@@ -72,23 +70,23 @@ public class ArenaOndemandToJoarkRoute extends BaseRoute {
 						// stop this route using a thread that will stop
 						// this route gracefully while we are still running
 						if (stop == null) {
-							stop = new Thread() {
-								@Override
-								public void run() {
-									try {
-										exchange.getContext().shutdown();
-										SpringApplication.exit(springContext, () -> 0);
-										System.exit(0);
-									} catch (Exception e) {
-										// ignore
-									}
+							stop = new Thread(()-> {
+								try {
+									exchange.getContext().shutdown();
+									SpringApplication.exit(springContext, () -> 0);
+									System.exit(0);
+								} catch (Exception e) {
+									// ignore
 								}
-							};
+							});
 						}
 
 						// start the thread that stops this route
 						stop.start();
 					}
 				});
+
+		//@formatter:on
 	}
+
 }
