@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -28,9 +29,11 @@ import static lombok.AccessLevel.NONE;
 @Setter
 public class Journaldata {
 
-	// TODO: SequenceGenerator?
+	private static final String JOURNALDATA_ID_SEQUENCE = "journaldata_id_seq";
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = JOURNALDATA_ID_SEQUENCE)
+	@SequenceGenerator(name = JOURNALDATA_ID_SEQUENCE, sequenceName = JOURNALDATA_ID_SEQUENCE, allocationSize = 1)
 	@Column(name = "journaldata_id")
 	@Setter(NONE)
 	private Long journaldataId;

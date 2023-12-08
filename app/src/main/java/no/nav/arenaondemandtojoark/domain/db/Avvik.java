@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,8 +18,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Avvik {
 
+	private static final String AVVIK_ID_SEQUENCE = "avvik_id_seq";
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = AVVIK_ID_SEQUENCE)
+	@SequenceGenerator(name = AVVIK_ID_SEQUENCE, sequenceName = AVVIK_ID_SEQUENCE, allocationSize = 1)
 	@Column(name = "avvik_id")
 	private Long avvikId;
 
