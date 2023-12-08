@@ -21,10 +21,10 @@ import static org.apache.camel.LoggingLevel.INFO;
 public class InnlesingRoute extends BaseRoute {
 
 	public static final String PROPERTY_FILNAVN = "Filnavn";
-	public static final String LES_FRA_FILOMRAADE_URI = "{{arenaondemandtojoark.endpointuri}}" +
-														"?{{arenaondemandtojoark.endpointconfig}}" +
-														"&antInclude=*.xml" +
-														"&move=processed/${date:now:yyyyMMdd}/${file:name}";
+	public static final String LES_FRA_FILOMRAADE_URI = "{{arenaondemandtojoark.sftp.uri}}" + "/inbound" +
+														"{{arenaondemandtojoark.sftp.config}}" +
+														"&antInclude=*.xml";
+														//"&move=processed/${date:now:yyyyMMdd}/${file:name}";
 
 	private final JournaldataMapper journaldataMapper;
 	private final JournaldataService journaldataService;
