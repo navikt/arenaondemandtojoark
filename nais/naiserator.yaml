@@ -18,7 +18,14 @@ spec:
       value: {{ filnavn }}
     - name: OPERASJON
       value: {{ operasjon }}
+    - name: SPRING_DATASOURCE_URL
+      value: {{ SPRING_DATASOURCE_URL }}
   azure:
     application:
       enabled: true
   webproxy: true
+  vault:
+    enabled: true
+    paths:
+      - kvPath: {{ ARENAONDEMANDTOJOARK_DB }}
+        mountPath: /var/run/secrets/nais.io/arenaondemandtojoarkDB
