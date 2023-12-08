@@ -45,7 +45,7 @@ public class RapporteringRouteITest extends AbstractIt {
 					.extracting("status")
 					.containsOnly(JournaldataStatus.AVLEVERT);
 
-			assertThat(new File(sshdPath.toString() + "/journalpostrapporter/" + filnavn))
+			assertThat(new File(sshdPath.toString() + "/outbound/" + filnavn))
 					.exists();
 		});
 	}

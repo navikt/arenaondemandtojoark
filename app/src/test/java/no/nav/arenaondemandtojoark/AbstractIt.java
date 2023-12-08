@@ -70,8 +70,10 @@ public abstract class AbstractIt {
 
 	@BeforeEach
 	void setup() throws Exception {
-
-		preparePath(sshdPath);
+		var inbound = sshdPath.resolve("inbound");
+		var outbound = sshdPath.resolve("outbound");
+		preparePath(inbound);
+		preparePath(outbound);
 		stubAzure();
 
 		journaldataRepository.deleteAll();
@@ -151,7 +153,7 @@ public abstract class AbstractIt {
 	}
 
 	void copyFileFromClasspathToInngaaende(final String zipfilename, Path sshdPath) throws IOException {
-		copy(new ClassPathResource(zipfilename).getInputStream(), sshdPath.resolve(zipfilename));
+		copy(new ClassPathResource(zipfilename).getInputStream(), sshdPath.resolve("inbound").resolve(zipfilename));
 	}
 
 }
