@@ -16,9 +16,9 @@ spec:
       value: {{ ARENAONDEMANDTOJOARK_ENDPOINTS_ONDEMAND }}
     - name: SPRING_DATASOURCE_URL
       value: {{ SPRING_DATASOURCE_URL }}
-    - name: FILNAVN
+    - name: ARENAONDEMANDTOJOARK_FILNAVN
       value: {{ filnavn }}
-    - name: OPERASJON
+    - name: ARENAONDEMANDTOJOARK_OPERASJON
       value: {{ operasjon }}
   azure:
     application:
