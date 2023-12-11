@@ -43,21 +43,21 @@ public class ArenaOndemandToJoarkRoute extends BaseRoute {
 				.setProperty("filnavn", constant(arenaondemandtojoarkProperties.getFilnavn()))
 				.choice()
 					.when(simple("${exchangeProperty.operasjon} == 'innlesing'"))
-						.log(INFO, "Starter innlesing av fil")
+						.log(INFO, log, "Starter innlesing av fil")
 						.to(RUTE_INNLESING)
-						.log(INFO, "Ferdig med innlesing av fil")
+						.log(INFO, log,"Ferdig med innlesing av fil")
 					.when(simple("${exchangeProperty.operasjon} == 'prosessering'"))
-						.log(INFO, "Starter prosessering av fil")
+						.log(INFO, log,"Starter prosessering av fil")
 						.to(RUTE_PROSESSERING)
-						.log(INFO, "Ferdig med prosessering av fil")
+						.log(INFO, log,"Ferdig med prosessering av fil")
 				    .when(simple("${exchangeProperty.operasjon} == 'rapportering'"))
-						.log(INFO, "Starter rapportering av fil")
+						.log(INFO, log,"Starter rapportering av fil")
 						.to(RUTE_RAPPORTERING)
-						.log(INFO, "Ferdig med rapportering av fil")
+						.log(INFO, log,"Ferdig med rapportering av fil")
 					.otherwise()
-						.log(WARN, "Ugyldig operasjon mottatt med verdi ${exchangeProperty.operasjon}.")
+						.log(WARN, log,"Ugyldig operasjon mottatt med verdi ${exchangeProperty.operasjon}.")
 				.end()
-				.log(INFO, "Avslutter prosessering av operasjon ${exchangeProperty.operasjon}.");
+				.log(INFO, log,"Avslutter prosessering av operasjon ${exchangeProperty.operasjon}.");
 
 		//@formatter:on
 	}

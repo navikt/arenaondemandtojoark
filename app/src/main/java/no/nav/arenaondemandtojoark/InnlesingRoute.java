@@ -51,18 +51,16 @@ public class InnlesingRoute extends BaseRoute {
 					.to("direct:map_journaldata")
 				.end()
 				.to("direct:lagre_journaldata_i_bulk")
-				.log(INFO, "Ferdig med lagring av journaldata i bulk")
-				.end();
+				.log(INFO, log,"Ferdig med lagring av journaldata i bulk")
+		.end();
 
 		from("direct:map_journaldata")
 				.routeId("map_journaldata")
-				.bean(journaldataMapper)
-				.end();
+				.bean(journaldataMapper);
 
 		from("direct:lagre_journaldata_i_bulk")
 				.routeId("lagre_journaldata_i_bulk")
-				.bean(journaldataService, "lagreJournaldata")
-				.end();
+				.bean(journaldataService, "lagreJournaldata");
 
 		//@formatter:on
 	}
