@@ -51,6 +51,7 @@ public class InnlesingRoute extends BaseRoute {
 					.to("direct:map_journaldata")
 				.end()
 				.to("direct:lagre_journaldata_i_bulk")
+				.log(INFO, "Ferdig med lagring av journaldata i bulk")
 				.end();
 
 		from("direct:map_journaldata")

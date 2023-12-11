@@ -24,10 +24,10 @@ public class JournaldataService {
 		this.journaldataRepository = journaldataRepository;
 	}
 
-	public Iterable<Journaldata> lagreJournaldata(ArrayList<Journaldata> journaldata) {
+	public void lagreJournaldata(ArrayList<Journaldata> journaldata) {
 		log.info("Lagrer journaldataliste med ondemandId={}", journaldata.stream().map(Journaldata::getOnDemandId).toList());
 
-		return journaldataRepository.saveAll(journaldata);
+		journaldataRepository.saveAll(journaldata);
 	}
 
 	public List<Journaldata> hentJournaldata(String filnavn) {
