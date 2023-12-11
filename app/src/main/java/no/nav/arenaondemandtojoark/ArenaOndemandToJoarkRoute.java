@@ -24,11 +24,13 @@ public class ArenaOndemandToJoarkRoute extends BaseRoute {
 	public static final String RUTE_RAPPORTERING = "direct:lag_rapport";
 
 	private final ArenaondemandtojoarkProperties arenaondemandtojoarkProperties;
+	private final ApplicationContext springContext;
 
 	public ArenaOndemandToJoarkRoute(AvvikService avvikService,
-									 ArenaondemandtojoarkProperties arenaondemandtojoarkProperties) {
+									 ArenaondemandtojoarkProperties arenaondemandtojoarkProperties, ApplicationContext springContext) {
 		super(avvikService);
 		this.arenaondemandtojoarkProperties = arenaondemandtojoarkProperties;
+		this.springContext = springContext;
 		MDCGenerate.generateNewCallId();
 	}
 
@@ -57,9 +59,40 @@ public class ArenaOndemandToJoarkRoute extends BaseRoute {
 					.otherwise()
 						.log(WARN, log,"Ugyldig operasjon mottatt med verdi ${exchangeProperty.operasjon}.")
 				.end()
-				.log(INFO, log,"Avslutter prosessering av operasjon ${exchangeProperty.operasjon}.");
+				.log(INFO, log,"Avslutter prosessering av operasjon ${exchangeProperty.operasjon}.")
+				.to("direct:shutdown");
 
 		//@formatter:on
-	}
 
+		from("direct:shutdown")
+				.routeId("shutdown")
+				.log(INFO, log, "Avslutter applikasjonen.")
+				.process(new Processor() {
+					Thread stop;
+
+					@Override
+					public void process(final Exchange exchange) {
+						// stop this route using a thread that will stop
+						// this route gracefully while we are still running
+						if (stop == null) {
+							stop = new Thread() {
+								@Override
+								public void run() {
+									try {
+										exchange.getContext().shutdown();
+										SpringApplication.exit(springContext, () -> 0);
+										System.exit(0);
+									} catch (Exception e) {
+										// ignore
+									}
+								}
+							};
+						}
+
+						// start the thread that stops this route
+						stop.start();
+					}
+				});
+
+	}
 }
