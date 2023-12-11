@@ -6,6 +6,7 @@ metadata:
   labels:
     team: teamdokumenthandtering
 spec:
+  ttlSecondsAfterFinished: 100
   image: {{ image }}
   env:
     - name: ARENAONDEMANDTOJOARK_ENDPOINTS_DOKARKIV_URL
