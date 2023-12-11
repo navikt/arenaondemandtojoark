@@ -11,6 +11,7 @@ import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.RUTE_PROSESS
 @Component
 public class ProsesseringRoute extends BaseRoute {
 
+	private static final String RUTE_BEHANDLE_JOURNALDATA = "direct:behandle_journaldata";
 	private final JournaldataService journaldataService;
 	private final JournaldataValidator journaldataValidator;
 	private final ArenaOndemandToJoarkService arenaOndemandToJoarkService;
@@ -35,10 +36,10 @@ public class ProsesseringRoute extends BaseRoute {
 			.bean(journaldataService, "hentJournaldata")
 			.split(body()).streaming().parallelProcessing()
 				.setProperty(PROPERTY_ONDEMAND_ID, simple("${body.onDemandId}"))
-				.to("direct:behandle_journaldata")
+				.to(RUTE_BEHANDLE_JOURNALDATA)
 			.end();
 
-			from("direct:behandle_journaldata")
+			from(RUTE_BEHANDLE_JOURNALDATA)
 			.routeId("behandle_journaldata")
 			.bean(journaldataValidator)
 			.bean(arenaOndemandToJoarkService)

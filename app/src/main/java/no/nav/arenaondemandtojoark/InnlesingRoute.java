@@ -23,8 +23,11 @@ public class InnlesingRoute extends BaseRoute {
 	public static final String PROPERTY_FILNAVN = "Filnavn";
 	public static final String LES_FRA_FILOMRAADE_URI = "{{arenaondemandtojoark.sftp.uri}}" + "/inbound" +
 														"{{arenaondemandtojoark.sftp.config}}" +
-														"&antInclude=*.xml";
-														//"&move=processed/${date:now:yyyyMMdd}/${file:name}";
+														"&antInclude=*.xml" +
+														"&charset=UTF-8";
+
+	private static final String RUTE_MAP_JOURNALDATA = "direct:map_journaldata";
+	private static final String RUTE_LAGRE_JOURNALDATA = "direct:lagre_journaldata_i_bulk";
 
 	private final JournaldataMapper journaldataMapper;
 	private final JournaldataService journaldataService;
@@ -48,17 +51,17 @@ public class InnlesingRoute extends BaseRoute {
 				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
 				.setBody(simple("${body.journaldataList}")) // List<xml.Journaldata>
 				.split(body(), new JournalpostAggregator()).streaming().parallelProcessing() //map alle journaldata-elementa til db-entitetar, og valider påkrevde felt
-					.to("direct:map_journaldata")
+					.to(RUTE_MAP_JOURNALDATA)
 				.end()
-				.to("direct:lagre_journaldata_i_bulk")
+				.to(RUTE_LAGRE_JOURNALDATA)
 				.log(INFO, log,"Ferdig med lagring av journaldata i bulk")
 		.end();
 
-		from("direct:map_journaldata")
+		from(RUTE_MAP_JOURNALDATA)
 				.routeId("map_journaldata")
 				.bean(journaldataMapper);
 
-		from("direct:lagre_journaldata_i_bulk")
+		from(RUTE_LAGRE_JOURNALDATA)
 				.routeId("lagre_journaldata_i_bulk")
 				.bean(journaldataService, "lagreJournaldata");
 

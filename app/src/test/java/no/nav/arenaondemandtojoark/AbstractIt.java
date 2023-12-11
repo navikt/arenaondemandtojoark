@@ -32,6 +32,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlPathEqualTo;
 import static java.nio.file.Files.copy;
 import static java.nio.file.Files.createDirectory;
 import static java.nio.file.Files.exists;
+import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.RUTE_SHUTDOWN;
 import static org.apache.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.HttpStatus.OK;
@@ -80,7 +81,7 @@ public abstract class AbstractIt {
 		avvikRepository.deleteAll();
 
 		// mock ut shutdown så appen ikke skrur seg av før testen er ferdig
-		mockEndpointAndSkipAt("start_operation", "direct:shutdown");
+		mockEndpointAndSkipAt("start_operation", RUTE_SHUTDOWN);
 	}
 
 	public void mockEndpointAndSkipAt(String routeId, String endpointUri) throws Exception {

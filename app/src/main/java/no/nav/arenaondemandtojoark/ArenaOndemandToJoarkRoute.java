@@ -22,6 +22,7 @@ public class ArenaOndemandToJoarkRoute extends BaseRoute {
 	public static final String RUTE_INNLESING = "direct:innlesing";
 	public static final String RUTE_PROSESSERING = "direct:prosessering";
 	public static final String RUTE_RAPPORTERING = "direct:lag_rapport";
+	public static final String RUTE_SHUTDOWN = "direct:shutdown";
 
 	private final ArenaondemandtojoarkProperties arenaondemandtojoarkProperties;
 	private final ApplicationContext springContext;
@@ -60,11 +61,11 @@ public class ArenaOndemandToJoarkRoute extends BaseRoute {
 						.log(WARN, log,"Ugyldig operasjon mottatt med verdi ${exchangeProperty.operasjon}.")
 				.end()
 				.log(INFO, log,"Avslutter prosessering av operasjon ${exchangeProperty.operasjon}.")
-				.to("direct:shutdown");
+				.to(RUTE_SHUTDOWN);
 
 		//@formatter:on
 
-		from("direct:shutdown")
+		from(RUTE_SHUTDOWN)
 				.routeId("shutdown")
 				.log(INFO, log, "Avslutter applikasjonen.")
 				.process(new Processor() {
