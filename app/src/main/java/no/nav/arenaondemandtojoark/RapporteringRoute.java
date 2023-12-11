@@ -39,7 +39,7 @@ public class RapporteringRoute extends BaseRoute {
 
 		from(RUTE_RAPPORTERING)
 				.routeId("rapportering")
-				.log(INFO, log, "Starter generering av rapport for fil=${exchangeProperty.filnavn}")
+				.log(INFO, "Starter generering av rapport for fil=${exchangeProperty.filnavn}")
 				.setBody(simple("${exchangeProperty.filnavn}"))
 				.bean(journaldataService, "lagJournalpostrapport")
 				.split(body(), new RapportAggregator()).streaming().parallelProcessing()

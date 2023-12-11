@@ -30,7 +30,7 @@ public class ProsesseringRoute extends BaseRoute {
 		super.configure();
 
 		from(RUTE_PROSESSERING)
-				.routeId("prosessering")
+			.routeId("prosessering")
 			.setBody(simple("${exchangeProperty.filnavn}"))
 			.bean(journaldataService, "hentJournaldata")
 			.split(body()).streaming().parallelProcessing()

@@ -48,7 +48,7 @@ public class InnlesingRoute extends BaseRoute {
 				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
 				.setBody(simple("${body.journaldataList}")) // List<xml.Journaldata>
 				.split(body(), new JournalpostAggregator()).streaming().parallelProcessing() //map alle journaldata-elementa til db-entitetar, og valider påkrevde felt
-				.to("direct:map_journaldata")
+					.to("direct:map_journaldata")
 				.end()
 				.to("direct:lagre_journaldata_i_bulk")
 				.end();
