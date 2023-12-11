@@ -21,7 +21,7 @@ public class ArenaOndemandToJoarkRoute extends BaseRoute {
 
 	public static final String RUTE_INNLESING = "direct:innlesing";
 	public static final String RUTE_PROSESSERING = "direct:prosessering";
-	public static final String RUTE_RAPPORTERING = "direct:lag_rapport";
+	public static final String RUTE_RAPPORTERING = "direct:rapportering";
 	public static final String RUTE_SHUTDOWN = "direct:shutdown";
 
 	private final ArenaondemandtojoarkProperties arenaondemandtojoarkProperties;

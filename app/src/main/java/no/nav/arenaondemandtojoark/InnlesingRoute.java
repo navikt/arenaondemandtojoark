@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.PROPERTY_FILNAVN;
 import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.RUTE_INNLESING;
 import static org.apache.camel.LoggingLevel.INFO;
 
@@ -20,7 +21,6 @@ import static org.apache.camel.LoggingLevel.INFO;
 @Component
 public class InnlesingRoute extends BaseRoute {
 
-	public static final String PROPERTY_FILNAVN = "Filnavn";
 	public static final String LES_FRA_FILOMRAADE_URI = "{{arenaondemandtojoark.sftp.uri}}" + "/inbound" +
 														"{{arenaondemandtojoark.sftp.config}}" +
 														"&antInclude=*.xml" +

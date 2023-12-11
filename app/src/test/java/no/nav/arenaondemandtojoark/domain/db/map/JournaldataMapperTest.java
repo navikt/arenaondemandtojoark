@@ -1,8 +1,16 @@
 package no.nav.arenaondemandtojoark.domain.db.map;
 
 import no.nav.arenaondemandtojoark.exception.JournaldataMappingException;
+import org.apache.camel.CamelContext;
+import org.apache.camel.Exchange;
+import org.apache.camel.impl.DefaultCamelContext;
+import org.apache.camel.support.DefaultExchange;
+import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
+import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.PROPERTY_FILNAVN;
 import static no.nav.arenaondemandtojoark.TestUtils.lagJournaldata;
 import static no.nav.arenaondemandtojoark.TestUtils.lagXmlJournaldata;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -11,17 +19,28 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class JournaldataMapperTest {
 
 	public static final String UGYLDIG_TIDSPUNKT = "2008-03-10 17:19:22";
+	private static final String FILNAVN = "journaldata.xml";
 
-	JournaldataMapper journaldataMapper = new JournaldataMapper();
+	private final JournaldataMapper journaldataMapper = new JournaldataMapper();
+	private Exchange exchange;
+
+	@BeforeEach
+	void beforeEach() {
+		CamelContext context = new DefaultCamelContext();
+		exchange = new DefaultExchange(context);
+		exchange.setProperty(PROPERTY_FILNAVN, "journaldata.xml");
+	}
 
 	@Test
 	void skalMappe() {
 		var xmlJournaldata = lagXmlJournaldata();
 		var expected = lagJournaldata();
 
-		var actual = journaldataMapper.map(xmlJournaldata);
+		var actual = journaldataMapper.map(xmlJournaldata, exchange);
 
-		assertThat(actual).usingRecursiveComparison().ignoringFields("status").isEqualTo(expected);
+		assertThat(actual).usingRecursiveComparison()
+				.ignoringFields("status", "filnavn").isEqualTo(expected);
+		assertThat(actual.getFilnavn()).isEqualTo(FILNAVN);
 	}
 
 	@Test
@@ -35,7 +54,7 @@ class JournaldataMapperTest {
 		xmlJournaldata.setJournaldato(null);
 		xmlJournaldata.setSendtPrintDato(null);
 
-		var resultat = journaldataMapper.map(xmlJournaldata);
+		var resultat = journaldataMapper.map(xmlJournaldata, exchange);
 
 		assertThat(resultat)
 				.extracting("journalposttype",
@@ -53,7 +72,7 @@ class JournaldataMapperTest {
 		xmlJournaldata.setJournalpostType("UGYLDIG_JOURNALPOSTTYPE");
 
 		assertThatExceptionOfType(JournaldataMappingException.class)
-				.isThrownBy(() -> journaldataMapper.map(xmlJournaldata))
+				.isThrownBy(() -> journaldataMapper.map(xmlJournaldata, exchange))
 				.withMessageContaining("Kan ikke mappe til journaldata. Ugyldig verdi for journalposttype=UGYLDIG_JOURNALPOSTTYPE");
 	}
 
@@ -63,7 +82,7 @@ class JournaldataMapperTest {
 		xmlJournaldata.setFagomraade("UGYLDIG_FAGOMRAADE");
 
 		assertThatExceptionOfType(JournaldataMappingException.class)
-				.isThrownBy(() -> journaldataMapper.map(xmlJournaldata))
+				.isThrownBy(() -> journaldataMapper.map(xmlJournaldata, exchange))
 				.withMessageContaining("Kan ikke mappe til journaldata. Ugyldig verdi for fagomraade=UGYLDIG_FAGOMRAADE");
 	}
 
@@ -73,7 +92,7 @@ class JournaldataMapperTest {
 		xmlJournaldata.setUtsendingskanal("UGYLDIG_UTSENDINGSKANAL");
 
 		assertThatExceptionOfType(JournaldataMappingException.class)
-				.isThrownBy(() -> journaldataMapper.map(xmlJournaldata))
+				.isThrownBy(() -> journaldataMapper.map(xmlJournaldata, exchange))
 				.withMessageContaining("Kan ikke mappe til journaldata. Ugyldig verdi for utsendingskanal=UGYLDIG_UTSENDINGSKANAL");
 	}
 
@@ -83,7 +102,7 @@ class JournaldataMapperTest {
 		xmlJournaldata.setDokumentkategori("UGYLDIG_DOKUMENTKATEGORI");
 
 		assertThatExceptionOfType(JournaldataMappingException.class)
-				.isThrownBy(() -> journaldataMapper.map(xmlJournaldata))
+				.isThrownBy(() -> journaldataMapper.map(xmlJournaldata, exchange))
 				.withMessageContaining("Kan ikke mappe til journaldata. Ugyldig verdi for dokumentkategori=UGYLDIG_DOKUMENTKATEGORI");
 	}
 
@@ -93,7 +112,7 @@ class JournaldataMapperTest {
 		xmlJournaldata.setJournaldato(UGYLDIG_TIDSPUNKT);
 
 		assertThatExceptionOfType(JournaldataMappingException.class)
-				.isThrownBy(() -> journaldataMapper.map(xmlJournaldata))
+				.isThrownBy(() -> journaldataMapper.map(xmlJournaldata, exchange))
 				.withMessageContaining("Kan ikke mappe til journaldata. Ugyldig verdi for journaldato=2008-03-10 17:19:22");
 	}
 
@@ -103,7 +122,7 @@ class JournaldataMapperTest {
 		xmlJournaldata.setSendtPrintDato(UGYLDIG_TIDSPUNKT);
 
 		assertThatExceptionOfType(JournaldataMappingException.class)
-				.isThrownBy(() -> journaldataMapper.map(xmlJournaldata))
+				.isThrownBy(() -> journaldataMapper.map(xmlJournaldata, exchange))
 				.withMessageContaining("Kan ikke mappe til journaldata. Ugyldig verdi for sendtprintdato=2008-03-10 17:19:22");
 	}
 
