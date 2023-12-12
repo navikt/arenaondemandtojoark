@@ -52,6 +52,8 @@ public class ArenaOndemandToJoarkService {
 
 	@Handler
 	public void prosesserJournaldata(Journaldata journaldata) {
+		log.info("Starter prosessering av journaldata med onDemandId={}", journaldata.getOnDemandId());
+
 		byte[] pdfDocument = hentDokument(journaldata.getOnDemandId());
 
 		OpprettJournalpostRequest journalpost = OpprettJournalpostRequestMapper.map(journaldata, pdfDocument);

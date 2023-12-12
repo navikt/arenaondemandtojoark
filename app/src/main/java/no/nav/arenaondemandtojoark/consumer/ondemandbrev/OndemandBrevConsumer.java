@@ -44,6 +44,7 @@ public class OndemandBrevConsumer {
 	}
 
 	public byte[] hentPdf(final String ondemandId) {
+		log.info("Henter pdf fra ondemand med ondemandId={}", ondemandId);
 
 		return webClient.get()
 				.uri(uriBuilder -> uriBuilder

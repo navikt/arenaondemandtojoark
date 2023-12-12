@@ -33,7 +33,11 @@ public class JournaldataService {
 	public List<Journaldata> hentJournaldata(String filnavn) {
 		log.info("Henter journaldataliste med filnavn={}", filnavn);
 
-		return journaldataRepository.getAllByFilnavnAndStatus(filnavn, INNLEST);
+		List<Journaldata> result = journaldataRepository.getAllByFilnavnAndStatus(filnavn, INNLEST);
+
+		log.info("Hentet {} journaldata-elementer med filnavn={}", result.size(), filnavn);
+
+		return result;
 	}
 
 	public List<Rapportelement> lagJournalpostrapport(String filnavn) {

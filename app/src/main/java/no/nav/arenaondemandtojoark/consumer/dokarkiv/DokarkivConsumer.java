@@ -40,6 +40,8 @@ public class DokarkivConsumer {
 	}
 
 	public OpprettJournalpostResponse opprettJournalpost(OpprettJournalpostRequest request) {
+		log.info("Oppretter journalpost med ondemandId={}", request.getEksternReferanseId());
+
 		return webClient.post()
 				.uri(uriBuilder -> uriBuilder
 						.queryParam("forsoekFerdigstill", false)
@@ -54,6 +56,8 @@ public class DokarkivConsumer {
 	}
 
 	public void ferdigstillJournalpost(String journalpostId, FerdigstillJournalpostRequest request) {
+		log.info("Ferdigstiller journalpost med journalpostId={}", journalpostId);
+
 		webClient.patch()
 				.uri(uriBuilder -> uriBuilder
 						.path("/{journalpostId}/ferdigstill")

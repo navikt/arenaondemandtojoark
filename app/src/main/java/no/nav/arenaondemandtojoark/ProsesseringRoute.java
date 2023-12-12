@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.PROPERTY_ONDEMAND_ID;
 import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.RUTE_PROSESSERING;
+import static org.apache.camel.LoggingLevel.INFO;
 
 @Slf4j
 @Component
@@ -34,6 +35,7 @@ public class ProsesseringRoute extends BaseRoute {
 			.routeId("prosessering")
 			.setBody(simple("${exchangeProperty.filnavn}"))
 			.bean(journaldataService, "hentJournaldata")
+				.log(INFO, log, "Hentet ${body.size()} journaldata fra fil=${exchangeProperty.filnavn}.")
 			.split(body()).streaming().parallelProcessing()
 				.setProperty(PROPERTY_ONDEMAND_ID, simple("${body.onDemandId}"))
 				.to(RUTE_BEHANDLE_JOURNALDATA)
