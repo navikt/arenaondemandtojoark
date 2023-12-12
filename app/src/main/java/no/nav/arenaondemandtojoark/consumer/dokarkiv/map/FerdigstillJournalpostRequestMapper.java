@@ -10,6 +10,8 @@ import static no.nav.arenaondemandtojoark.domain.db.Journalposttype.U;
 
 public class FerdigstillJournalpostRequestMapper {
 
+	public static final String DATE_FORMAT = "yyyy-MM-dd";
+
 	public static FerdigstillJournalpostRequest map(Journaldata journaldata) {
 
 		return FerdigstillJournalpostRequest.builder()
@@ -20,8 +22,8 @@ public class FerdigstillJournalpostRequestMapper {
 				.datoSendtPrint(U.equals(journaldata.getJournalposttype()) ? toDatoString(journaldata.getSendtPrintDato()) : null)
 				.build();
 	}
-	
+
 	private static String toDatoString(LocalDateTime dato) {
-		return dato.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")).replace(" ", "T");
+		return dato.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
 	}
 }
