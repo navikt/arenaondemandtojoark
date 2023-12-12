@@ -2,11 +2,13 @@ package no.nav.arenaondemandtojoark.domain.joark;
 
 
 import lombok.Builder;
+import lombok.Value;
 
+@Value
 @Builder
 public class DokumentVariant {
-	private String filtype;
-	private String variantformat;
-	private byte[] fysiskDokument;
-	private String filnavn;
+	String filtype;
+	String variantformat;
+	byte[] fysiskDokument;
+	String filnavn;
 }

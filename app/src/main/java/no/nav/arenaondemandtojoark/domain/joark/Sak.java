@@ -1,12 +1,13 @@
 package no.nav.arenaondemandtojoark.domain.joark;
 
 import lombok.Builder;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+@Value
 @Builder
-@Jacksonized
 public class Sak {
-	private Sakstype sakstype;
-	private String fagsakId;
-	private Fagsaksystem fagsaksystem;
+	Sakstype sakstype;
+	String fagsakId;
+	Fagsaksystem fagsaksystem;
 }

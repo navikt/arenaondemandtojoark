@@ -14,7 +14,6 @@ import java.util.List;
 
 @Value
 @Builder
-@Jacksonized
 public class OpprettJournalpostRequest {
 	JournalpostType journalposttype;
 	AvsenderMottaker avsenderMottaker;

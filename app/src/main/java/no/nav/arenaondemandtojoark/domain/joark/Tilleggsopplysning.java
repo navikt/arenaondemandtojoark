@@ -1,11 +1,12 @@
 package no.nav.arenaondemandtojoark.domain.joark;
 
 import lombok.Builder;
+import lombok.Value;
 import lombok.extern.jackson.Jacksonized;
 
+@Value
 @Builder
-@Jacksonized
 public class Tilleggsopplysning {
-	private String nokkel;
-	private String verdi;
+	String nokkel;
+	String verdi;
 }
