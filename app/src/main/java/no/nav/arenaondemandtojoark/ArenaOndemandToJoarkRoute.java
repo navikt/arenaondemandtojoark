@@ -61,7 +61,7 @@ public class ArenaOndemandToJoarkRoute extends BaseRoute {
 					.otherwise()
 						.log(WARN, log,"Ugyldig operasjon mottatt med verdi ${exchangeProperty.operasjon}.")
 				.end()
-				.log(INFO, log,"Avslutter prosessering av operasjon ${exchangeProperty.operasjon}.")
+				.log(INFO, log,"Ferdig med ${exchangeProperty.operasjon} av fil ${exchangeProperty.filnavn}.")
 				.to(RUTE_SHUTDOWN);
 
 		//@formatter:on
