@@ -7,6 +7,8 @@ import no.nav.arenaondemandtojoark.exception.OndemandNonRetryableException;
 import no.nav.arenaondemandtojoark.exception.retryable.OndemandRetryableException;
 import no.nav.arenaondemandtojoark.exception.retryable.OndemandTomResponseException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.unit.DataSize;
+import org.springframework.web.reactive.function.client.ExchangeStrategies;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
@@ -34,6 +36,10 @@ public class OndemandBrevConsumer {
 		ondemandFolder = arenaondemandtojoarkProperties.getOndemandFolder();
 		this.webClient = webClient.mutate()
 				.baseUrl(arenaondemandtojoarkProperties.getEndpoints().getOndemand())
+				.exchangeStrategies(ExchangeStrategies.builder()
+						.codecs(clientCodecConfigurer -> clientCodecConfigurer
+								.defaultCodecs().maxInMemorySize((int) DataSize.ofMegabytes(100).toBytes()))
+						.build())
 				.build();
 	}
 
