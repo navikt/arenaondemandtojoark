@@ -28,7 +28,8 @@ public class ArenaOndemandToJoarkRoute extends BaseRoute {
 	private final ApplicationContext springContext;
 
 	public ArenaOndemandToJoarkRoute(AvvikService avvikService,
-									 ArenaondemandtojoarkProperties arenaondemandtojoarkProperties, ApplicationContext springContext) {
+									 ArenaondemandtojoarkProperties arenaondemandtojoarkProperties,
+									 ApplicationContext springContext) {
 		super(avvikService);
 		this.arenaondemandtojoarkProperties = arenaondemandtojoarkProperties;
 		this.springContext = springContext;

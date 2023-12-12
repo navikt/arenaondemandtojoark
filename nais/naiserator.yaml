@@ -21,6 +21,8 @@ spec:
       value: {{ filnavn }}
     - name: ARENAONDEMANDTOJOARK_OPERASJON
       value: {{ operasjon }}
+    - name: ARENAONDEMANDTOJOARK_ONDEMAND_FOLDER
+      value: {{ ARENAONDEMANDTOJOARK_ONDEMAND_FOLDER }}
   azure:
     application:
       enabled: true

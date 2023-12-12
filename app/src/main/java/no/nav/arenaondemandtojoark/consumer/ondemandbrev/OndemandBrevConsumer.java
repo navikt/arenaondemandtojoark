@@ -21,15 +21,16 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @Slf4j
 @Component
 public class OndemandBrevConsumer {
-	private static final String ARENA_ONDEMAND_FOLDER = "AREP1";
 	private static final String IDNR = "IDNR";
 	private static final String APP_ID = "appID";
 
 	private final WebClient webClient;
+	private final String ondemandFolder;
 
 	public OndemandBrevConsumer(
 			ArenaondemandtojoarkProperties arenaondemandtojoarkProperties,
 			WebClient webClient) {
+		ondemandFolder = arenaondemandtojoarkProperties.getOndemandFolder();
 		this.webClient = webClient.mutate()
 				.baseUrl(arenaondemandtojoarkProperties.getEndpoints().getOndemand())
 				.build();
@@ -40,7 +41,7 @@ public class OndemandBrevConsumer {
 		return webClient.get()
 				.uri(uriBuilder -> uriBuilder
 						.queryParam(IDNR, ondemandId)
-						.queryParam(APP_ID, ARENA_ONDEMAND_FOLDER)
+						.queryParam(APP_ID, ondemandFolder)
 						.build())
 				.httpRequest(httpRequest -> {
 					HttpClientRequest reactorRequest = httpRequest.getNativeRequest();

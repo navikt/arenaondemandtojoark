@@ -35,6 +35,6 @@ public class Avvik {
 	@Column(name = "feiltype")
 	private String feiltype;
 
-	@Column(name = "feilmelding")
+	@Column(name = "feilmelding", length = 500)
 	private String feilmelding;
 }

@@ -64,7 +64,7 @@ public abstract class AbstractIt {
 
 	private static final String OPPRETT_JOURNALPOST_URL = "/rest/journalpostapi/v1/journalpost?forsoekFerdigstill=false";
 	private static final String FERDIGSTILL_JOURNALPOST_URL = "/rest/journalpostapi/v1/journalpost/%s/ferdigstill";
-	private static final String HENT_ONDEMAND_DOKUMENT_URL = "/ODBrevServlet?IDNR=%s&appID=AREP1";
+	private static final String HENT_ONDEMAND_DOKUMENT_URL = "/ODBrevServlet?IDNR=%s&appID=AREQ1";
 
 	@Autowired
 	public Path sshdPath;
@@ -107,7 +107,7 @@ public abstract class AbstractIt {
 	void stubHentOndemandDokumentMedStatus(HttpStatus status) {
 		stubFor(get(urlPathEqualTo("/ODBrevServlet"))
 				.withQueryParam("IDNR", matching(".*"))
-				.withQueryParam("appID", equalTo("AREP1"))
+				.withQueryParam("appID", equalTo("AREQ1"))
 				.willReturn(aResponse()
 						.withStatus(status.value())
 						.withHeader(CONTENT_TYPE, APPLICATION_JSON_VALUE)));

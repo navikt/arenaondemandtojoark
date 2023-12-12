@@ -3,7 +3,6 @@ package no.nav.arenaondemandtojoark.config;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import lombok.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
@@ -16,6 +15,8 @@ public class ArenaondemandtojoarkProperties {
 	private String filnavn;
 	@NotEmpty
 	private String operasjon;
+	@NotEmpty
+	private String ondemandFolder;
 
 	private final Endpoints endpoints = new Endpoints();
 

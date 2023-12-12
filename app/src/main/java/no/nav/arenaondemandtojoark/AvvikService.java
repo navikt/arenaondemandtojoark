@@ -51,8 +51,8 @@ public class AvvikService {
 	private String getFeiltype(Exception exception) {
 
 		return switch (exception) {
-			case ArenaondemandtojoarkRetryableException e -> "Retryable";
-			case ArenaondemandtojoarkNonRetryableException e -> "NonRetryable";
+			case ArenaondemandtojoarkRetryableException ignored -> "Retryable";
+			case ArenaondemandtojoarkNonRetryableException ignored -> "NonRetryable";
 			default -> "Unknown";
 		};
 	}
