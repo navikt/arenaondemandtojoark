@@ -17,6 +17,7 @@ import java.time.Duration;
 
 import static java.lang.String.format;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
+import static org.springframework.http.MediaType.APPLICATION_PDF;
 
 @Slf4j
 @Component
@@ -47,6 +48,7 @@ public class OndemandBrevConsumer {
 					HttpClientRequest reactorRequest = httpRequest.getNativeRequest();
 					reactorRequest.responseTimeout(Duration.ofSeconds(30));
 				})
+				.accept(APPLICATION_PDF)
 				.retrieve()
 				.bodyToMono(byte[].class)
 				.switchIfEmpty(Mono.error(new OndemandTomResponseException("Payload fra ondemandbrev var tom.")))
@@ -58,6 +60,8 @@ public class OndemandBrevConsumer {
 	}
 
 	private void handleError(Throwable error) {
+		log.info("Feil ved henting av pdf fra ondemand", error);
+
 		if (!(error instanceof WebClientResponseException response)) {
 			String feilmelding = format("Kall mot ondemand feilet teknisk med feilmelding=%s", error.getMessage());
 
