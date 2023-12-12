@@ -1,12 +1,12 @@
 package no.nav.arenaondemandtojoark.domain.joark;
 
 import lombok.Builder;
-import lombok.extern.jackson.Jacksonized;
+import lombok.Value;
 
+@Value
 @Builder
-@Jacksonized
 public class AvsenderMottaker {
-	private String id;
-	private String navn;
-	private AvsenderMottakerIdType idType;
+	String id;
+	String navn;
+	AvsenderMottakerIdType idType;
 }

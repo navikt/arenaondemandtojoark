@@ -3,6 +3,9 @@ package no.nav.arenaondemandtojoark.consumer.dokarkiv.map;
 import no.nav.arenaondemandtojoark.consumer.dokarkiv.FerdigstillJournalpostRequest;
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import static no.nav.arenaondemandtojoark.domain.db.Journalposttype.U;
 
 public class FerdigstillJournalpostRequestMapper {
@@ -13,8 +16,12 @@ public class FerdigstillJournalpostRequestMapper {
 				.journalfoerendeEnhet(journaldata.getJournalfoerendeEnhet())
 				.journalfortAvNavn(journaldata.getOpprettetAvNavn())
 				.opprettetAvNavn(journaldata.getOpprettetAvNavn())
-				.datoJournal(journaldata.getJournaldato()) //TODO Verdifiser at disse datoene er på riktig format
-				.datoSendtPrint(U.equals(journaldata.getJournalposttype()) ? journaldata.getSendtPrintDato() : null)
+				.datoJournal(toDatoString(journaldata.getJournaldato()))
+				.datoSendtPrint(U.equals(journaldata.getJournalposttype()) ? toDatoString(journaldata.getSendtPrintDato()) : null)
 				.build();
+	}
+	
+	private static String toDatoString(LocalDateTime dato) {
+		return dato.format(DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm:ss")).replace(" ", "T");
 	}
 }
