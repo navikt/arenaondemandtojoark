@@ -49,8 +49,8 @@ public class InnlesingRoute extends BaseRoute {
 				.log(INFO, log, "Starter lesing av ${file:absolute.path}.")
 				.setProperty(PROPERTY_FILNAVN, simple("${file:name}"))
 				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
-				.setBody(simple("${body.journaldataList}")) // List<xml.Journaldata>
-				.split(body(), new JournalpostAggregator()).streaming().parallelProcessing() //map alle journaldata-elementa til db-entitetar, og valider påkrevde felt
+				.setBody(simple("${body.journaldataList}"))
+				.split(body(), new JournalpostAggregator()).streaming().parallelProcessing()
 					.to(RUTE_MAP_JOURNALDATA)
 				.end()
 				.to(RUTE_LAGRE_JOURNALDATA)
