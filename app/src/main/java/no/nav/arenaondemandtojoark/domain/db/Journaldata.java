@@ -8,6 +8,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -103,16 +104,6 @@ public class Journaldata {
 	@Column(name = "dokument_info_id")
 	String dokumentInfoId;
 
-	// Status -> (default) INNLEST, HAR_HENTET_ONDEMAND_DOKUMENT (avvik), HAR_FÅTT_OPPRETTET_JOURNALPOST, HAR_FERDIGSTILT_JOURNALPOST, HAR_LAGET_JOURNALPOSTRAPPORT
-	// Status -> INNLEST, AVLEVERT, FEILET
-
-	// ODID 1, 2, 3, 4, 5, 6, 7
-	// xm
-	/*
-	To tabellar:
-	1. Journalpostrapport (ondemandId, journalpostId (frå dokarkiv), dokumentInfoId (frå dokarkiv))
-		- 1, 3 og 4
-
-	 */
-
+	@OneToOne(mappedBy = "journaldata")
+	private Avvik avvik;
 }

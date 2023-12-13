@@ -53,6 +53,7 @@ public class DokarkivConsumer {
 				.bodyToMono(OpprettJournalpostResponse.class)
 				.doOnError(this::handleError)
 				.block();
+		//TODO legg til retry
 	}
 
 	public void ferdigstillJournalpost(String journalpostId, FerdigstillJournalpostRequest request) {
@@ -68,6 +69,7 @@ public class DokarkivConsumer {
 				.toBodilessEntity()
 				.doOnError(this::handleError)
 				.block();
+		//TODO legg til retry
 	}
 
 	private void handleError(Throwable error) {

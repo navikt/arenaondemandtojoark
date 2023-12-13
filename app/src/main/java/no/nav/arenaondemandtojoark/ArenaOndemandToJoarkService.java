@@ -11,6 +11,7 @@ import no.nav.arenaondemandtojoark.consumer.ondemandbrev.OndemandBrevConsumer;
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.exception.DokarkivNonRetryableException;
 import no.nav.arenaondemandtojoark.exception.OndemandDokumentIkkeFunnetException;
+import no.nav.arenaondemandtojoark.repository.AvvikRepository;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
 import org.apache.camel.Handler;
 import org.springframework.core.io.ClassPathResource;
@@ -19,8 +20,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileCopyUtils;
 
 import java.io.IOException;
-import java.io.InputStream;
 
+import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVVIK;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
 
 @Slf4j
@@ -30,28 +31,25 @@ public class ArenaOndemandToJoarkService {
 	private final OndemandBrevConsumer ondemandBrevConsumer;
 	private final DokarkivConsumer dokarkivConsumer;
 	private final JournaldataRepository journaldataRepository;
+	private final AvvikRepository avvikRepository;
 	private static final byte[] dummypdf;
 
 	public ArenaOndemandToJoarkService(OndemandBrevConsumer ondemandBrevConsumer,
 									   DokarkivConsumer dokarkivConsumer,
-									   JournaldataRepository journaldataRepository) {
+									   JournaldataRepository journaldataRepository,
+									   AvvikRepository avvikRepository) {
 		this.ondemandBrevConsumer = ondemandBrevConsumer;
 		this.dokarkivConsumer = dokarkivConsumer;
 		this.journaldataRepository = journaldataRepository;
+		this.avvikRepository = avvikRepository;
 	}
 
 	static {
 		byte[] pdf;
-		log.info("Prøver å finne MigreringMislyktes-fil");
 		try {
 			Resource resource = new ClassPathResource("/MigreringMislyktes.pdf");
-			log.info("Fil-description: {}:", resource.getDescription());
-			log.info("Fil-uri: {}:", resource.getURI());
-			InputStream inputStream = resource.getInputStream();
-			log.info("Fant MigreringMislyktes-fil");
-			pdf = FileCopyUtils.copyToByteArray(inputStream);
+			pdf = FileCopyUtils.copyToByteArray(resource.getInputStream());
 		} catch (IOException e) {
-			log.info("Fant ikke MigreringMislyktes-fil");
 			pdf = null;
 		}
 		dummypdf = pdf;
@@ -59,6 +57,14 @@ public class ArenaOndemandToJoarkService {
 
 	@Handler
 	public void prosesserJournaldata(Journaldata journaldata) {
+
+		if (AVVIK.equals(journaldata.getStatus()))
+			if (journaldata.getAvvik().getFeiltype().equals("Retryable")) {
+				avvikRepository.delete(journaldata.getAvvik());
+			} else {
+				return;
+			}
+
 		log.info("Starter prosessering av journaldata med onDemandId={}", journaldata.getOnDemandId());
 
 		byte[] pdfDocument = hentDokument(journaldata.getOnDemandId());
