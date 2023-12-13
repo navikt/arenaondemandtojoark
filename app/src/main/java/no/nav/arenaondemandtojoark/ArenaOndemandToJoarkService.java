@@ -42,7 +42,7 @@ public class ArenaOndemandToJoarkService {
 	static {
 		byte[] pdf;
 		try {
-			File resource = new ClassPathResource("__files/ondemand/MigreringMislyktes.pdf").getFile();
+			File resource = new ClassPathResource("MigreringMislyktes.pdf").getFile();
 			pdf = Files.readAllBytes(resource.toPath());
 		} catch (IOException e) {
 			pdf = null;
