@@ -120,7 +120,7 @@ public class OpprettJournalpostRequestMapper {
 
 	public static List<Dokument> toDokumenter(Journaldata journaldata, byte[] pdfDocument) {
 		if (pdfDocument == null || pdfDocument.length == 0) {
-			throw new JournalpostdataMappingException("Kan ikke mappe journaldata med ondemandId=%s. PDF-dokment mangler eller er tomt."
+			throw new JournalpostdataMappingException("Kan ikke mappe journaldata med ondemandId=%s. PDF-dokument mangler eller er tomt."
 					.formatted(journaldata.getOnDemandId()));
 		}
 

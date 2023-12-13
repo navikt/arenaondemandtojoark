@@ -41,10 +41,13 @@ public class ArenaOndemandToJoarkService {
 
 	static {
 		byte[] pdf;
+		log.info("Prøver å finne MigreringMislyktes-fil");
 		try {
 			File resource = new ClassPathResource("/MigreringMislyktes.pdf").getFile();
+			log.info("Fant MigreringMislyktes-fil");
 			pdf = Files.readAllBytes(resource.toPath());
 		} catch (IOException e) {
+			log.info("Fant ikke MigreringMislyktes-fil");
 			pdf = null;
 		}
 		dummypdf = pdf;
