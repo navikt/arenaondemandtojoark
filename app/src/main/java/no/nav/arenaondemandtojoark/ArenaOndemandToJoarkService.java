@@ -14,11 +14,12 @@ import no.nav.arenaondemandtojoark.exception.OndemandDokumentIkkeFunnetException
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
 import org.apache.camel.Handler;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.FileCopyUtils;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.InputStream;
 
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
 
@@ -43,9 +44,10 @@ public class ArenaOndemandToJoarkService {
 		byte[] pdf;
 		log.info("Prøver å finne MigreringMislyktes-fil");
 		try {
-			File resource = new ClassPathResource("/MigreringMislyktes.pdf").getFile();
+			Resource resource = new ClassPathResource("classpath:MigreringMislyktes.pdf");
+			InputStream inputStream = resource.getInputStream();
 			log.info("Fant MigreringMislyktes-fil");
-			pdf = Files.readAllBytes(resource.toPath());
+			pdf = FileCopyUtils.copyToByteArray(inputStream);
 		} catch (IOException e) {
 			log.info("Fant ikke MigreringMislyktes-fil");
 			pdf = null;
