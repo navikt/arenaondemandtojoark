@@ -2,6 +2,7 @@ package no.nav.arenaondemandtojoark.consumer.dokarkiv.map;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.consumer.dokarkiv.OpprettJournalpostRequest;
+import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.domain.joark.AvsenderMottaker;
 import no.nav.arenaondemandtojoark.domain.joark.AvsenderMottakerIdType;
 import no.nav.arenaondemandtojoark.domain.joark.Bruker;
@@ -11,19 +12,17 @@ import no.nav.arenaondemandtojoark.domain.joark.DokumentVariant;
 import no.nav.arenaondemandtojoark.domain.joark.JournalpostType;
 import no.nav.arenaondemandtojoark.domain.joark.Sak;
 import no.nav.arenaondemandtojoark.domain.joark.Tilleggsopplysning;
-import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.exception.JournalpostdataMappingException;
 
 import java.util.List;
 
 import static java.util.Collections.singletonList;
-import static no.nav.arenaondemandtojoark.domain.joark.AvsenderMottakerIdType.ORGNR;
+import static no.nav.arenaondemandtojoark.domain.db.Journalposttype.U;
 import static no.nav.arenaondemandtojoark.domain.joark.Fagsaksystem.AO01;
 import static no.nav.arenaondemandtojoark.domain.joark.JournalpostType.NOTAT;
 import static no.nav.arenaondemandtojoark.domain.joark.JournalpostType.UTGAAENDE;
 import static no.nav.arenaondemandtojoark.domain.joark.Sakstype.FAGSAK;
 import static no.nav.arenaondemandtojoark.domain.joark.Sakstype.GENERELL_SAK;
-import static no.nav.arenaondemandtojoark.domain.db.Journalposttype.U;
 import static org.apache.logging.log4j.util.Strings.isBlank;
 
 @Slf4j
@@ -82,7 +81,7 @@ public class OpprettJournalpostRequestMapper {
 
 	private static AvsenderMottakerIdType toAvsenderMottakerIdType(String mottakerId) {
 		if (mottakerId.length() == 9) {
-			return ORGNR;
+			return AvsenderMottakerIdType.ORGNR;
 		} else if (mottakerId.length() == 11 && !mottakerId.startsWith(TSS_ID_PREFIX)) {
 			return AvsenderMottakerIdType.FNR;
 		}

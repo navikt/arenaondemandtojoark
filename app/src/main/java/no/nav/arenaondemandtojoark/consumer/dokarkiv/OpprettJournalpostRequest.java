@@ -2,7 +2,6 @@ package no.nav.arenaondemandtojoark.consumer.dokarkiv;
 
 import lombok.Builder;
 import lombok.Value;
-import lombok.extern.jackson.Jacksonized;
 import no.nav.arenaondemandtojoark.domain.joark.AvsenderMottaker;
 import no.nav.arenaondemandtojoark.domain.joark.Bruker;
 import no.nav.arenaondemandtojoark.domain.joark.Dokument;
