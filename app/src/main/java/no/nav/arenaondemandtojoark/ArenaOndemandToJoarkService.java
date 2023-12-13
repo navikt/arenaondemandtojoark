@@ -44,7 +44,9 @@ public class ArenaOndemandToJoarkService {
 		byte[] pdf;
 		log.info("Prøver å finne MigreringMislyktes-fil");
 		try {
-			Resource resource = new ClassPathResource("classpath:MigreringMislyktes.pdf");
+			Resource resource = new ClassPathResource("/MigreringMislyktes.pdf");
+			log.info("Fil-description: {}:", resource.getDescription());
+			log.info("Fil-uri: {}:", resource.getURI());
 			InputStream inputStream = resource.getInputStream();
 			log.info("Fant MigreringMislyktes-fil");
 			pdf = FileCopyUtils.copyToByteArray(inputStream);
