@@ -1,0 +1,31 @@
+name: Deploy to dev
+
+on:
+  workflow_dispatch:
+    inputs:
+      filnavn:
+        description: 'Navn på fil som skal behandles'
+        required: true
+      operasjon:
+        type: choice
+        description: 'Steg en vil utføre'
+        required: true
+        options:
+          - innlesing
+          - prosessering
+          - rapportering
+
+jobs:
+  deploy-to-dev:
+    name: Deploy to dev-fss
+    needs: build-app
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: nais/naiserator.yaml
+          VARS: nais/q1-config.json
+          VAR: image=ghcr.io/${{ github.repository }}:${{ github.sha }},filnavn=${{github.event.inputs.filnavn}},operasjon=${{github.event.inputs.operasjon}}
