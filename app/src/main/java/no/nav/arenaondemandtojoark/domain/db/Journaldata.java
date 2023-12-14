@@ -1,10 +1,12 @@
 package no.nav.arenaondemandtojoark.domain.db;
 
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -104,6 +106,6 @@ public class Journaldata {
 	@Column(name = "dokument_info_id")
 	String dokumentInfoId;
 
-	@OneToOne(mappedBy = "journaldata")
+	@OneToOne(mappedBy = "journaldata", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private Avvik avvik;
 }

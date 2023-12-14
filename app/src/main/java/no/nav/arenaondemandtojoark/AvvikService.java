@@ -2,7 +2,6 @@ package no.nav.arenaondemandtojoark;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.domain.db.Avvik;
-import no.nav.arenaondemandtojoark.exception.ArenaondemandtojoarkNonRetryableException;
 import no.nav.arenaondemandtojoark.exception.retryable.ArenaondemandtojoarkRetryableException;
 import no.nav.arenaondemandtojoark.repository.AvvikRepository;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
@@ -13,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.PROPERTY_FILNAVN;
 import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.PROPERTY_ONDEMAND_ID;
+import static no.nav.arenaondemandtojoark.domain.db.Avvik.MAX_FEILMELDING_LENGDE;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVVIK;
 
 @Slf4j
@@ -32,7 +32,7 @@ public class AvvikService {
 	@Handler
 	public void lagreAvvik(Exception exception, Exchange exchange) {
 
-		log.info("Lagrer avvik for ondemandId={}", exchange.getProperty(PROPERTY_ONDEMAND_ID, String.class));
+		log.info("Lagrer avvik for ondemandId={}", exchange.getProperty(PROPERTY_ONDEMAND_ID, String.class), exception);
 
 		var ondemandId = exchange.getProperty(PROPERTY_ONDEMAND_ID, String.class);
 		var filnavn = exchange.getProperty(PROPERTY_FILNAVN, String.class);
@@ -40,20 +40,15 @@ public class AvvikService {
 		var avvik = Avvik.builder()
 				.ondemandId(ondemandId)
 				.filnavn(filnavn)
-				.feiltype(getFeiltype(exception))
-				.feilmelding(exception.getMessage())
+				.retryable(isRetryable(exception))
+				.feilmelding(exception.getMessage().substring(0, MAX_FEILMELDING_LENGDE))
 				.build();
 
 		avvikRepository.save(avvik);
 		journaldataRepository.updateStatus(ondemandId, AVVIK);
 	}
 
-	private String getFeiltype(Exception exception) {
-
-		return switch (exception) {
-			case ArenaondemandtojoarkRetryableException ignored -> "Retryable";
-			case ArenaondemandtojoarkNonRetryableException ignored -> "NonRetryable";
-			default -> "Unknown";
-		};
+	private boolean isRetryable(Exception exception) {
+		return exception instanceof ArenaondemandtojoarkRetryableException;
 	}
 }

@@ -78,11 +78,11 @@ public class AvvikITest extends AbstractIt {
 			var avvik = avvikRepository.findAll();
 			assertThat(avvik)
 					.hasSize(3)
-					.extracting("ondemandId", "feiltype")
+					.extracting("ondemandId", "retryable")
 					.containsExactlyInAnyOrder(
-							tuple(ONDEMAND_ID_1, "NonRetryable"),
-							tuple(ONDEMAND_ID_2, "NonRetryable"),
-							tuple(ONDEMAND_ID_3, "NonRetryable")
+							tuple(ONDEMAND_ID_1, false),
+							tuple(ONDEMAND_ID_2, false),
+							tuple(ONDEMAND_ID_3, false)
 					);
 
 			var journaldata = journaldataRepository.findAll();

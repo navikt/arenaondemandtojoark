@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Avvik {
 
-	private static final String AVVIK_ID_SEQUENCE = "avvik_id_seq";
+	public static final int MAX_FEILMELDING_LENGDE = 500;
 
 	@Id
 	@Column(name = "avvik_id")
@@ -33,14 +33,13 @@ public class Avvik {
 	@Column(name = "filnavn")
 	private String filnavn;
 
-	@Column(name = "feiltype")
-	private String feiltype; //TODO Burde dette være en boolean? isRetryable?
+	@Column(name = "retryable")
+	private boolean retryable;
 
-	@Column(name = "feilmelding", length = 500)
+	@Column(name = "feilmelding", length = MAX_FEILMELDING_LENGDE)
 	private String feilmelding;
 
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "journaldata_id")
 	@MapsId
 	private Journaldata journaldata;
 }
