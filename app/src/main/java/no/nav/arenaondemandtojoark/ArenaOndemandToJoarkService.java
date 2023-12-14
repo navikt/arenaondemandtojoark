@@ -31,17 +31,14 @@ public class ArenaOndemandToJoarkService {
 	private final OndemandBrevConsumer ondemandBrevConsumer;
 	private final DokarkivConsumer dokarkivConsumer;
 	private final JournaldataRepository journaldataRepository;
-	private final AvvikRepository avvikRepository;
 	private static final byte[] dummypdf;
 
 	public ArenaOndemandToJoarkService(OndemandBrevConsumer ondemandBrevConsumer,
 									   DokarkivConsumer dokarkivConsumer,
-									   JournaldataRepository journaldataRepository,
-									   AvvikRepository avvikRepository) {
+									   JournaldataRepository journaldataRepository) {
 		this.ondemandBrevConsumer = ondemandBrevConsumer;
 		this.dokarkivConsumer = dokarkivConsumer;
 		this.journaldataRepository = journaldataRepository;
-		this.avvikRepository = avvikRepository;
 	}
 
 	static {
@@ -59,8 +56,9 @@ public class ArenaOndemandToJoarkService {
 	public void prosesserJournaldata(Journaldata journaldata) {
 
 		if (AVVIK.equals(journaldata.getStatus()))
-			if (journaldata.getAvvik().getFeiltype().equals("Retryable")) {
-				avvikRepository.delete(journaldata.getAvvik());
+			if (journaldata.getAvvik().isRetryable()) {
+				journaldata.setAvvik(null);
+				journaldataRepository.save(journaldata);
 			} else {
 				return;
 			}
