@@ -2,8 +2,8 @@ package no.nav.arenaondemandtojoark;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.domain.db.Avvik;
+import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.exception.retryable.ArenaondemandtojoarkRetryableException;
-import no.nav.arenaondemandtojoark.repository.AvvikRepository;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
 import org.apache.camel.Exchange;
 import org.apache.camel.Handler;
@@ -11,8 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static java.lang.Math.min;
-import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.PROPERTY_FILNAVN;
-import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.PROPERTY_ONDEMAND_ID;
 import static no.nav.arenaondemandtojoark.domain.db.Avvik.MAX_FEILMELDING_LENGDE;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVVIK;
 
@@ -30,11 +28,13 @@ public class AvvikService {
 	@Handler
 	public void lagreAvvik(Exception exception, Exchange exchange) {
 
-		log.info("Lagrer avvik for ondemandId={}", exchange.getProperty(PROPERTY_ONDEMAND_ID, String.class), exception);
+		Journaldata journaldata = (Journaldata) exchange.getIn().getBody();
 
-		var ondemandId = exchange.getProperty(PROPERTY_ONDEMAND_ID, String.class);
-		var filnavn = exchange.getProperty(PROPERTY_FILNAVN, String.class);
+		var ondemandId = journaldata.getOnDemandId();
+		var filnavn = journaldata.getFilnavn();
 		var feilmelding = exception.getMessage();
+
+		log.info("Lagrer avvik for ondemandId={} og filnavn={}", ondemandId, filnavn, exception);
 
 		var avvik = Avvik.builder()
 				.ondemandId(ondemandId)
@@ -43,7 +43,6 @@ public class AvvikService {
 				.feilmelding(feilmelding.substring(0, min(feilmelding.length(), MAX_FEILMELDING_LENGDE)))
 				.build();
 
-		var journaldata = journaldataRepository.getByOnDemandId(ondemandId);
 		journaldata.setAvvik(avvik);
 		journaldata.setStatus(AVVIK);
 

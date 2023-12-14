@@ -16,7 +16,6 @@ import static org.apache.camel.LoggingLevel.WARN;
 @Component
 public class ArenaOndemandToJoarkRoute extends BaseRoute {
 
-	public static final String PROPERTY_ONDEMAND_ID = "OndemandId";
 	public static final String PROPERTY_FILNAVN = "Filnavn";
 
 	public static final String RUTE_INNLESING = "direct:innlesing";
