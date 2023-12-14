@@ -14,10 +14,18 @@ import java.util.List;
 @Repository
 public interface JournaldataRepository extends CrudRepository<Journaldata, Long> {
 
-	Journaldata getByOnDemandId(String onDemandId);
-
 	// Uthenting før prosesseringssteget
 	List<Journaldata> getAllByFilnavnAndStatus(String filnavn, JournaldataStatus status);
+
+	@Query("""
+				select j from Journaldata j
+				where j.filnavn = :filnavn
+				and j.status in :statuses
+			""")
+	List<Journaldata> getAllByFilnavnAndStatuses(
+			@Param("filnavn") String filnavn,
+			@Param("statuses") List<JournaldataStatus> statuses
+	);
 
 	// Rapportlaging
 	@Query("""

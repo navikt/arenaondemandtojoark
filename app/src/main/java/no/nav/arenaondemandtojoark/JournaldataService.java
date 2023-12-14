@@ -2,6 +2,7 @@ package no.nav.arenaondemandtojoark;
 
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
+import no.nav.arenaondemandtojoark.domain.db.JournaldataStatus;
 import no.nav.arenaondemandtojoark.domain.db.projections.Rapportelement;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
 import org.springframework.stereotype.Service;
@@ -10,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVVIK;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.INNLEST;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
 
@@ -17,6 +19,8 @@ import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT
 @Service
 @Transactional
 public class JournaldataService {
+
+	private static final List<JournaldataStatus> HENT_JOURNALDATA_STATUSER = List.of(INNLEST, AVVIK);
 
 	private final JournaldataRepository journaldataRepository;
 
@@ -33,7 +37,7 @@ public class JournaldataService {
 	public List<Journaldata> hentJournaldata(String filnavn) {
 		log.info("Henter journaldataliste med filnavn={}", filnavn);
 
-		List<Journaldata> result = journaldataRepository.getAllByFilnavnAndStatus(filnavn, INNLEST);
+		List<Journaldata> result = journaldataRepository.getAllByFilnavnAndStatuses(filnavn, HENT_JOURNALDATA_STATUSER);
 
 		log.info("Hentet {} journaldata-elementer med filnavn={}", result.size(), filnavn);
 
