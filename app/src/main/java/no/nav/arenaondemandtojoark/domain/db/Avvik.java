@@ -12,11 +12,13 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Builder
 @Entity(name = "Avvik")
 @Table(name = "avvik")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Avvik {
