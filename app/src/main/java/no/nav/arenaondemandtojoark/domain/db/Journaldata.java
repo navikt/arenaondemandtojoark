@@ -23,8 +23,8 @@ import java.time.LocalDateTime;
 
 import static lombok.AccessLevel.NONE;
 
-@Entity
-@Table
+@Entity(name = "Journaldata")
+@Table(name = "journaldata")
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

@@ -14,8 +14,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Builder
-@Entity
-@Table
+@Entity(name = "Avvik")
+@Table(name = "avvik")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -41,5 +41,6 @@ public class Avvik {
 
 	@OneToOne(fetch = FetchType.LAZY)
 	@MapsId
+	@JoinColumn(name = "journaldata_id")
 	private Journaldata journaldata;
 }
