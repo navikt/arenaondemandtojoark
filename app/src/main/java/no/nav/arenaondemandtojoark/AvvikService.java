@@ -10,6 +10,7 @@ import org.apache.camel.Handler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static java.lang.Math.max;
 import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.PROPERTY_FILNAVN;
 import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.PROPERTY_ONDEMAND_ID;
 import static no.nav.arenaondemandtojoark.domain.db.Avvik.MAX_FEILMELDING_LENGDE;
@@ -36,12 +37,13 @@ public class AvvikService {
 
 		var ondemandId = exchange.getProperty(PROPERTY_ONDEMAND_ID, String.class);
 		var filnavn = exchange.getProperty(PROPERTY_FILNAVN, String.class);
+		var feilmelding = exception.getMessage();
 
 		var avvik = Avvik.builder()
 				.ondemandId(ondemandId)
 				.filnavn(filnavn)
 				.retryable(isRetryable(exception))
-				.feilmelding(exception.getMessage().substring(0, MAX_FEILMELDING_LENGDE))
+				.feilmelding(feilmelding.substring(0, max(feilmelding.length(), MAX_FEILMELDING_LENGDE)))
 				.build();
 
 		avvikRepository.save(avvik);
