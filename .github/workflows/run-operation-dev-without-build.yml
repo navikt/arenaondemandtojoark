@@ -1,4 +1,4 @@
-name: Deploy to dev
+name: Run operation on file
 
 on:
   workflow_dispatch:
@@ -18,7 +18,6 @@ on:
 jobs:
   deploy-to-dev:
     name: Deploy to dev-fss
-    needs: build-app
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
