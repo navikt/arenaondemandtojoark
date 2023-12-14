@@ -14,6 +14,8 @@ import java.util.List;
 @Repository
 public interface JournaldataRepository extends CrudRepository<Journaldata, Long> {
 
+	Journaldata getByOnDemandId(String onDemandId);
+
 	// Uthenting før prosesseringssteget
 	List<Journaldata> getAllByFilnavnAndStatus(String filnavn, JournaldataStatus status);
 

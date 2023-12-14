@@ -21,12 +21,9 @@ import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVVIK;
 @Transactional
 public class AvvikService {
 
-	private final AvvikRepository avvikRepository;
 	private final JournaldataRepository journaldataRepository;
 
-	public AvvikService(AvvikRepository avvikRepository,
-						JournaldataRepository journaldataRepository) {
-		this.avvikRepository = avvikRepository;
+	public AvvikService(JournaldataRepository journaldataRepository) {
 		this.journaldataRepository = journaldataRepository;
 	}
 
@@ -46,8 +43,11 @@ public class AvvikService {
 				.feilmelding(feilmelding.substring(0, min(feilmelding.length(), MAX_FEILMELDING_LENGDE)))
 				.build();
 
-		avvikRepository.save(avvik);
-		journaldataRepository.updateStatus(ondemandId, AVVIK);
+		var journaldata = journaldataRepository.getByOnDemandId(ondemandId);
+		journaldata.setAvvik(avvik);
+		journaldata.setStatus(AVVIK);
+
+		journaldataRepository.save(journaldata);
 	}
 
 	private boolean isRetryable(Exception exception) {
