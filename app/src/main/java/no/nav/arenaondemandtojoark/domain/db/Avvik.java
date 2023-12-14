@@ -24,8 +24,7 @@ public class Avvik {
 	public static final int MAX_FEILMELDING_LENGDE = 500;
 
 	@Id
-	@Column(name = "avvik_id")
-	private Long avvikId;
+	private Long journaldataId;
 
 	@Column(name = "ondemand_id")
 	private String ondemandId;
