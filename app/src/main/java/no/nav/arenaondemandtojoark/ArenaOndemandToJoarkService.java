@@ -11,7 +11,6 @@ import no.nav.arenaondemandtojoark.consumer.ondemandbrev.OndemandBrevConsumer;
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.exception.DokarkivNonRetryableException;
 import no.nav.arenaondemandtojoark.exception.OndemandDokumentIkkeFunnetException;
-import no.nav.arenaondemandtojoark.repository.AvvikRepository;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
 import org.apache.camel.Handler;
 import org.springframework.core.io.ClassPathResource;

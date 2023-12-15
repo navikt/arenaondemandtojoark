@@ -109,6 +109,7 @@ public class Journaldata {
 	@OneToOne(mappedBy = "journaldata", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private Avvik avvik;
 
+	//TODO: Prøv å slette dette
 	public void setAvvik(Avvik avvik) {
 		if (avvik == null) {
 			if (this.avvik != null) {

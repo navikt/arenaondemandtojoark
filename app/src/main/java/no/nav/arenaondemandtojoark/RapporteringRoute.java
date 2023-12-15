@@ -37,6 +37,7 @@ public class RapporteringRoute extends BaseRoute {
 		//@formatter:off
 		super.configure();
 
+		//TODO: Skal kun lage rapport for dei som både har journalpostId og dokumentInfoId?
 		from(RUTE_RAPPORTERING)
 				.routeId("rapportering")
 				.log(INFO, "Starter generering av rapport for fil=${exchangeProperty.filnavn}")

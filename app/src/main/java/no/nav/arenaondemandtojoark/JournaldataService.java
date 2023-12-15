@@ -38,7 +38,6 @@ public class JournaldataService {
 		log.info("Henter journaldataliste med filnavn={}", filnavn);
 
 		List<Journaldata> result = journaldataRepository.getAllByFilnavnAndStatuses(filnavn, HENT_JOURNALDATA_STATUSER);
-
 		log.info("Hentet {} journaldata-elementer med filnavn={}", result.size(), filnavn);
 
 		return result;
@@ -47,7 +46,10 @@ public class JournaldataService {
 	public List<Rapportelement> lagJournalpostrapport(String filnavn) {
 		log.info("Henter journalpostrapportelement-liste for filnavn={}", filnavn);
 
-		return journaldataRepository.getRapportdataByFilnavnAndStatus(filnavn, PROSESSERT);
+		List<Rapportelement> result = journaldataRepository.getRapportdataByFilnavnAndStatus(filnavn, PROSESSERT);
+		log.info("Hentet {} journalpostrapportelement med filnavn={}", result.size(), filnavn);
+
+		return result;
 	}
 
 	public void oppdaterStatusTilAvlevert(String filnavn) {
