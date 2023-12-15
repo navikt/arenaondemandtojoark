@@ -28,9 +28,11 @@ public class Avvik {
 	@Id
 	private Long journaldataId;
 
+	//TODO: Fjern denne, har kopling til journaldata frå før
 	@Column(name = "ondemand_id")
 	private String ondemandId;
 
+	//TODO: Fjern denne, har kopling til journaldata frå før
 	@Column(name = "filnavn")
 	private String filnavn;
 

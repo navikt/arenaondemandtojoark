@@ -20,7 +20,6 @@ import org.springframework.util.FileCopyUtils;
 
 import java.io.IOException;
 
-import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVVIK;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
 
 @Slf4j
@@ -53,14 +52,6 @@ public class ArenaOndemandToJoarkService {
 
 	@Handler
 	public void prosesserJournaldata(Journaldata journaldata) {
-
-		if (AVVIK.equals(journaldata.getStatus()))
-			if (journaldata.getAvvik().isRetryable()) {
-				journaldata.setAvvik(null);
-				journaldataRepository.save(journaldata);
-			} else {
-				return;
-			}
 
 		log.info("Starter prosessering av journaldata med onDemandId={}", journaldata.getOnDemandId());
 

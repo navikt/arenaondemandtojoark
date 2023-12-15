@@ -1,5 +1,6 @@
 package no.nav.arenaondemandtojoark;
 
+import no.nav.arenaondemandtojoark.domain.db.Avvik;
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.domain.db.JournaldataStatus;
 import no.nav.arenaondemandtojoark.domain.db.projections.Rapportelement;
@@ -22,6 +23,7 @@ import java.util.stream.Stream;
 import static no.nav.arenaondemandtojoark.TestUtils.lagJournaldataentitet;
 import static no.nav.arenaondemandtojoark.TestUtils.lagJournaldataentitetMedStatusInnlest;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVLEVERT;
+import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVVIK;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.INNLEST;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,6 +53,7 @@ class JournaldataRepositoryTest {
 	@AfterEach
 	public void cleanup() {
 		journaldataRepository.deleteAll();
+		commitAndBeginNewTransaction();
 	}
 
 	@ParameterizedTest
@@ -68,6 +71,43 @@ class JournaldataRepositoryTest {
 				Arguments.of(List.of("ODAP08031000123", "ODAP08031000234"), INNLEST),
 				Arguments.of(List.of("ODAP08031000456", "ODAP08031000567"), PROSESSERT)
 		);
+	}
+
+	@Test
+	void skalHenteJournaldataMedInnlestEllerRetryableAvvik() {
+		var journaldataliste = journaldataRepository.getAllByFilnavnAndStatus(RELEVANT_FILNAVN, INNLEST);
+		var ondemandId1 = "ODAP08031000123";
+		var ondemandId2 = "ODAP08031000234";
+		var retryable = journaldataliste.stream().filter(j -> j.getOnDemandId().equals(ondemandId1)).findFirst().get();
+		retryable.setStatus(AVVIK);
+		retryable.setAvvik(Avvik.builder()
+				.journaldataId(retryable.getJournaldataId())
+				.ondemandId(retryable.getOnDemandId())
+				.retryable(true)
+				.filnavn(RELEVANT_FILNAVN)
+				.feilmelding("En retryable exception har skjedd")
+				.build());
+
+		var nonRetryable = journaldataliste.stream().filter(j -> j.getOnDemandId().equals(ondemandId2)).findFirst().get();
+		nonRetryable.setStatus(AVVIK);
+		nonRetryable.setAvvik(Avvik.builder()
+				.journaldataId(nonRetryable.getJournaldataId())
+				.ondemandId(nonRetryable.getOnDemandId())
+				.retryable(false)
+				.filnavn(RELEVANT_FILNAVN)
+				.feilmelding("En non-retryable exception har skjedd")
+				.build());
+
+		var ondemandId3 = "ODAP08031000555";
+		var innlest = lagJournaldataentitetMedStatusInnlest(ondemandId3, RELEVANT_FILNAVN);
+		journaldataRepository.saveAll(List.of(retryable, nonRetryable, innlest));
+		commitAndBeginNewTransaction();
+
+		var result = journaldataRepository.getAllByFilnavnAndStatuses(RELEVANT_FILNAVN, List.of(INNLEST, AVVIK));
+		assertThat(result)
+				.hasSize(2)
+				.extracting("onDemandId")
+				.containsExactlyInAnyOrder(ondemandId1, ondemandId3);
 	}
 
 	@ParameterizedTest

@@ -36,17 +36,26 @@ public class AvvikService {
 
 		log.info("Lagrer avvik for ondemandId={} og filnavn={}", ondemandId, filnavn, exception);
 
-		var avvik = Avvik.builder()
-				.ondemandId(ondemandId)
-				.filnavn(filnavn)
-				.retryable(isRetryable(exception))
-				.feilmelding(feilmelding.substring(0, min(feilmelding.length(), MAX_FEILMELDING_LENGDE)))
-				.build();
-
-		journaldata.setAvvik(avvik);
-		journaldata.setStatus(AVVIK);
+		var avvik = journaldata.getAvvik();
+		if (avvik != null) {
+			avvik.setRetryable(isRetryable(exception));
+			avvik.setFeilmelding(mapFeilmelding(feilmelding));
+		} else {
+			avvik = Avvik.builder()
+					.ondemandId(ondemandId)
+					.filnavn(filnavn)
+					.retryable(isRetryable(exception))
+					.feilmelding(mapFeilmelding(feilmelding))
+					.build();
+			journaldata.setAvvik(avvik);
+			journaldata.setStatus(AVVIK);
+		}
 
 		journaldataRepository.save(journaldata);
+	}
+
+	private static String mapFeilmelding(String feilmelding) {
+		return feilmelding.substring(0, min(feilmelding.length(), MAX_FEILMELDING_LENGDE));
 	}
 
 	private boolean isRetryable(Exception exception) {

@@ -19,7 +19,9 @@ public interface JournaldataRepository extends CrudRepository<Journaldata, Long>
 
 	@Query("""
 				select j from Journaldata j
-				where j.filnavn = :filnavn
+				left join j.avvik a
+				where (a is null or a.retryable = true)
+				and j.filnavn = :filnavn
 				and j.status in :statuses
 			""")
 	List<Journaldata> getAllByFilnavnAndStatuses(
