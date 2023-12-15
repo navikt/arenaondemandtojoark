@@ -9,12 +9,10 @@ import jakarta.persistence.MapsId;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Builder
 @Entity(name = "Avvik")
 @Table(name = "avvik")
 @Getter
@@ -27,14 +25,6 @@ public class Avvik {
 
 	@Id
 	private Long journaldataId;
-
-	//TODO: Fjern denne, har kopling til journaldata frå før
-	@Column(name = "ondemand_id")
-	private String ondemandId;
-
-	//TODO: Fjern denne, har kopling til journaldata frå før
-	@Column(name = "filnavn")
-	private String filnavn;
 
 	@Column(name = "retryable")
 	private boolean retryable;

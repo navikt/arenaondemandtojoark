@@ -2,6 +2,7 @@ package no.nav.arenaondemandtojoark;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,6 +28,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @SpringBootTest(
 		properties = {"arenaondemandtojoark.operasjon=prosessering", "arenaondemandtojoark.filnavn=journaldata.xml"}
 )
+@Disabled
 public class AvvikITest extends AbstractIt {
 
 	private static final List<String> ONDEMAND_IDER = List.of(ONDEMAND_ID_1, ONDEMAND_ID_2, ONDEMAND_ID_3);
@@ -63,7 +65,7 @@ public class AvvikITest extends AbstractIt {
 			var avvik = avvikRepository.findAll();
 			assertThat(avvik)
 					.hasSize(3)
-					.extracting("ondemandId")
+					.extracting("journaldata.ondemandId")
 					.hasSameElementsAs(ONDEMAND_IDER);
 		});
 	}

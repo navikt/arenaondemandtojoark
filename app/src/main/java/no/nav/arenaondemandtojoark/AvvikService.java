@@ -30,26 +30,23 @@ public class AvvikService {
 
 		Journaldata journaldata = (Journaldata) exchange.getIn().getBody();
 
-		var ondemandId = journaldata.getOnDemandId();
-		var filnavn = journaldata.getFilnavn();
 		var feilmelding = exception.getMessage();
 
-		log.info("Lagrer avvik for ondemandId={} og filnavn={}", ondemandId, filnavn, exception);
+		log.info("Lagrer avvik for ondemandId={} og filnavn={}",
+				journaldata.getOnDemandId(),
+				journaldata.getFilnavn(),
+				exception);
 
 		var avvik = journaldata.getAvvik();
-		if (avvik != null) {
-			avvik.setRetryable(isRetryable(exception));
-			avvik.setFeilmelding(mapFeilmelding(feilmelding));
-		} else {
-			avvik = Avvik.builder()
-					.ondemandId(ondemandId)
-					.filnavn(filnavn)
-					.retryable(isRetryable(exception))
-					.feilmelding(mapFeilmelding(feilmelding))
-					.build();
+
+		if (avvik == null) {
+			avvik = new Avvik();
 			journaldata.setAvvik(avvik);
 			journaldata.setStatus(AVVIK);
 		}
+
+		avvik.setRetryable(isRetryable(exception));
+		avvik.setFeilmelding(mapFeilmelding(feilmelding));
 
 		journaldataRepository.save(journaldata);
 	}

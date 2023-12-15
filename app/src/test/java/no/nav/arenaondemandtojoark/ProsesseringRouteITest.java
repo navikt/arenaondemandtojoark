@@ -68,11 +68,14 @@ class ProsesseringRouteITest extends AbstractIt {
 		copyFileFromClasspathToInngaaende(filnavn, sshdPath);
 
 		await().atMost(10, SECONDS).untilAsserted(() -> {
-			var result = journaldataRepository.findAll();
-			assertThat(result)
+			var journaldata = journaldataRepository.findAll();
+			assertThat(journaldata)
 					.hasSize(1)
 					.extracting("onDemandId", "status")
 					.containsExactly(tuple(ONDEMAND_ID_1, AVVIK));
+
+			var avvik = journaldata.iterator().next().getAvvik();
+			assertThat(avvik.isRetryable()).isFalse();
 		});
 		verify(1, getRequestedFor(urlEqualTo(format(HENT_ONDEMAND_DOKUMENT_URL, ONDEMAND_ID_1))));
 	}

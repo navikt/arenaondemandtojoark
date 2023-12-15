@@ -80,23 +80,19 @@ class JournaldataRepositoryTest {
 		var ondemandId2 = "ODAP08031000234";
 		var retryable = journaldataliste.stream().filter(j -> j.getOnDemandId().equals(ondemandId1)).findFirst().get();
 		retryable.setStatus(AVVIK);
-		retryable.setAvvik(Avvik.builder()
-				.journaldataId(retryable.getJournaldataId())
-				.ondemandId(retryable.getOnDemandId())
-				.retryable(true)
-				.filnavn(RELEVANT_FILNAVN)
-				.feilmelding("En retryable exception har skjedd")
-				.build());
+		retryable.setAvvik(new Avvik(
+				retryable.getJournaldataId(),
+				true,
+				"En retryable exception har skjedd",
+				retryable));
 
 		var nonRetryable = journaldataliste.stream().filter(j -> j.getOnDemandId().equals(ondemandId2)).findFirst().get();
 		nonRetryable.setStatus(AVVIK);
-		nonRetryable.setAvvik(Avvik.builder()
-				.journaldataId(nonRetryable.getJournaldataId())
-				.ondemandId(nonRetryable.getOnDemandId())
-				.retryable(false)
-				.filnavn(RELEVANT_FILNAVN)
-				.feilmelding("En non-retryable exception har skjedd")
-				.build());
+		nonRetryable.setAvvik(new Avvik(
+				nonRetryable.getJournaldataId(),
+				false,
+				"En non-retryable exception har skjedd",
+				nonRetryable));
 
 		var ondemandId3 = "ODAP08031000555";
 		var innlest = lagJournaldataentitetMedStatusInnlest(ondemandId3, RELEVANT_FILNAVN);
