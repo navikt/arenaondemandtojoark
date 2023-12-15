@@ -18,6 +18,7 @@ public class ArenaOndemandToJoarkRoute extends BaseRoute {
 
 	public static final String PROPERTY_FILNAVN = "Filnavn";
 
+	public static final String RUTE_HOVED = "{{arenaondemandtojoark.main.route}}";
 	public static final String RUTE_INNLESING = "direct:innlesing";
 	public static final String RUTE_PROSESSERING = "direct:prosessering";
 	public static final String RUTE_RAPPORTERING = "direct:rapportering";
@@ -40,7 +41,7 @@ public class ArenaOndemandToJoarkRoute extends BaseRoute {
 		//@formatter:off
 		super.configure();
 
-		from("timer://runOnce?repeatCount=1&delay=1000")
+		from(RUTE_HOVED)
 				.routeId("start_operation")
 				.setProperty("operasjon", constant(arenaondemandtojoarkProperties.getOperasjon()))
 				.setProperty("filnavn", constant(arenaondemandtojoarkProperties.getFilnavn()))

@@ -6,6 +6,7 @@ import no.nav.arenaondemandtojoark.exception.OndemandDokumentIkkeFunnetException
 import no.nav.arenaondemandtojoark.exception.OndemandNonRetryableException;
 import no.nav.arenaondemandtojoark.exception.retryable.OndemandRetryableException;
 import no.nav.arenaondemandtojoark.exception.retryable.OndemandTomResponseException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
@@ -13,19 +14,26 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Mono;
 import reactor.netty.http.client.HttpClientRequest;
-import reactor.util.retry.Retry;
 
 import java.time.Duration;
 
 import static java.lang.String.format;
+import static java.time.Duration.ofMillis;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_PDF;
+import static reactor.util.retry.Retry.backoff;
 
 @Slf4j
 @Component
 public class OndemandBrevConsumer {
+
 	private static final String IDNR = "IDNR";
 	private static final String APP_ID = "appID";
+
+	@Value("${arenaondemandtojoark.consumer.max-attempts}")
+	Long RETRY_MAX_ATTEMPTS;
+	@Value("${arenaondemandtojoark.consumer.time-between-attempts}")
+	Long RETRY_TIME_BETWEEN_ATTEMPTS;
 
 	private final WebClient webClient;
 	private final String ondemandFolder;
@@ -60,7 +68,7 @@ public class OndemandBrevConsumer {
 				.bodyToMono(byte[].class)
 				.switchIfEmpty(Mono.error(new OndemandTomResponseException("Payload fra ondemandbrev var tom.")))
 				.doOnError(this::handleError)
-				.retryWhen(Retry.backoff(1, Duration.ofMillis(1000)) //TODO Sett dette til fornuftige verdier
+				.retryWhen(backoff(RETRY_MAX_ATTEMPTS, ofMillis(RETRY_TIME_BETWEEN_ATTEMPTS))
 						.filter(e -> e instanceof OndemandRetryableException)
 						.onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> retrySignal.failure()))
 				.block();

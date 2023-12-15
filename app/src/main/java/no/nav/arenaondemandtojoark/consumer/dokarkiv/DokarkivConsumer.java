@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.config.ArenaondemandtojoarkProperties;
 import no.nav.arenaondemandtojoark.exception.DokarkivNonRetryableException;
 import no.nav.arenaondemandtojoark.exception.retryable.DokarkivRetryableException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.ReactiveOAuth2AuthorizedClientManager;
 import org.springframework.stereotype.Component;
@@ -15,16 +16,23 @@ import java.util.Map;
 import java.util.function.Consumer;
 
 import static java.lang.String.format;
+import static java.time.Duration.ofMillis;
 import static no.nav.arenaondemandtojoark.config.AzureTokenProperties.CLIENT_REGISTRATION_DOKARKIV;
 import static no.nav.arenaondemandtojoark.config.AzureTokenProperties.getOAuth2AuthorizeRequestForAzure;
 import static org.springframework.http.HttpHeaders.CONTENT_TYPE;
 import static org.springframework.http.HttpStatus.CONFLICT;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.security.oauth2.client.web.reactive.function.client.ServerOAuth2AuthorizedClientExchangeFilterFunction.oauth2AuthorizedClient;
+import static reactor.util.retry.Retry.backoff;
 
 @Slf4j
 @Component
 public class DokarkivConsumer {
+
+	@Value("${arenaondemandtojoark.consumer.max-attempts}")
+	Long RETRY_MAX_ATTEMPTS;
+	@Value("${arenaondemandtojoark.consumer.time-between-attempts}")
+	Long RETRY_TIME_BETWEEN_ATTEMPTS;
 
 	private final WebClient webClient;
 	private final ReactiveOAuth2AuthorizedClientManager oAuth2AuthorizedClientManager;
@@ -52,8 +60,10 @@ public class DokarkivConsumer {
 				.onStatus(httpStatus -> httpStatus.isSameCodeAs(CONFLICT), response -> Mono.empty())
 				.bodyToMono(OpprettJournalpostResponse.class)
 				.doOnError(this::handleError)
+				.retryWhen(backoff(RETRY_MAX_ATTEMPTS, ofMillis(RETRY_TIME_BETWEEN_ATTEMPTS))
+						.filter(e -> e instanceof DokarkivRetryableException)
+						.onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> retrySignal.failure()))
 				.block();
-		//TODO legg til retry
 	}
 
 	public void ferdigstillJournalpost(String journalpostId, FerdigstillJournalpostRequest request) {
@@ -68,8 +78,10 @@ public class DokarkivConsumer {
 				.retrieve()
 				.toBodilessEntity()
 				.doOnError(this::handleError)
+				.retryWhen(backoff(RETRY_MAX_ATTEMPTS, ofMillis(RETRY_TIME_BETWEEN_ATTEMPTS))
+						.filter(e -> e instanceof DokarkivRetryableException)
+						.onRetryExhaustedThrow((retryBackoffSpec, retrySignal) -> retrySignal.failure()))
 				.block();
-		//TODO legg til retry
 	}
 
 	private void handleError(Throwable error) {
