@@ -1,7 +1,6 @@
 package no.nav.arenaondemandtojoark;
 
 import lombok.extern.slf4j.Slf4j;
-import no.nav.arenaondemandtojoark.repository.AvvikRepository;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
 import org.apache.camel.CamelContext;
 import org.apache.camel.builder.AdviceWith;
@@ -60,9 +59,6 @@ public abstract class AbstractIt {
 	public JournaldataRepository journaldataRepository;
 
 	@Autowired
-	public AvvikRepository avvikRepository;
-
-	@Autowired
 	private CamelContext camelContext;
 
 	public static final String HENT_ONDEMAND_DOKUMENT_URL = "/ODBrevServlet?IDNR=%s&appID=AREQ1";
@@ -86,7 +82,6 @@ public abstract class AbstractIt {
 		stubAzure();
 
 		journaldataRepository.deleteAll();
-		avvikRepository.deleteAll();
 
 		// mock ut shutdown så appen ikke skrur seg av før testen er ferdig
 		mockEndpointAndSkipAt("start_operation", RUTE_SHUTDOWN);

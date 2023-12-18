@@ -4,11 +4,16 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static no.nav.arenaondemandtojoark.TestUtils.JOURNALPOST_ID;
@@ -19,7 +24,6 @@ import static no.nav.arenaondemandtojoark.TestUtils.lagJournaldataentitetMedStat
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVVIK;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.tuple;
 import static org.awaitility.Awaitility.await;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
@@ -30,8 +34,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 )
 @Disabled
 public class AvvikITest extends AbstractIt {
-
-	private static final List<String> ONDEMAND_IDER = List.of(ONDEMAND_ID_1, ONDEMAND_ID_2, ONDEMAND_ID_3);
 
 	@Value("${arenaondemandtojoark.filnavn}")
 	String filnavn;
@@ -50,53 +52,39 @@ public class AvvikITest extends AbstractIt {
 	@AfterEach
 	void afterEach() {
 		journaldataRepository.deleteAll();
-		avvikRepository.deleteAll();
 
 		commitAndBeginNewTransaction();
 	}
 
-	@Test
-	void skalLagreAvvikVedRetryableFeilFraOnDemandBrev() throws IOException {
-		stubHentOndemandDokumentMedStatus(INTERNAL_SERVER_ERROR);
+	@ParameterizedTest
+	@MethodSource
+	void skalLagreAvvikVedFeilFraOnDemandBrev(HttpStatus httpStatus, boolean isRetryable) throws IOException {
+		stubHentOndemandDokumentMedStatus(httpStatus);
 
 		copyFileFromClasspathToInngaaende(filnavn, sshdPath);
 
 		await().atMost(10, SECONDS).untilAsserted(() -> {
-			var avvik = avvikRepository.findAll();
-			assertThat(avvik)
+
+			var journaldataliste = journaldataRepository.findAll();
+
+			assertThat(journaldataliste)
 					.hasSize(3)
-					.extracting("journaldata.ondemandId")
-					.hasSameElementsAs(ONDEMAND_IDER);
+					.extracting("status")
+					.containsOnly(AVVIK);
+
+			assertThat(journaldataliste)
+					.allSatisfy(journaldata -> {
+						assertThat(journaldata.getAvvik()).isNotNull();
+						assertThat(journaldata.getAvvik().isRetryable()).isEqualTo(isRetryable);
+					});
+
 		});
 	}
 
-	@Test
-	void skalLagreAvvikVedNonRetryableFeilFraOnDemandBrev() throws IOException {
-		stubHentOndemandDokumentMedStatus(BAD_REQUEST);
-
-		copyFileFromClasspathToInngaaende(filnavn, sshdPath);
-
-		await().atMost(10, SECONDS).untilAsserted(() -> {
-			var avvik = avvikRepository.findAll();
-			assertThat(avvik)
-					.hasSize(3)
-					.extracting("ondemandId", "retryable")
-					.containsExactlyInAnyOrder(
-							tuple(ONDEMAND_ID_1, false),
-							tuple(ONDEMAND_ID_2, false),
-							tuple(ONDEMAND_ID_3, false)
-					);
-
-			var journaldata = journaldataRepository.findAll();
-			assertThat(journaldata)
-					.hasSize(3)
-					.extracting("onDemandId", "status")
-					.containsExactlyInAnyOrder(
-							tuple(ONDEMAND_ID_1, AVVIK),
-							tuple(ONDEMAND_ID_2, AVVIK),
-							tuple(ONDEMAND_ID_3, AVVIK)
-					);
-		});
+	private static Stream<Arguments> skalLagreAvvikVedFeilFraOnDemandBrev() {
+		return Stream.of(
+				Arguments.of(INTERNAL_SERVER_ERROR, true),
+				Arguments.of(BAD_REQUEST, false));
 	}
 
 	@Test
@@ -109,20 +97,12 @@ public class AvvikITest extends AbstractIt {
 		copyFileFromClasspathToInngaaende(filnavn, sshdPath);
 
 		await().atMost(10, SECONDS).untilAsserted(() -> {
-			var avvik = avvikRepository.findAll();
-			assertThat(avvik).hasSize(0);
 
 			var result = journaldataRepository.findAll();
 			assertThat(result)
 					.hasSize(3)
-					.extracting("onDemandId", "status")
-					.containsExactlyInAnyOrder(
-							tuple(ONDEMAND_ID_1, PROSESSERT),
-							tuple(ONDEMAND_ID_2, PROSESSERT),
-							tuple(ONDEMAND_ID_3, PROSESSERT)
-					);
-
-
+					.extracting("status")
+					.containsOnly(PROSESSERT);
 		});
 	}
 }
