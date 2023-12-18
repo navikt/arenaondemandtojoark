@@ -2,7 +2,6 @@ package no.nav.arenaondemandtojoark;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -32,7 +31,6 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 @SpringBootTest(
 		properties = {"arenaondemandtojoark.operasjon=prosessering", "arenaondemandtojoark.filnavn=journaldata.xml"}
 )
-@Disabled
 public class AvvikITest extends AbstractIt {
 
 	@Value("${arenaondemandtojoark.filnavn}")
