@@ -81,6 +81,10 @@ public class ArenaOndemandToJoarkService {
 		journaldata.setDokumentInfoId(dokumentInfoId);
 		journaldata.setStatus(PROSESSERT);
 
+		if (journaldata.getAvvik() != null) {
+			journaldata.setAvvik(null);
+		}
+
 		journaldataRepository.save(journaldata);
 	}
 
