@@ -52,7 +52,12 @@ public class AvvikService {
 	}
 
 	private static String mapFeilmelding(String feilmelding) {
-		return feilmelding.substring(0, min(feilmelding.length(), MAX_FEILMELDING_LENGDE));
+		log.info("Lengde før forkorting: {}", feilmelding);
+
+		var forkortet = feilmelding.substring(0, min(feilmelding.length(), MAX_FEILMELDING_LENGDE));
+		log.info("Lengde etter forkorting: {}", forkortet);
+
+		return forkortet;
 	}
 
 	private boolean isRetryable(Exception exception) {
