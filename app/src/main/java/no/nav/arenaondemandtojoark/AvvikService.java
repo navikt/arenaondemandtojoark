@@ -42,9 +42,9 @@ public class AvvikService {
 		if (avvik == null) {
 			avvik = new Avvik();
 			journaldata.setAvvik(avvik);
-			journaldata.setStatus(AVVIK);
 		}
 
+		journaldata.setStatus(AVVIK);
 		avvik.setRetryable(isRetryable(exception));
 		avvik.setFeilmelding(mapFeilmelding(feilmelding));
 
