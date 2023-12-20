@@ -24,7 +24,7 @@ public class InnlesingRoute extends BaseRoute {
 	public static final String LES_FRA_FILOMRAADE_URI = "{{arenaondemandtojoark.sftp.uri}}" + "/inbound" +
 														"{{arenaondemandtojoark.sftp.config}}" +
 														"&include={{arenaondemandtojoark.filnavn}}" +
-														"&charset=UTF-8";
+														"&charset=ISO-8859-1";
 
 	private static final String RUTE_MAP_JOURNALDATA = "direct:map_journaldata";
 	private static final String RUTE_LAGRE_JOURNALDATA = "direct:lagre_journaldata_i_bulk";

@@ -22,7 +22,8 @@ public class RapporteringRoute extends BaseRoute {
 
 	private static final String JOURNALPOSTRAPPORT_URI = "{{arenaondemandtojoark.sftp.uri}}" + "/outbound" +
 														 "{{arenaondemandtojoark.sftp.config}}" +
-														 "&fileName=${exchangeProperty.filnavn}";
+														 "&fileName=${exchangeProperty.filnavn}" +
+														 "&charset=ISO-8859-1";
 
 	private final JournaldataService journaldataService;
 

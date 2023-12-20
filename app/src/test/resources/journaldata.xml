@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
 <innlasting>
 	<journaldata>
 		<onDemandId>ODAP08031000123</onDemandId>
@@ -7,7 +8,7 @@
 		<journalpostType>U</journalpostType>
 		<fagomraade>OPP</fagomraade>
 		<journaldato>2008-03-10T17:19:22</journaldato>
-		<innhold>Innk. til dialogmÃ¸te innen 26 uker der mottaker er arb.giver</innhold>
+		<innhold>Innk. til dialogmøte innen 26 uker der mottaker er arb.giver</innhold>
 		<mottakerNavn>DUCK DONALD</mottakerNavn>
 		<mottakerId>80000009123</mottakerId>
 		<utsendingskanal>L</utsendingskanal>
@@ -26,7 +27,7 @@
 		<journalpostType>U</journalpostType>
 		<fagomraade>OPP</fagomraade>
 		<journaldato>2008-03-10T10:20:19</journaldato>
-		<innhold>Innk. til dialogmÃ¸te innen 26 uker der mottaker er arb.giver</innhold>
+		<innhold>Innk. til dialogmøte innen 26 uker der mottaker er arb.giver</innhold>
 		<mottakerNavn>DUCK DOLLY</mottakerNavn>
 		<mottakerId>80000347123</mottakerId>
 		<utsendingskanal>L</utsendingskanal>
@@ -45,7 +46,7 @@
 		<journalpostType>U</journalpostType>
 		<fagomraade>OPP</fagomraade>
 		<journaldato>2008-03-10T10:37:57</journaldato>
-		<innhold>Innk. til dialogmÃ¸te innen 26 uker der mottaker er arb.giver</innhold>
+		<innhold>Innk. til dialogmøte innen 26 uker der mottaker er arb.giver</innhold>
 		<mottakerNavn>ANTON FETTER</mottakerNavn>
 		<mottakerId>80000416123</mottakerId>
 		<utsendingskanal>L</utsendingskanal>
