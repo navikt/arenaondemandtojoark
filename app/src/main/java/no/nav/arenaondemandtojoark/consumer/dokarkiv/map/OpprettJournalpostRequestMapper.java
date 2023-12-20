@@ -23,7 +23,7 @@ import static no.nav.arenaondemandtojoark.domain.joark.JournalpostType.NOTAT;
 import static no.nav.arenaondemandtojoark.domain.joark.JournalpostType.UTGAAENDE;
 import static no.nav.arenaondemandtojoark.domain.joark.Sakstype.FAGSAK;
 import static no.nav.arenaondemandtojoark.domain.joark.Sakstype.GENERELL_SAK;
-import static org.apache.logging.log4j.util.Strings.isBlank;
+import static org.apache.logging.log4j.util.Strings.isNotBlank;
 
 @Slf4j
 public class OpprettJournalpostRequestMapper {
@@ -115,7 +115,7 @@ public class OpprettJournalpostRequestMapper {
 	}
 
 	private static Sak toSak(Journaldata journaldata) {
-		var saksnummerErSatt = isBlank(journaldata.getSaksnummer());
+		var saksnummerErSatt = isNotBlank(journaldata.getSaksnummer());
 		var sakstype = saksnummerErSatt ? FAGSAK : GENERELL_SAK;
 		var fagsakId = saksnummerErSatt ? journaldata.getSaksnummer() : null;
 		var fagsaksystem = saksnummerErSatt ? AO01 : null;
