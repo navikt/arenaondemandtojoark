@@ -4,13 +4,14 @@ import no.nav.arenaondemandtojoark.consumer.dokarkiv.FerdigstillJournalpostReque
 import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
+import java.util.Date;
 
 import static no.nav.arenaondemandtojoark.domain.db.Journalposttype.U;
 
 public class FerdigstillJournalpostRequestMapper {
 
-	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	public static final ZoneId EUROPE_OSLO = ZoneId.of("Europe/Oslo");
 
 	public static FerdigstillJournalpostRequest map(Journaldata journaldata) {
 
@@ -18,12 +19,12 @@ public class FerdigstillJournalpostRequestMapper {
 				.journalfoerendeEnhet(journaldata.getJournalfoerendeEnhet())
 				.journalfortAvNavn(journaldata.getOpprettetAvNavn())
 				.opprettetAvNavn(journaldata.getOpprettetAvNavn())
-				.datoJournal(toDatoString(journaldata.getJournaldato()))
-				.datoSendtPrint(U.equals(journaldata.getJournalposttype()) ? toDatoString(journaldata.getSendtPrintDato()) : null)
+				.datoJournal(toDato(journaldata.getJournaldato()))
+				.datoSendtPrint(U.equals(journaldata.getJournalposttype()) ? toDato(journaldata.getSendtPrintDato()) : null)
 				.build();
 	}
 
-	private static String toDatoString(LocalDateTime dato) {
-		return dato.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+	private static Date toDato(LocalDateTime dato) {
+		return Date.from(dato.atZone(EUROPE_OSLO).toInstant());
 	}
 }
