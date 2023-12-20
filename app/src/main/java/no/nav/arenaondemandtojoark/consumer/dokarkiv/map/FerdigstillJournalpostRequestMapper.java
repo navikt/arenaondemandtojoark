@@ -25,6 +25,6 @@ public class FerdigstillJournalpostRequestMapper {
 	}
 
 	private static Date toDato(LocalDateTime dato) {
-		return Date.from(dato.atZone(EUROPE_OSLO).toInstant());
+		return dato != null ? Date.from(dato.atZone(EUROPE_OSLO).toInstant()) : null;
 	}
 }
