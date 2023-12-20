@@ -43,13 +43,22 @@ public class OpprettJournalpostRequestMapper {
 				.bruker(toBruker(journaldata))
 				.tema(journaldata.getFagomraade().name())
 				.tittel(journaldata.getInnhold())
-				.kanal(journaldata.getUtsendingskanal().name())
+				.kanal(toUtsendingskanal(journaldata))
 				.journalfoerendeEnhet(journaldata.getJournalfoerendeEnhet())
 				.eksternReferanseId(journaldata.getOnDemandId())
 				.tilleggsopplysninger(toTilleggsopplysninger(journaldata))
 				.sak(toSak(journaldata))
 				.dokumenter(toDokumenter(journaldata, pdfDocument))
 				.build();
+	}
+
+	private static String toUtsendingskanal(Journaldata journaldata) {
+		var utsendingskanal = journaldata.getUtsendingskanal();
+
+		if (U.equals(journaldata.getJournalposttype()))
+			return utsendingskanal == null ? "S" : utsendingskanal.name();
+
+		return utsendingskanal.name();
 	}
 
 	private static JournalpostType toJournalpostType(Journaldata journaldata) {

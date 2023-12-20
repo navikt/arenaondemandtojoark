@@ -42,10 +42,8 @@ public class JournaldataValidator {
 		validerPaakrevdFelt("brevkode", journaldata.getBrevkode(), validationErrors);
 
 		if (U.equals(journaldata.getJournalposttype())) {
-			validerPaakrevdFelt("utsendingskanal", journaldata.getUtsendingskanal(), validationErrors);
 			validerPaakrevdFelt("mottakernavn", journaldata.getMottakernavn(), validationErrors);
 			validerPaakrevdFelt("mottakerId", journaldata.getMottakerId(), validationErrors);
-			validerPaakrevdFelt("sendtPrintDato", journaldata.getSendtPrintDato(), validationErrors);
 		}
 	}
 
