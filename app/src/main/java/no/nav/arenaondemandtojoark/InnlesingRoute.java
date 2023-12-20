@@ -23,7 +23,7 @@ public class InnlesingRoute extends BaseRoute {
 
 	public static final String LES_FRA_FILOMRAADE_URI = "{{arenaondemandtojoark.sftp.uri}}" + "/inbound" +
 														"{{arenaondemandtojoark.sftp.config}}" +
-														"&antInclude=*.xml" +
+														"&include={{arenaondemandtojoark.filnavn}}" +
 														"&charset=UTF-8";
 
 	private static final String RUTE_MAP_JOURNALDATA = "direct:map_journaldata";
