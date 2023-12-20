@@ -1,13 +1,11 @@
 package no.nav.arenaondemandtojoark;
 
-import jakarta.xml.bind.JAXBContext;
 import lombok.extern.slf4j.Slf4j;
 import no.nav.arenaondemandtojoark.domain.xml.rapport.Journalpostrapport;
 import no.nav.arenaondemandtojoark.domain.xml.rapport.JournalpostrapportElement;
 import no.nav.arenaondemandtojoark.domain.xml.rapport.map.JournalpostrapportMapper;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
-import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -22,8 +20,7 @@ public class RapporteringRoute extends BaseRoute {
 
 	private static final String JOURNALPOSTRAPPORT_URI = "{{arenaondemandtojoark.sftp.uri}}" + "/outbound" +
 														 "{{arenaondemandtojoark.sftp.config}}" +
-														 "&fileName=${exchangeProperty.filnavn}" +
-														 "&charset=ISO-8859-1";
+														 "&fileName=${exchangeProperty.filnavn}";
 
 	private final JournaldataService journaldataService;
 
@@ -47,7 +44,7 @@ public class RapporteringRoute extends BaseRoute {
 				.split(body(), new RapportAggregator()).streaming().parallelProcessing()
 				    .bean(JournalpostrapportMapper.class)
 				.end()
-				.marshal(new JaxbDataFormat(JAXBContext.newInstance(Journalpostrapport.class)))
+				.marshal("rapporteringDataFormat")
 				.to(JOURNALPOSTRAPPORT_URI)
 				.setBody(simple("${exchangeProperty.filnavn}"))
 				.bean(journaldataService, "oppdaterStatusTilAvlevert")
