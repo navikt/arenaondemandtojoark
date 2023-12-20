@@ -10,7 +10,7 @@ import static no.nav.arenaondemandtojoark.domain.db.Journalposttype.U;
 
 public class FerdigstillJournalpostRequestMapper {
 
-	public static final String DATE_FORMAT = "yyyy-MM-dd";
+	public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
 	public static FerdigstillJournalpostRequest map(Journaldata journaldata) {
 
