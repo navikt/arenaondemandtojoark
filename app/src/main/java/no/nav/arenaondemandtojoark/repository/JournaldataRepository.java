@@ -14,8 +14,9 @@ import java.util.List;
 @Repository
 public interface JournaldataRepository extends CrudRepository<Journaldata, Long> {
 
-	// Uthenting før prosesseringssteget
 	List<Journaldata> getAllByFilnavnAndStatus(String filnavn, JournaldataStatus status);
+
+	Long countJournaldataByFilnavnAndStatus(String filnavn, JournaldataStatus status);
 
 	@Query("""
 				select j from Journaldata j

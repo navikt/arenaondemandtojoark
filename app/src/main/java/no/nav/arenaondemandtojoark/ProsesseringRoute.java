@@ -37,7 +37,9 @@ public class ProsesseringRoute extends BaseRoute {
 				.log(INFO, log, "Hentet ${body.size()} journaldata fra fil=${exchangeProperty.filnavn}.")
 			.split(body()).streaming().parallelProcessing()
 				.to(RUTE_BEHANDLE_JOURNALDATA)
-			.end();
+			.end()
+			.setBody(simple("${exchangeProperty.filnavn}"))
+			.bean(journaldataService, "lagOppsummering");
 
 			from(RUTE_BEHANDLE_JOURNALDATA)
 			.routeId("behandle_journaldata")

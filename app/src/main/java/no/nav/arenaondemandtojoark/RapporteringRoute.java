@@ -48,6 +48,7 @@ public class RapporteringRoute extends BaseRoute {
 				.to(JOURNALPOSTRAPPORT_URI)
 				.setBody(simple("${exchangeProperty.filnavn}"))
 				.bean(journaldataService, "oppdaterStatusTilAvlevert")
+				.bean(journaldataService, "lagOppsummering")
 				.end();
 
 		//@formatter:on

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVLEVERT;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVVIK;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.INNLEST;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
@@ -41,6 +42,19 @@ public class JournaldataService {
 		log.info("Hentet {} journaldata-elementer med filnavn={}", result.size(), filnavn);
 
 		return result;
+	}
+
+	public void lagOppsummering(String filnavn) {
+		var antallInnlest = journaldataRepository.countJournaldataByFilnavnAndStatus(filnavn, INNLEST);
+		var antallProsessert = journaldataRepository.countJournaldataByFilnavnAndStatus(filnavn, PROSESSERT);
+		var antallAvvik = journaldataRepository.countJournaldataByFilnavnAndStatus(filnavn, AVVIK);
+		var antallAvlevert = journaldataRepository.countJournaldataByFilnavnAndStatus(filnavn, AVLEVERT);
+
+		log.info("Oppsummering for fil={}: {}={}, {}={}, {}={}, {}={}", filnavn,
+				INNLEST, antallInnlest,
+				PROSESSERT, antallProsessert,
+				AVVIK, antallAvvik,
+				AVLEVERT, antallAvlevert);
 	}
 
 	public List<Rapportelement> lagJournalpostrapport(String filnavn) {
