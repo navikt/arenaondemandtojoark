@@ -66,8 +66,6 @@ public class OndemandBrevConsumer {
 	}
 
 	private void handleError(Throwable error) {
-		log.info("Feil ved henting av pdf fra ondemand", error);
-
 		if (!(error instanceof WebClientResponseException response)) {
 			String feilmelding = format("Kall mot ondemand feilet teknisk med feilmelding=%s", error.getMessage());
 

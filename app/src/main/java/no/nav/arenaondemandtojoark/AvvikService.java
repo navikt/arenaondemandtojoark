@@ -28,6 +28,8 @@ public class AvvikService {
 	@Handler
 	public void lagreAvvik(Exception exception, Exchange exchange) {
 
+		log.info("Håndterer exception: {}", exception.getMessage(), exception);
+
 		Journaldata journaldata = (Journaldata) exchange.getIn().getBody();
 
 		var feilmelding = exception.getMessage();

@@ -41,7 +41,7 @@ public class Journaldata {
 	@Setter(NONE)
 	private Long journaldataId;
 
-	@Column(name = "ondemand_id")
+	@Column(name = "ondemand_id", unique = true)
 	String onDemandId;
 
 	@Column(name = "saksnummer")

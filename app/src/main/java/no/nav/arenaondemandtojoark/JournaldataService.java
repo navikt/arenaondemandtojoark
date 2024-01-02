@@ -30,7 +30,7 @@ public class JournaldataService {
 	}
 
 	public void lagreJournaldata(ArrayList<Journaldata> journaldata) {
-		log.info("Lagrer journaldataliste med ondemandId={}", journaldata.stream().map(Journaldata::getOnDemandId).toList());
+		log.info("Lagrer {} journaldata", journaldata.size());
 
 		journaldataRepository.saveAll(journaldata);
 	}

@@ -16,7 +16,8 @@ import static org.apache.camel.LoggingLevel.WARN;
 @Component
 public class ArenaOndemandToJoarkRoute extends BaseRoute {
 
-	public static final String PROPERTY_FILNAVN = "Filnavn";
+	public static final String PROPERTY_OPERASJON = "operasjon";
+	public static final String PROPERTY_FILNAVN = "filnavn";
 
 	public static final String RUTE_HOVED = "{{arenaondemandtojoark.main.route}}";
 	public static final String RUTE_INNLESING = "direct:innlesing";
@@ -43,22 +44,20 @@ public class ArenaOndemandToJoarkRoute extends BaseRoute {
 
 		from(RUTE_HOVED)
 				.routeId("start_operation")
-				.setProperty("operasjon", constant(arenaondemandtojoarkProperties.getOperasjon()))
-				.setProperty("filnavn", constant(arenaondemandtojoarkProperties.getFilnavn()))
+				.setProperty(PROPERTY_OPERASJON, constant(arenaondemandtojoarkProperties.getOperasjon()))
+				.setProperty(PROPERTY_FILNAVN, constant(arenaondemandtojoarkProperties.getFilnavn()))
+				.log(INFO, log, "Starter ${exchangeProperty.operasjon} av ${exchangeProperty.filnavn}.")
 				.choice()
 					.when(simple("${exchangeProperty.operasjon} == 'innlesing'"))
-						.log(INFO, log, "Starter innlesing av fil")
 						.to(RUTE_INNLESING)
 					.when(simple("${exchangeProperty.operasjon} == 'prosessering'"))
-						.log(INFO, log,"Starter prosessering av fil")
 						.to(RUTE_PROSESSERING)
 				    .when(simple("${exchangeProperty.operasjon} == 'rapportering'"))
-						.log(INFO, log,"Starter rapportering av fil")
 						.to(RUTE_RAPPORTERING)
 					.otherwise()
 						.log(WARN, log,"Ugyldig operasjon mottatt med verdi ${exchangeProperty.operasjon}.")
 				.end()
-				.log(INFO, log,"Ferdig med ${exchangeProperty.operasjon} av fil ${exchangeProperty.filnavn}.")
+				.log(INFO, log,"Ferdig med ${exchangeProperty.operasjon} av ${exchangeProperty.filnavn}.")
 				.to(RUTE_SHUTDOWN);
 
 		//@formatter:on

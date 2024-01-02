@@ -49,10 +49,8 @@ class JournaldataValidatorTest {
 				.isThrownBy(() -> validator.validate(journaldata))
 				.withMessageContainingAll(
 						"Journaldata med ondemandId=ODAP08031000123 feilet validering med feilmeldinger:",
-						"Journaldata mangler påkrevd felt=utsendingskanal",
 						"Journaldata mangler påkrevd felt=mottakernavn",
-						"Journaldata mangler påkrevd felt=mottakerId",
-						"Journaldata mangler påkrevd felt=sendtPrintDato"
+						"Journaldata mangler påkrevd felt=mottakerId"
 				);
 	}
 

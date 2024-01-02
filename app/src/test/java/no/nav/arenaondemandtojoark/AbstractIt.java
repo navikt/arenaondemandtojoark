@@ -82,6 +82,7 @@ public abstract class AbstractIt {
 		stubAzure();
 
 		journaldataRepository.deleteAll();
+		commitAndBeginNewTransaction();
 
 		// mock ut shutdown så appen ikke skrur seg av før testen er ferdig
 		mockEndpointAndSkipAt("start_operation", RUTE_SHUTDOWN);

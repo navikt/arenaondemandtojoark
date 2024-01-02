@@ -23,7 +23,6 @@ public class JournaldataMapper {
 
 	@Handler
 	public Journaldata map(no.nav.arenaondemandtojoark.domain.xml.Journaldata journaldata, Exchange exchange) {
-		log.info("Mapper journaldata med ondemandId={}", journaldata.getOnDemandId());
 		var filnavn = exchange.getProperty(PROPERTY_FILNAVN, String.class);
 
 		return Journaldata.builder()
