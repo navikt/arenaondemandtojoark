@@ -8,6 +8,7 @@ import no.nav.arenaondemandtojoark.domain.xml.Innlasting;
 import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import org.apache.camel.converter.jaxb.JaxbDataFormat;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -53,8 +54,10 @@ public class InnlesingRoute extends BaseRoute {
 				.split(body(), new JournalpostAggregator()).streaming().parallelProcessing()
 					.to(RUTE_MAP_JOURNALDATA)
 				.end()
-				.to(RUTE_LAGRE_JOURNALDATA)
-				.log(INFO, log,"Ferdig med lagring av journaldata i bulk")
+				.split(body()).streaming().parallelProcessing()
+					.to(RUTE_LAGRE_JOURNALDATA)
+				.end()
+				.log(INFO, log, "Ferdig med lagring av journaldata")
 		.end();
 
 		from(RUTE_MAP_JOURNALDATA)
@@ -62,8 +65,16 @@ public class InnlesingRoute extends BaseRoute {
 				.bean(journaldataMapper);
 
 		from(RUTE_LAGRE_JOURNALDATA)
-				.routeId("lagre_journaldata_i_bulk")
-				.bean(journaldataService, "lagreJournaldata");
+				.routeId("lagre_journaldata")
+				.process(exchange-> {
+					var journaldata = exchange.getIn().getBody(Journaldata.class);
+					try {
+						journaldataService.lagreJournaldata(journaldata);
+					} catch (DataIntegrityViolationException e) {
+						log.error("Kunne ikke lagre journaldata med duplikat onDemandId={}. Feilmelding={}", journaldata.getOnDemandId(), e.getMessage(), e);
+					}
+    			})
+				.end();
 
 		//@formatter:on
 	}

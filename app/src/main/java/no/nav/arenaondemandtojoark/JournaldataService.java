@@ -5,10 +5,10 @@ import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.domain.db.JournaldataStatus;
 import no.nav.arenaondemandtojoark.domain.db.projections.Rapportelement;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVLEVERT;
@@ -18,7 +18,7 @@ import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT
 
 @Slf4j
 @Service
-@Transactional
+@Transactional(readOnly = true)
 public class JournaldataService {
 
 	private static final List<JournaldataStatus> HENT_JOURNALDATA_STATUSER = List.of(INNLEST, AVVIK);
@@ -29,10 +29,9 @@ public class JournaldataService {
 		this.journaldataRepository = journaldataRepository;
 	}
 
-	public void lagreJournaldata(ArrayList<Journaldata> journaldata) {
-		log.info("Lagrer {} journaldata", journaldata.size());
-
-		journaldataRepository.saveAll(journaldata);
+	@Transactional
+	public void lagreJournaldata(Journaldata journaldata) {
+		journaldataRepository.save(journaldata);
 	}
 
 	public List<Journaldata> hentJournaldata(String filnavn) {
@@ -66,6 +65,7 @@ public class JournaldataService {
 		return result;
 	}
 
+	@Transactional
 	public void oppdaterStatusTilAvlevert(String filnavn) {
 		log.info("Oppdaterer status til AVLEVERT for filnavn={}", filnavn);
 

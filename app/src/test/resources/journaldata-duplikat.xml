@@ -1,0 +1,42 @@
+<innlasting>
+	<journaldata>
+		<onDemandId>ODAP08031000123</onDemandId>
+		<saksnummer>3133123</saksnummer>
+		<brukerId>11114928123</brukerId>
+		<brukerType>PERSON</brukerType>
+		<journalpostType>U</journalpostType>
+		<fagomraade>OPP</fagomraade>
+		<journaldato>2008-03-10T17:19:22</journaldato>
+		<innhold>Innk. til dialogmøte innen 26 uker der mottaker er arb.giver</innhold>
+		<mottakerNavn>DUCK DONALD</mottakerNavn>
+		<mottakerId>80000009123</mottakerId>
+		<utsendingskanal>L</utsendingskanal>
+		<journalfoerendeEnhet>0211</journalfoerendeEnhet>
+		<sendtPrintDato>2011-12-08T15:07:48</sendtPrintDato>
+		<opprettetAvNavn>Tryll, Magika Von</opprettetAvNavn>
+		<dokumentkategori>B</dokumentkategori>
+		<dokumentFerdigDato>2018-03-10T17:19:22</dokumentFerdigDato>
+		<brevkode>brevkode1</brevkode>
+		<sensitivt>true</sensitivt>
+	</journaldata>
+	<journaldata>
+		<onDemandId>ODAP08031000123</onDemandId>
+		<saksnummer>3133123</saksnummer>
+		<brukerId>11114928123</brukerId>
+		<brukerType>PERSON</brukerType>
+		<journalpostType>U</journalpostType>
+		<fagomraade>OPP</fagomraade>
+		<journaldato>2008-03-10T17:19:23</journaldato>
+		<innhold>Innk. til dialogmøte innen 26 uker der mottaker er arb.giver</innhold>
+		<mottakerNavn>DUCK DONALD</mottakerNavn>
+		<mottakerId>80000009123</mottakerId>
+		<utsendingskanal>L</utsendingskanal>
+		<journalfoerendeEnhet>0211</journalfoerendeEnhet>
+		<sendtPrintDato>2011-12-08T15:07:48</sendtPrintDato>
+		<opprettetAvNavn>Tryll, Magika Von</opprettetAvNavn>
+		<dokumentkategori>B</dokumentkategori>
+		<dokumentFerdigDato>2018-03-10T17:19:22</dokumentFerdigDato>
+		<brevkode>brevkode1</brevkode>
+		<sensitivt>true</sensitivt>
+	</journaldata>
+</innlasting>
