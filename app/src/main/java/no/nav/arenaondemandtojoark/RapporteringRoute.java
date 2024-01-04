@@ -25,7 +25,7 @@ public class RapporteringRoute extends BaseRoute {
 														 "{{arenaondemandtojoark.sftp.config}}" +
 														 "&fileName=%s";
 	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmss");
-	private static final String JOURNALPOSTRAPPORT_FILNAVN = "R81_journalpostrapport_%s.xml";
+	private static final String JOURNALPOSTRAPPORT_FILNAVN = "GR81_journalpostrapport_%s.xml";
 
 	private final JournaldataService journaldataService;
 
