@@ -8,6 +8,8 @@ import org.apache.camel.AggregationStrategy;
 import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +23,9 @@ public class RapporteringRoute extends BaseRoute {
 	private static final String JOURNALPOSTRAPPORT_URI = "{{arenaondemandtojoark.sftp.uri}}" +
 														 "{{arenaondemandtojoark.sftp.outbound.folder}}" +
 														 "{{arenaondemandtojoark.sftp.config}}" +
-														 "&fileName=${exchangeProperty.filnavn}";
+														 "&fileName=%s";
+	private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd_HHmmss");
+	private static final String JOURNALPOSTRAPPORT_FILNAVN = "R81_journalpostrapport_%s.xml";
 
 	private final JournaldataService journaldataService;
 
@@ -36,7 +40,6 @@ public class RapporteringRoute extends BaseRoute {
 		//@formatter:off
 		super.configure();
 
-		//TODO: Skal kun lage rapport for dei som både har journalpostId og dokumentInfoId?
 		from(RUTE_RAPPORTERING)
 				.routeId("rapportering")
 				.log(INFO, "Starter generering av rapport for fil=${exchangeProperty.filnavn}")
@@ -46,13 +49,17 @@ public class RapporteringRoute extends BaseRoute {
 				    .bean(JournalpostrapportMapper.class)
 				.end()
 				.marshal("rapporteringDataFormat")
-				.to(JOURNALPOSTRAPPORT_URI)
+				.to(JOURNALPOSTRAPPORT_URI.formatted(genererFilnavn()))
 				.setBody(simple("${exchangeProperty.filnavn}"))
 				.bean(journaldataService, "oppdaterStatusTilAvlevert")
 				.bean(journaldataService, "lagOppsummering")
 				.end();
 
 		//@formatter:on
+	}
+
+	private static String genererFilnavn() {
+		return JOURNALPOSTRAPPORT_FILNAVN.formatted(LocalDateTime.now().format(formatter));
 	}
 
 	private static class RapportAggregator implements AggregationStrategy {
