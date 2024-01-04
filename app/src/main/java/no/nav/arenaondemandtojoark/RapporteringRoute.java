@@ -18,7 +18,8 @@ import static org.apache.camel.LoggingLevel.INFO;
 @Component
 public class RapporteringRoute extends BaseRoute {
 
-	private static final String JOURNALPOSTRAPPORT_URI = "{{arenaondemandtojoark.sftp.uri}}" + "/outbound" +
+	private static final String JOURNALPOSTRAPPORT_URI = "{{arenaondemandtojoark.sftp.uri}}" +
+														 "{{arenaondemandtojoark.sftp.outbound.folder}}" +
 														 "{{arenaondemandtojoark.sftp.config}}" +
 														 "&fileName=${exchangeProperty.filnavn}";
 

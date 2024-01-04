@@ -22,7 +22,8 @@ import static org.apache.camel.LoggingLevel.INFO;
 @Component
 public class InnlesingRoute extends BaseRoute {
 
-	public static final String LES_FRA_FILOMRAADE_URI = "{{arenaondemandtojoark.sftp.uri}}" + "/inbound" +
+	public static final String LES_FRA_FILOMRAADE_URI = "{{arenaondemandtojoark.sftp.uri}}" +
+														"{{arenaondemandtojoark.sftp.inbound.folder}}" +
 														"{{arenaondemandtojoark.sftp.config}}" +
 														"&include={{arenaondemandtojoark.filnavn}}" +
 														"&charset=ISO-8859-1";
