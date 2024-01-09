@@ -16,17 +16,17 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.0</version>
+		<version>3.2.1</version>
 	</parent>
 
 	<properties>
 		<logstash-logback-encoder.version>7.4</logstash-logback-encoder.version>
-		<camel-spring-boot-dependencies.version>4.2.0</camel-spring-boot-dependencies.version>
+		<camel-spring-boot-dependencies.version>4.3.0</camel-spring-boot-dependencies.version>
 		<jaxb-runtime.version>4.0.4</jaxb-runtime.version>
 
-		<spring-cloud-contract-wiremock.version>4.0.4</spring-cloud-contract-wiremock.version>
+		<spring-cloud-contract-wiremock.version>4.1.0</spring-cloud-contract-wiremock.version>
 		<sshd-core.version>2.11.0</sshd-core.version>
-		<datasource-proxy-spring-boot-starter.version>1.9.0</datasource-proxy-spring-boot-starter.version>
+		<datasource-proxy-spring-boot-starter.version>1.9.1</datasource-proxy-spring-boot-starter.version>
 	</properties>
 
 	<dependencyManagement>
