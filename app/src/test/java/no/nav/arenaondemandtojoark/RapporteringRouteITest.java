@@ -7,6 +7,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static no.nav.arenaondemandtojoark.TestUtils.DOKUMENT_INFO_ID;
@@ -45,8 +46,15 @@ public class RapporteringRouteITest extends AbstractIt {
 					.extracting("status")
 					.containsOnly(JournaldataStatus.AVLEVERT);
 
-			assertThat(new File(sshdPath.toString() + "/outbound/" + filnavn))
-					.exists();
+			var rapportmappe = new File(String.valueOf(sshdPath.resolve("outbound"))).listFiles();
+			assertThat(rapportmappe).isNotNull();
+
+			var filer = Stream.of(rapportmappe)
+					.filter(file -> !file.isDirectory())
+					.map(File::getName)
+					.toList();
+			assertThat(filer.size()).isEqualTo(1);
+			assertThat(filer.get(0)).startsWith("R81_journalpostrapport_");
 		});
 	}
 }
