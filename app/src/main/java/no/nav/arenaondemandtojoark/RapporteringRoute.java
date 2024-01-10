@@ -59,7 +59,10 @@ public class RapporteringRoute extends BaseRoute {
 	}
 
 	private static String genererFilnavn() {
-		return JOURNALPOSTRAPPORT_FILNAVN.formatted(LocalDateTime.now().format(formatter));
+		var filnavn = JOURNALPOSTRAPPORT_FILNAVN.formatted(LocalDateTime.now().format(formatter));
+		log.info("Skriver rapport til fil={}", filnavn);
+
+		return filnavn;
 	}
 
 	private static class RapportAggregator implements AggregationStrategy {
