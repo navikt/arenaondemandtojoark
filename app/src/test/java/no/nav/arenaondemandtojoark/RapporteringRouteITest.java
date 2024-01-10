@@ -54,7 +54,7 @@ public class RapporteringRouteITest extends AbstractIt {
 					.map(File::getName)
 					.toList();
 			assertThat(filer.size()).isEqualTo(1);
-			assertThat(filer.get(0)).startsWith("R81_journalpostrapport_");
+			assertThat(filer.get(0)).startsWith("GR81_journalpostrapport_");
 		});
 	}
 }
