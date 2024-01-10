@@ -1,4 +1,4 @@
-name: Run operation on file dev
+name: Run operation on file prod
 
 on:
   workflow_dispatch:
@@ -16,15 +16,15 @@ on:
           - rapportering
 
 jobs:
-  deploy-to-dev:
-    name: Deploy to dev-fss
+  deploy-to-prod:
+    name: Deploy to prod-fss
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: dev-fss
+          CLUSTER: prod-fss
           RESOURCE: nais/naiserator.yaml
-          VARS: nais/q1-config.json
+          VARS: nais/p-config.json
           VAR: image=ghcr.io/${{ github.repository }}:${{ github.sha }},filnavn=${{github.event.inputs.filnavn}},operasjon=${{github.event.inputs.operasjon}}
