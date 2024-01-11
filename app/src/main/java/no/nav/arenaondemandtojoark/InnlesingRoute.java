@@ -58,7 +58,7 @@ public class InnlesingRoute extends BaseRoute {
 				.split(body()).streaming().parallelProcessing()
 					.to(RUTE_LAGRE_JOURNALDATA)
 				.end()
-				.log(INFO, log, "Ferdig med lagring av journaldata")
+				.log(INFO, log, "Ferdig med lagring av ${body.size()} journaldata-elementer")
 		.end();
 
 		from(RUTE_MAP_JOURNALDATA)
