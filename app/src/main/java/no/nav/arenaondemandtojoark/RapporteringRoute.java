@@ -20,6 +20,8 @@ import static org.apache.camel.LoggingLevel.INFO;
 @Component
 public class RapporteringRoute extends BaseRoute {
 
+	private static final String PROPERTY_RAPPORTFIL = "rapportfil";
+
 	private static final String JOURNALPOSTRAPPORT_URI = "{{arenaondemandtojoark.sftp.uri}}" +
 														 "{{arenaondemandtojoark.sftp.outbound.folder}}" +
 														 "{{arenaondemandtojoark.sftp.config}}" +
@@ -42,14 +44,16 @@ public class RapporteringRoute extends BaseRoute {
 
 		from(RUTE_RAPPORTERING)
 				.routeId("rapportering")
-				.log(INFO, "Starter generering av rapport for fil=${exchangeProperty.filnavn}")
+				.log(INFO, log, "Starter generering av rapport for fil=${exchangeProperty.filnavn}")
 				.setBody(simple("${exchangeProperty.filnavn}"))
 				.bean(journaldataService, "lagJournalpostrapport")
 				.split(body(), new RapportAggregator()).streaming().parallelProcessing()
 				    .bean(JournalpostrapportMapper.class)
 				.end()
 				.marshal("rapporteringDataFormat")
-				.to(JOURNALPOSTRAPPORT_URI.formatted(genererFilnavn()))
+				.process(this::genererFilnavn)
+				.log(INFO, log, "Skriver rapport til fil=${exchangeProperty.%s}".formatted(PROPERTY_RAPPORTFIL))
+				.to(JOURNALPOSTRAPPORT_URI.formatted("${exchangeProperty.%s}".formatted(PROPERTY_RAPPORTFIL)))
 				.setBody(simple("${exchangeProperty.filnavn}"))
 				.bean(journaldataService, "oppdaterStatusTilAvlevert")
 				.bean(journaldataService, "lagOppsummering")
@@ -58,11 +62,10 @@ public class RapporteringRoute extends BaseRoute {
 		//@formatter:on
 	}
 
-	private static String genererFilnavn() {
+	private void genererFilnavn(Exchange exchange) {
 		var filnavn = JOURNALPOSTRAPPORT_FILNAVN.formatted(LocalDateTime.now().format(formatter));
-		log.info("Skriver rapport til fil={}", filnavn);
 
-		return filnavn;
+		exchange.setProperty(PROPERTY_RAPPORTFIL, filnavn);
 	}
 
 	private static class RapportAggregator implements AggregationStrategy {
