@@ -55,11 +55,12 @@ public interface JournaldataRepository extends CrudRepository<Journaldata, Long>
 	@Modifying
 	@Query("""
 				update Journaldata j
-				set j.status = 'AVLEVERT'
+				set j.status = 'AVLEVERT', j.rapportfil = :rapportfil
 				where j.filnavn = :filnavn
 				and j.status = 'PROSESSERT'
 			""")
-	void updateStatusToAvlevert(
-			@Param("filnavn") String filnavn
-	);
+	void updateStatusToAvlevertAndSetRapportfil(
+			@Param("filnavn") String filnavn,
+			@Param("rapportfil") String rapportfil
+ 	);
 }

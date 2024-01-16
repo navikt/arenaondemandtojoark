@@ -106,10 +106,12 @@ public class Journaldata {
 	@Column(name = "dokument_info_id")
 	String dokumentInfoId;
 
+	@Column(name = "rapportfil")
+	String rapportfil;
+
 	@OneToOne(mappedBy = "journaldata", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	private Avvik avvik;
 
-	//TODO: Prøv å slette dette
 	public void setAvvik(Avvik avvik) {
 		if (avvik == null) {
 			if (this.avvik != null) {

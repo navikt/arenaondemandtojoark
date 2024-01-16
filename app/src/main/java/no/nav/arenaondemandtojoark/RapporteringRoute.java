@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.PROPERTY_FILNAVN;
 import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.RUTE_RAPPORTERING;
 import static org.apache.camel.LoggingLevel.INFO;
 
@@ -55,7 +56,11 @@ public class RapporteringRoute extends BaseRoute {
 				.log(INFO, log, "Skriver rapport til fil=${exchangeProperty.%s}".formatted(PROPERTY_RAPPORTFIL))
 				.to(JOURNALPOSTRAPPORT_URI.formatted("${exchangeProperty.%s}".formatted(PROPERTY_RAPPORTFIL)))
 				.setBody(simple("${exchangeProperty.filnavn}"))
-				.bean(journaldataService, "oppdaterStatusTilAvlevert")
+				.process(exchange -> {
+					var filnavn = exchange.getProperty(PROPERTY_FILNAVN, String.class);
+					var rapportfil = exchange.getProperty(PROPERTY_RAPPORTFIL, String.class);
+					journaldataService.oppdaterStatusTilAvlevert(filnavn, rapportfil);
+				})
 				.bean(journaldataService, "lagOppsummering")
 				.end();
 

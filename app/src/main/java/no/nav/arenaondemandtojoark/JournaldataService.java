@@ -5,7 +5,6 @@ import no.nav.arenaondemandtojoark.domain.db.Journaldata;
 import no.nav.arenaondemandtojoark.domain.db.JournaldataStatus;
 import no.nav.arenaondemandtojoark.domain.db.projections.Rapportelement;
 import no.nav.arenaondemandtojoark.repository.JournaldataRepository;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,9 +65,9 @@ public class JournaldataService {
 	}
 
 	@Transactional
-	public void oppdaterStatusTilAvlevert(String filnavn) {
-		log.info("Oppdaterer status til AVLEVERT for filnavn={}", filnavn);
+	public void oppdaterStatusTilAvlevert(String filnavn, String rapportfil) {
+		log.info("Oppdaterer status=AVLEVERT og rapportfil={} for filnavn={}", rapportfil, filnavn);
 
-		journaldataRepository.updateStatusToAvlevert(filnavn);
+		journaldataRepository.updateStatusToAvlevertAndSetRapportfil(filnavn, rapportfil);
 	}
 }

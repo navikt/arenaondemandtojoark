@@ -27,6 +27,7 @@ import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVVIK;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.INNLEST;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.PROSESSERT;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 @DataJpaTest
 @ActiveProfiles("itest")
@@ -35,6 +36,7 @@ class JournaldataRepositoryTest {
 	private static final String RELEVANT_FILNAVN = "relevantFilnavn.xml";
 	private static final String IRRELEVANT_FILNAVN = "irrelevantFilnavn.xml";
 	private static final String FEIL_FILNAVN = "feilfilnavn.xml";
+	private static final String RAPPORTFIL = "rapportfil.xml";
 
 	@Autowired
 	JournaldataRepository journaldataRepository;
@@ -138,7 +140,7 @@ class JournaldataRepositoryTest {
 
 	@Test
 	void skalOppdatereStatusTilAvlevert() {
-		journaldataRepository.updateStatusToAvlevert(RELEVANT_FILNAVN);
+		journaldataRepository.updateStatusToAvlevertAndSetRapportfil(RELEVANT_FILNAVN, RAPPORTFIL);
 
 		commitAndBeginNewTransaction();
 
@@ -147,8 +149,10 @@ class JournaldataRepositoryTest {
 		assertThat(journaldata)
 				.filteredOn(j -> j.getStatus().equals(AVLEVERT))
 				.hasSize(2)
-				.extracting("onDemandId")
-				.containsExactlyInAnyOrder("ODAP08031000456", "ODAP08031000567");
+				.extracting("onDemandId", "rapportfil")
+				.containsExactlyInAnyOrder(
+						tuple("ODAP08031000456", RAPPORTFIL),
+						tuple("ODAP08031000567", RAPPORTFIL));
 	}
 
 	private static void commitAndBeginNewTransaction() {
