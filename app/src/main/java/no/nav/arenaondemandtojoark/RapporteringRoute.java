@@ -59,7 +59,7 @@ public class RapporteringRoute extends BaseRoute {
 				.process(exchange -> {
 					var filnavn = exchange.getProperty(PROPERTY_FILNAVN, String.class);
 					var rapportfil = exchange.getProperty(PROPERTY_RAPPORTFIL, String.class);
-					journaldataService.oppdaterStatusTilAvlevert(filnavn, rapportfil);
+					journaldataService.oppdaterStatusTilAvlevertOgSettRapportfil(filnavn, rapportfil);
 				})
 				.bean(journaldataService, "lagOppsummering")
 				.end();

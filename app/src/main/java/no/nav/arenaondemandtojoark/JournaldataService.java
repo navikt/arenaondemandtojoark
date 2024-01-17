@@ -65,7 +65,7 @@ public class JournaldataService {
 	}
 
 	@Transactional
-	public void oppdaterStatusTilAvlevert(String filnavn, String rapportfil) {
+	public void oppdaterStatusTilAvlevertOgSettRapportfil(String filnavn, String rapportfil) {
 		log.info("Oppdaterer status=AVLEVERT og rapportfil={} for filnavn={}", rapportfil, filnavn);
 
 		journaldataRepository.updateStatusToAvlevertAndSetRapportfil(filnavn, rapportfil);

@@ -13,7 +13,10 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
+import static java.lang.Math.min;
 import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.PROPERTY_FILNAVN;
 import static no.nav.arenaondemandtojoark.ArenaOndemandToJoarkRoute.RUTE_INNLESING;
 import static org.apache.camel.LoggingLevel.INFO;
@@ -21,6 +24,8 @@ import static org.apache.camel.LoggingLevel.INFO;
 @Slf4j
 @Component
 public class InnlesingRoute extends BaseRoute {
+
+	private static final Integer JOURNALPOST_LOGGBLOKK_STOERRELSE = 100;
 
 	public static final String LES_FRA_FILOMRAADE_URI = "{{arenaondemandtojoark.sftp.uri}}" +
 														"{{arenaondemandtojoark.sftp.inbound.folder}}" +
@@ -52,6 +57,7 @@ public class InnlesingRoute extends BaseRoute {
 				.setProperty(PROPERTY_FILNAVN, simple("${file:name}"))
 				.unmarshal(new JaxbDataFormat(JAXBContext.newInstance(Innlasting.class)))
 				.setBody(simple("${body.journaldataList}"))
+				.log(INFO, log, "Starter lagring av ${body.size()} journaldata-elementer")
 				.split(body(), new JournalpostAggregator()).streaming().parallelProcessing()
 					.to(RUTE_MAP_JOURNALDATA)
 				.end()
@@ -83,18 +89,41 @@ public class InnlesingRoute extends BaseRoute {
 	private static class JournalpostAggregator implements AggregationStrategy {
 
 		private final List<Journaldata> journalposter = new ArrayList<>();
+		private final AtomicInteger counter = new AtomicInteger(0);
 
 		@Override
 		public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
 			journalposter.add((Journaldata) newExchange.getIn().getBody());
-			log.info("Har aggregert {}", ((Journaldata) newExchange.getIn().getBody()).getOnDemandId());
+			var count = counter.getAndIncrement();
+
+			if (count % JOURNALPOST_LOGGBLOKK_STOERRELSE == 0)
+				logAggregerteJournalposter(journalposter);
 
 			return newExchange;
 		}
 
 		@Override
 		public void onCompletion(Exchange exchange) {
+			var antall = journalposter.size();
+			var resterende = antall % JOURNALPOST_LOGGBLOKK_STOERRELSE;
+
+			if (antall < JOURNALPOST_LOGGBLOKK_STOERRELSE )
+				logAggregerteJournalposter(journalposter);
+			else if (resterende != 0)
+				logAggregerteJournalposter(journalposter.subList(antall - resterende, antall));
+
 			exchange.getIn().setBody(journalposter);
+		}
+
+		private void logAggregerteJournalposter(List<Journaldata> journalposter) {
+			var loggTil = journalposter.size();
+			var loggFra = loggTil - min(loggTil, JOURNALPOST_LOGGBLOKK_STOERRELSE);
+
+			var liste = journalposter.subList(loggFra, loggTil).stream()
+					.map(Journaldata::getOnDemandId)
+					.collect(Collectors.joining(", "));
+
+			log.info("Har aggregert {}", liste);
 		}
 	}
 
