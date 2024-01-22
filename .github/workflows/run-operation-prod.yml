@@ -70,6 +70,8 @@ jobs:
           CLUSTER: prod-fss
           RESOURCE: nais/naiserator.yaml
           VARS: nais/p-config.json
+          WAIT: true
+          TIMEOUT: 3h
           VAR: image=ghcr.io/${{ github.repository }}:${{ github.sha }},filnavn=${{github.event.inputs.filnavn}},operasjon=${{github.event.inputs.operasjon}}
 
   
