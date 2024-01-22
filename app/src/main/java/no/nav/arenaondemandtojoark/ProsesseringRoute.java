@@ -68,8 +68,6 @@ public class ProsesseringRoute extends BaseRoute {
 			var antallProsesserte = counter.incrementAndGet();
 			var fremdrift = antallProsesserte * 100 / antallJournaldata;
 
-			log.info(String.valueOf(antallJournaldata));
-
 			if (antallProsesserte % 100 == 0)
 				log.info("Har prosessert {} av {} journaldata-elementer ({}%).", antallProsesserte, antallJournaldata, fremdrift);
 
