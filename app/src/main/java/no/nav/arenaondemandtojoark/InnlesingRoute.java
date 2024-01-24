@@ -32,7 +32,7 @@ public class InnlesingRoute extends BaseRoute {
 														"{{arenaondemandtojoark.sftp.inbound.folder}}" +
 														"{{arenaondemandtojoark.sftp.config}}" +
 														"&include={{arenaondemandtojoark.filnavn}}" +
-														"stepwise=false" +
+														"&stepwise=false" +
 														"&charset=ISO-8859-1";
 
 	private static final String RUTE_MAP_JOURNALDATA = "direct:map_journaldata";
