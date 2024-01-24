@@ -11,6 +11,7 @@ import org.apache.camel.converter.jaxb.JaxbDataFormat;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -31,6 +32,7 @@ public class InnlesingRoute extends BaseRoute {
 														"{{arenaondemandtojoark.sftp.inbound.folder}}" +
 														"{{arenaondemandtojoark.sftp.config}}" +
 														"&include={{arenaondemandtojoark.filnavn}}" +
+														"stepwise=false" +
 														"&charset=ISO-8859-1";
 
 	private static final String RUTE_MAP_JOURNALDATA = "direct:map_journaldata";
@@ -51,7 +53,7 @@ public class InnlesingRoute extends BaseRoute {
 		//@formatter:off
 
 		from(RUTE_INNLESING)
-				.pollEnrich(LES_FRA_FILOMRAADE_URI)
+				.pollEnrich(LES_FRA_FILOMRAADE_URI, Duration.ofMinutes(2).toMillis())
 				.routeId("innlesing")
 				.log(INFO, log, "Starter lesing av ${file:absolute.path}.")
 				.setProperty(PROPERTY_FILNAVN, simple("${file:name}"))
