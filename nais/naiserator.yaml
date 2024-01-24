@@ -8,6 +8,9 @@ metadata:
 spec:
   ttlSecondsAfterFinished: 100
   image: {{ image }}
+  resources:
+    limits:
+      memory: 4096Mi
   env:
     - name: ARENAONDEMANDTOJOARK_ENDPOINTS_DOKARKIV_URL
       value: {{ ARENAONDEMANDTOJOARK_ENDPOINTS_DOKARKIV_URL }}
