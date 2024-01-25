@@ -1,6 +1,6 @@
 {
   "APP_NAME": "arenaondemandtojoark",
-  "ARENAONDEMANDTOJOARK_ENDPOINTS_DOKARKIV_URL": "https://dokarkiv.intern.nav.no/rest/journalpostapi/v1/journalpost",
+  "ARENAONDEMANDTOJOARK_ENDPOINTS_DOKARKIV_URL": "http://dokarkiv.teamdokumenthandtering.svc.nais.local/rest/journalpostapi/v1/journalpost",
   "ARENAONDEMANDTOJOARK_ENDPOINTS_DOKARKIV_SCOPE": "api://prod-fss.teamdokumenthandtering.dokarkiv/.default",
   "ARENAONDEMANDTOJOARK_ENDPOINTS_ONDEMAND": "https://wasapp.adeo.no/ODBrevServlet/ODBrevServlet",
   "SPRING_DATASOURCE_URL":"jdbc:oracle:thin:@a01dbfl043.adeo.no:1521/arenaondemandtojoark",
