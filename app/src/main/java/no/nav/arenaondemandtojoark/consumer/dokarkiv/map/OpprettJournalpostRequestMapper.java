@@ -98,9 +98,20 @@ public class OpprettJournalpostRequestMapper {
 		return null;
 	}
 
+	private static String toBrukerId(String brukerId, String onDemandId) {
+		if ((brukerId.length() == 9) || (brukerId.length() == 11 && !brukerId.startsWith(TSS_ID_PREFIX))) {
+			return brukerId;
+		}
+
+		throw new JournalpostdataMappingException("Kan ikke mappe journaldata med ondemandId=%s. BrukerId=%s er ikke et gyldig FNR eller ORGNR, eller det er en TSS-id (starter med 80)"
+				.formatted(onDemandId, brukerId));
+	}
+
 	private static Bruker toBruker(Journaldata journaldata) {
+		var brukerId = valider(journaldata, journaldata.getBrukerId(), BRUKER_ID);
+
 		return Bruker.builder()
-				.id(valider(journaldata, journaldata.getBrukerId(), BRUKER_ID))
+				.id(toBrukerId(brukerId, journaldata.getOnDemandId()))
 				.idType(PERSON.equalsIgnoreCase(journaldata.getBrukertype()) ? BrukerIdType.FNR : BrukerIdType.ORGNR)
 				.build();
 	}
