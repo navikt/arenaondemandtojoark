@@ -51,6 +51,7 @@ public class InnlesingRoute extends BaseRoute {
 	@Override
 	public void configure() throws Exception {
 		//@formatter:off
+		super.configure();
 
 		from(RUTE_INNLESING)
 				.pollEnrich(LES_FRA_FILOMRAADE_URI, Duration.ofMinutes(2).toMillis())
