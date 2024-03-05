@@ -25,4 +25,12 @@ public class Journaldata {
 	String opprettetAvNavn;
 	String dokumentkategori;
 	String brevkode;
+
+	public void setFagomraade(String fagomraade) {
+		if ("KLA".equals(fagomraade)) {
+			this.fagomraade = "AAP";
+		} else {
+			this.fagomraade = fagomraade;
+		}
+	}
 }

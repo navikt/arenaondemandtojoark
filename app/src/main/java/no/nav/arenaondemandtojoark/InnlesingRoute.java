@@ -126,7 +126,7 @@ public class InnlesingRoute extends BaseRoute {
 					.map(Journaldata::getOnDemandId)
 					.collect(Collectors.joining(", "));
 
-			log.info("Har aggregert {}", liste);
+			log.info("Har aggregert (totalt: {}) {}", loggTil, liste);
 		}
 	}
 
