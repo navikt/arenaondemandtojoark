@@ -2,8 +2,10 @@ package no.nav.arenaondemandtojoark.domain.xml;
 
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
+import jakarta.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import lombok.Getter;
 import lombok.Setter;
+import no.nav.arenaondemandtojoark.domain.xml.adapters.FagomraadeAdapter;
 
 @Getter
 @Setter
@@ -14,6 +16,7 @@ public class Journaldata {
 	String brukerId;
 	String brukerType;
 	String journalpostType;
+	@XmlJavaTypeAdapter(FagomraadeAdapter.class)
 	String fagomraade;
 	String journaldato;
 	String innhold;
@@ -25,12 +28,4 @@ public class Journaldata {
 	String opprettetAvNavn;
 	String dokumentkategori;
 	String brevkode;
-
-	public void setFagomraade(String fagomraade) {
-		if ("KLA".equals(fagomraade)) {
-			this.fagomraade = "AAP";
-		} else {
-			this.fagomraade = fagomraade;
-		}
-	}
 }
