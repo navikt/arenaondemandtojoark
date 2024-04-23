@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVLEVERT;
 import static no.nav.arenaondemandtojoark.domain.db.JournaldataStatus.AVVIK;
@@ -30,6 +31,14 @@ public class JournaldataService {
 
 	@Transactional
 	public void lagreJournaldata(Journaldata journaldata) {
+		log.info("Lagrer journaldata med filnavn={}", journaldata.getFilnavn());
+
+		var test = journaldataRepository.findAll();
+
+		log.info(StreamSupport.stream(test.spliterator(), false).count() + " journaldata elementer i databasen");
+
+		log.info("DB connction OK!");
+
 		journaldataRepository.save(journaldata);
 	}
 
