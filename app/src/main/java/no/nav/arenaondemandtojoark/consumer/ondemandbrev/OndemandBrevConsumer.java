@@ -37,6 +37,7 @@ public class OndemandBrevConsumer {
 		ondemandFolder = arenaondemandtojoarkProperties.getOndemandFolder();
 		this.webClient = webClient.mutate()
 				.baseUrl(arenaondemandtojoarkProperties.getEndpoints().getOndemand())
+				.defaultHeader("nav-team-dok", "arenaondemandtojoark")
 				.exchangeStrategies(ExchangeStrategies.builder()
 						.codecs(clientCodecConfigurer -> clientCodecConfigurer
 								.defaultCodecs().maxInMemorySize((int) DataSize.ofMegabytes(100).toBytes()))
