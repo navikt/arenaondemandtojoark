@@ -18,8 +18,6 @@ spec:
       value: {{ ARENAONDEMANDTOJOARK_ENDPOINTS_DOKARKIV_SCOPE }}
     - name: ARENAONDEMANDTOJOARK_ENDPOINTS_ONDEMAND
       value: {{ ARENAONDEMANDTOJOARK_ENDPOINTS_ONDEMAND }}
-    - name: SPRING_DATASOURCE_URL
-      value: {{ SPRING_DATASOURCE_URL }}
     - name: ARENAONDEMANDTOJOARK_FILNAVN
       value: {{ filnavn }}
     - name: ARENAONDEMANDTOJOARK_OPERASJON
@@ -33,5 +31,7 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: {{ ARENAONDEMANDTOJOARK_DB }}
-        mountPath: /var/run/secrets/nais.io/arenaondemandtojoarkDB
+      - kvPath: {{ ARENAONDEMANDTOJOARK_DB_CREDS }}
+        mountPath: "/var/run/secrets/nais.io/db_creds"
+      - kvPath: {{ ARENAONDEMANDTOJOARK_DB_CONFIG }}
+        mountPath: "/var/run/secrets/nais.io/db_config"
